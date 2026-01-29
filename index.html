@@ -2,377 +2,376 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>APEX Corporate Translator</title>
-  <meta name="description" content="APEX Corporate Translator — paste any corporate message and get an APEX verdict in 5 bullets with status + confidence."/>
+  <meta name="description" content="APEX Corporate Translator — paste any corporate message. Get an APEX verdict in exactly 5 bullets with status + confidence." />
   <style>
     :root{
-      --bg:#070b11;
-      --card:#0d1320;
-      --card2:#0b1220;
-      --stroke:rgba(255,255,255,0.08);
-      --text:#eaf0ff;
-      --muted:rgba(234,240,255,0.70);
-      --muted2:rgba(234,240,255,0.55);
-      --blue:#3b82f6;
-      --blue2:#2563eb;
-      --shadow:0 30px 80px rgba(0,0,0,0.55);
-      --radius:18px;
-      --radius2:14px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --bg:#0a0f16;
+      --panel:#0f1726;
+      --panel2:#0b1220;
+      --text:#eef3ff;
+      --muted:rgba(238,243,255,.72);
+      --muted2:rgba(238,243,255,.54);
+      --line:rgba(255,255,255,.09);
+      --shadow:0 18px 55px rgba(0,0,0,.48);
+      --r:22px;
+
+      --blue:#4f8cff;
+      --blue2:#3b74d9;
+
+      --crit:#ff4d6d;
+      --high:#ffb020;
+      --watch:#56d3ff;
+      --safe:#61ffb0;
+
+      --glowCrit:0 0 0 1px rgba(255,77,109,.18), 0 0 40px rgba(255,77,109,.10);
+      --glowHigh:0 0 0 1px rgba(255,176,32,.18), 0 0 40px rgba(255,176,32,.10);
+      --glowWatch:0 0 0 1px rgba(86,211,255,.18), 0 0 40px rgba(86,211,255,.10);
+      --glowSafe:0 0 0 1px rgba(97,255,176,.18), 0 0 40px rgba(97,255,176,.10);
     }
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:var(--sans);
-      color:var(--text);
       background:
-        radial-gradient(1000px 500px at 20% 10%, rgba(59,130,246,0.18), transparent 55%),
-        radial-gradient(900px 450px at 80% 20%, rgba(99,102,241,0.14), transparent 60%),
-        radial-gradient(1200px 700px at 50% 120%, rgba(16,185,129,0.10), transparent 60%),
+        radial-gradient(900px 600px at 20% 10%, rgba(79,140,255,.12), transparent 60%),
+        radial-gradient(800px 500px at 80% 30%, rgba(255,77,109,.10), transparent 60%),
+        radial-gradient(700px 500px at 50% 90%, rgba(86,211,255,.08), transparent 60%),
         var(--bg);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      min-height:100vh;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:24px;
+      padding:28px 14px;
     }
 
-    .wrap{ width:100%; max-width:980px; }
+    .wrap{width:min(980px,100%)}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:18px;
+    }
+    @media (max-width: 860px){
+      .grid{grid-template-columns:1fr}
+    }
 
-    .hero{
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .cardInner{padding:22px}
+    .top{
       display:flex;
-      gap:22px;
       align-items:flex-start;
       justify-content:space-between;
-      margin-bottom:16px;
+      gap:12px;
+      padding:22px 22px 12px 22px;
     }
-
-    .title{
+    .brand{
       display:flex;
       flex-direction:column;
-      gap:10px;
-      max-width:520px;
+      gap:8px;
     }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 14px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,0.03);
-      border-radius:999px;
-      width:max-content;
-      color:var(--muted);
-      font-size:13px;
-      letter-spacing:0.2px;
-    }
-    .dot{
-      width:8px;height:8px;border-radius:999px;
-      background:rgba(59,130,246,0.9);
-      box-shadow:0 0 0 6px rgba(59,130,246,0.15);
-    }
-
-    h1{
+    .h1{
+      font-weight:800;
+      letter-spacing:-.02em;
+      font-size:40px;
+      line-height:1.04;
       margin:0;
-      font-size:44px;
-      line-height:1.02;
-      letter-spacing:-1.2px;
     }
     .sub{
       margin:0;
       color:var(--muted);
-      line-height:1.6;
-      font-size:16px;
+      line-height:1.5;
+      max-width:42ch;
     }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap:18px;
-    }
-
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      border:1px solid var(--stroke);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-
-    .cardHeader{
-      padding:18px 18px 0;
-    }
-    .cardBody{
-      padding:18px;
+    .pill{
+      align-self:flex-start;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      color:var(--muted);
+      font-weight:650;
+      font-size:12px;
+      letter-spacing:.02em;
+      white-space:nowrap;
     }
 
     textarea{
       width:100%;
-      min-height:240px;
-      resize:vertical;
-      border-radius:var(--radius2);
-      border:1px solid var(--stroke);
-      background:rgba(0,0,0,0.25);
+      min-height:210px;
+      padding:16px 16px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(5,8,14,.55);
       color:var(--text);
-      padding:14px 14px;
+      outline:none;
+      resize:vertical;
       font-size:15px;
       line-height:1.55;
-      outline:none;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
     }
-    textarea::placeholder{
-      color:rgba(234,240,255,0.35);
-    }
-    textarea:focus{
-      border-color:rgba(59,130,246,0.45);
-      box-shadow:0 0 0 6px rgba(59,130,246,0.12);
-    }
+    textarea::placeholder{color:rgba(238,243,255,.40)}
 
-    .actions{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-      margin-top:12px;
-    }
-
-    button{
-      width:100%;
-      border:0;
-      border-radius:14px;
-      padding:14px 14px;
-      cursor:pointer;
-      font-weight:700;
-      font-size:16px;
-      letter-spacing:0.2px;
-    }
-
-    .primary{
-      background: linear-gradient(180deg, rgba(59,130,246,1), rgba(37,99,235,1));
-      color:white;
-      box-shadow:0 18px 30px rgba(37,99,235,0.24);
-    }
-    .primary:hover{ filter:brightness(1.05); }
-    .secondary{
-      background:rgba(255,255,255,0.04);
-      color:var(--text);
-      border:1px solid var(--stroke);
-    }
-    .secondary:hover{ background:rgba(255,255,255,0.06); }
-
-    .miniRow{
+    .btnRow{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:10px;
-    }
-
-    .kpiRow{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap:10px;
-      margin-top:10px;
-    }
-    .kpi{
-      padding:14px;
-      border-radius:16px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,0.03);
-      min-height:84px;
-    }
-    .kpiLabel{
-      color:var(--muted2);
-      font-size:12px;
-      letter-spacing:0.35px;
-      text-transform:uppercase;
-      margin-bottom:8px;
-    }
-    .kpiValue{
-      font-size:20px;
-      font-weight:800;
-      letter-spacing:-0.4px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .statusPill{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 12px;
-      border-radius:999px;
-      border:1px solid var(--stroke);
-      background:rgba(0,0,0,0.20);
-      width:max-content;
-      font-size:13px;
-      color:var(--muted);
-    }
-    .statusDot{ width:10px;height:10px;border-radius:999px; }
-
-    .outCard{
-      border-radius:var(--radius);
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,0.03);
-      padding:16px;
       margin-top:12px;
     }
+    @media (max-width: 520px){
+      .btnRow{grid-template-columns:1fr}
+    }
+    button{
+      border:none;
+      border-radius:16px;
+      padding:14px 14px;
+      cursor:pointer;
+      font-weight:800;
+      letter-spacing:.01em;
+      font-size:15px;
+      transition:transform .06s ease, background .2s ease, opacity .2s ease;
+    }
+    button:active{transform:translateY(1px)}
+    .primary{
+      background:linear-gradient(180deg, var(--blue), var(--blue2));
+      color:white;
+    }
+    .ghost{
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      color:var(--text);
+    }
+    .ghost:hover{background:rgba(255,255,255,.06)}
+    .primary:hover{opacity:.95}
 
-    .alertTitle{
+    .miniRow{
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .miniBtn{
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:13px;
+      font-weight:750;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      color:var(--text);
+    }
+
+    .rightHeader{
+      padding:18px 18px 0 18px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .titleSmall{
+      font-size:13px;
+      color:var(--muted2);
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .alert{
+      margin:14px 18px 12px 18px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.16);
+      padding:14px 14px;
+    }
+    .alertTop{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
       margin-bottom:8px;
     }
-    .alertLeft{
+    .badge{
       display:flex;
       align-items:center;
       gap:10px;
       font-weight:900;
-      letter-spacing:0.2px;
+      letter-spacing:.02em;
     }
-    .sirDot{
-      width:10px;height:10px;border-radius:999px;
-      box-shadow:0 0 0 8px rgba(255,255,255,0.06);
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background:var(--watch);
+      box-shadow:0 0 0 6px rgba(86,211,255,.10);
+      flex:0 0 auto;
     }
-    .alertMeta{
-      font-size:13px;
-      color:var(--muted);
+    .alertLabel{
+      color:var(--muted2);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
     }
-    .alertText{
-      margin:10px 0 0;
+    .alertMsg{
+      margin:0;
       color:var(--text);
       line-height:1.55;
       font-size:14px;
     }
-    .verdictTitle{
-      margin:14px 0 8px;
+
+    .stats{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+      padding:0 18px 14px 18px;
+    }
+    @media (max-width: 520px){
+      .stats{grid-template-columns:1fr}
+    }
+    .stat{
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.14);
+      padding:14px;
+      min-height:80px;
+    }
+    .statK{
       color:var(--muted2);
       font-size:12px;
-      letter-spacing:0.35px;
+      font-weight:850;
+      letter-spacing:.08em;
       text-transform:uppercase;
+      margin-bottom:6px;
+    }
+    .statV{
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:-.01em;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .section{
+      padding:0 18px 18px 18px;
+    }
+    .box{
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.12);
+      padding:14px;
+    }
+    .boxTitle{
+      color:var(--muted2);
+      font-size:12px;
+      font-weight:850;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin:0 0 10px 0;
     }
     ul{
       margin:0;
       padding-left:18px;
-      line-height:1.6;
+      color:var(--text);
     }
-    li{ margin:8px 0; }
-
-    .tiny{
+    li{
+      margin:0 0 10px 0;
+      line-height:1.5;
+    }
+    .hint{
       margin-top:12px;
-      color:rgba(234,240,255,0.40);
+      color:var(--muted2);
       font-size:12px;
       line-height:1.45;
     }
-    .link{
-      color:#93c5fd;
-      text-decoration:none;
-    }
-    .link:hover{ text-decoration:underline; }
+    .hint a{color:rgba(79,140,255,.95);text-decoration:none;font-weight:800}
+    .hint a:hover{text-decoration:underline}
 
-    .mutedBlock{
-      margin-top:10px;
-      padding:14px;
-      border-radius:16px;
-      border:1px dashed rgba(255,255,255,0.12);
-      color:rgba(234,240,255,0.55);
-      background:rgba(0,0,0,0.18);
-      font-size:12.5px;
-      line-height:1.5;
-    }
+    /* Status styling hooks */
+    .crit .dot{background:var(--crit); box-shadow:0 0 0 6px rgba(255,77,109,.12)}
+    .high .dot{background:var(--high); box-shadow:0 0 0 6px rgba(255,176,32,.12)}
+    .watch .dot{background:var(--watch); box-shadow:0 0 0 6px rgba(86,211,255,.12)}
+    .safe .dot{background:var(--safe); box-shadow:0 0 0 6px rgba(97,255,176,.12)}
 
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-      .hero{ flex-direction:column; }
-      h1{ font-size:40px; }
-    }
+    .crit .alert{box-shadow:var(--glowCrit)}
+    .high .alert{box-shadow:var(--glowHigh)}
+    .watch .alert{box-shadow:var(--glowWatch)}
+    .safe .alert{box-shadow:var(--glowSafe)}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="hero">
-      <div class="title">
-        <div class="badge"><span class="dot"></span> APEX · Verdict Engine</div>
-        <h1>APEX Corporate Translator</h1>
-        <p class="sub">
-          Paste any corporate email / Slack post / HR update.
-          Get an <b>APEX verdict</b> in <b>exactly 5 bullets</b> with <b>Status</b> + <b>Confidence</b>.
-        </p>
-      </div>
-    </div>
-
     <div class="grid">
       <!-- LEFT: INPUT -->
       <div class="card">
-        <div class="cardHeader">
-          <div class="statusPill">
-            <span class="statusDot" id="statusDotTop" style="background:rgba(255,255,255,0.25)"></span>
-            <span id="statusTopText">APEX Ready</span>
+        <div class="top">
+          <div class="brand">
+            <h1 class="h1">APEX<br/>Corporate Translator</h1>
+            <p class="sub">Paste any corporate email / Slack / HR update. Get an <b>APEX verdict</b> in <b>exactly 5 bullets</b> with status + confidence.</p>
           </div>
+          <div class="pill">APEX • Verdict Engine</div>
         </div>
 
-        <div class="cardBody">
-          <textarea id="input" placeholder="Paste corporate email / Slack post / HR update here..."></textarea>
+        <div class="cardInner">
+          <textarea id="input" placeholder="Paste corporate message here… (email / Slack / HR update)"></textarea>
 
-          <div class="actions">
+          <div class="btnRow">
             <button class="primary" id="btnTranslate">APEX Translate</button>
+            <button class="ghost" id="btnExample">Load APEX Example</button>
+          </div>
 
-            <div class="miniRow">
-              <button class="secondary" id="btnExample">Load APEX Example</button>
-              <button class="secondary" id="btnCopy">Copy Verdict</button>
-            </div>
-            <button class="secondary" id="btnReset">Reset</button>
-
-            <div class="kpiRow">
-              <div class="kpi">
-                <div class="kpiLabel">APEX Status</div>
-                <div class="kpiValue">
-                  <span class="statusDot" id="statusDot" style="background:rgba(255,255,255,0.25)"></span>
-                  <span id="statusValue">—</span>
-                </div>
-              </div>
-              <div class="kpi">
-                <div class="kpiLabel">APEX Confidence</div>
-                <div class="kpiValue" id="confidenceValue">—</div>
-              </div>
-              <div class="kpi">
-                <div class="kpiLabel">APEX Signals</div>
-                <div class="kpiValue"><span id="signalCount">—</span> <span style="color:rgba(234,240,255,0.55); font-weight:700">(<span id="signalScore">—</span>)</span></div>
-              </div>
-            </div>
-
-            <div class="tiny">
-              Tip: corporate emails often hide the real move behind “alignment”, “streamline”, “flexibility”.
-              <a class="link" href="#" id="useExampleLink">Use example</a>
-            </div>
+          <div class="miniRow">
+            <button class="miniBtn" id="btnCopy">Copy Verdict</button>
+            <button class="miniBtn" id="btnReset">Reset</button>
           </div>
         </div>
       </div>
 
       <!-- RIGHT: OUTPUT -->
-      <div class="card">
-        <div class="cardBody">
-          <div class="outCard" id="alertBox" style="display:none;">
-            <div class="alertTitle">
-              <div class="alertLeft">
-                <span class="sirDot" id="sirDot" style="background:rgba(255,255,255,0.25)"></span>
-                <span>APEX ALERT</span>
-              </div>
-              <div class="alertMeta">
-                Status: <b id="alertStatus">—</b> · Confidence: <b id="alertConfidence">—</b>
-              </div>
-            </div>
-            <p class="alertText" id="alertText"></p>
+      <div class="card" id="rightCard">
+        <div class="rightHeader">
+          <div class="titleSmall">APEX Output</div>
+          <div class="titleSmall" id="timeTag">—</div>
+        </div>
 
-            <div class="verdictTitle">APEX Verdict (5 bullets)</div>
-            <ul id="verdictList"></ul>
+        <div class="alert watch" id="alertBox">
+          <div class="alertTop">
+            <div class="badge"><span class="dot"></span><span id="statusText">STATUS: —</span></div>
+            <div class="alertLabel" id="confText">CONFIDENCE: —</div>
           </div>
+          <p class="alertMsg" id="alertMsg">Paste a message and run <b>APEX Translate</b>.</p>
+        </div>
 
-          <div class="mutedBlock" id="emptyState">
-            Paste a corporate message on the left, then press <b>APEX Translate</b>.
-            You’ll receive a compact <b>5-bullet verdict</b> designed for speed and clarity.
+        <div class="stats">
+          <div class="stat">
+            <div class="statK">APEX Status</div>
+            <div class="statV" id="statStatus"><span class="dot"></span>—</div>
+          </div>
+          <div class="stat">
+            <div class="statK">APEX Confidence</div>
+            <div class="statV" id="statConf">—</div>
+          </div>
+          <div class="stat">
+            <div class="statK">APEX Signals</div>
+            <div class="statV" id="statSignals">—</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="box">
+            <div class="boxTitle">APEX Verdict (5 bullets)</div>
+            <ul id="verdictList">
+              <li>—</li>
+            </ul>
+            <div class="hint">
+              Tip: corporate messages often hide the real move behind “alignment”, “streamline”, “flexibility”.
+              <br/><a href="#" id="useExampleLink">Use example</a>
+            </div>
           </div>
         </div>
       </div>
@@ -380,61 +379,66 @@
   </div>
 
   <script>
-    // ===== APEX ENGINE (local heuristic) =====
-    // No external APIs. No tracking. Works on GitHub Pages.
-    // Output is ALWAYS exactly 5 bullets + status + confidence.
+    // =========================
+    // APEX Corporate Translator
+    // Exactly 5 bullets output
+    // =========================
 
-    const APEX_PHRASES = [
-      // high weight: restructure / cuts / pressure
-      {p:"organizational adjustments", w:4, tag:"reorg"},
-      {p:"operating model", w:4, tag:"reorg"},
-      {p:"streamline", w:4, tag:"cuts"},
-      {p:"rightsizing", w:4, tag:"cuts"},
-      {p:"restructure", w:4, tag:"reorg"},
-      {p:"reorganization", w:4, tag:"reorg"},
-      {p:"cost discipline", w:4, tag:"cuts"},
-      {p:"cost optimization", w:4, tag:"cuts"},
-      {p:"reduce costs", w:4, tag:"cuts"},
-      {p:"headcount", w:4, tag:"cuts"},
-      {p:"redundancy", w:4, tag:"cuts"},
-      {p:"role elimination", w:4, tag:"cuts"},
-      {p:"position elimination", w:4, tag:"cuts"},
-      {p:"hiring freeze", w:4, tag:"freeze"},
-      {p:"freeze hiring", w:4, tag:"freeze"},
-      {p:"layoff", w:4, tag:"cuts"},
-      {p:"layoffs", w:4, tag:"cuts"},
-      {p:"separation", w:4, tag:"cuts"},
-      {p:"transition", w:3, tag:"reorg"},
-      {p:"realign", w:3, tag:"reorg"},
-      {p:"align our resources", w:3, tag:"reorg"},
-      {p:"strategic priorities", w:2, tag:"reorg"},
-      {p:"dynamic market", w:2, tag:"pressure"},
-      {p:"market environment", w:2, tag:"pressure"},
-      {p:"macroeconomic", w:2, tag:"pressure"},
-      {p:"uncertainty", w:2, tag:"pressure"},
-      {p:"short-term flexibility", w:3, tag:"pressure"},
-      {p:"additional details will be shared", w:3, tag:"delay"},
-      {p:"as they become available", w:2, tag:"delay"},
-      {p:"over the coming weeks", w:2, tag:"timeline"},
-      {p:"in the coming weeks", w:2, tag:"timeline"},
-      {p:"effective immediately", w:3, tag:"timeline"},
-      {p:"effective", w:1, tag:"timeline"},
-      {p:"manager", w:1, tag:"mgmt"},
-      {p:"cross-functional collaboration", w:1, tag:"process"},
-      {p:"workflow", w:1, tag:"process"},
-      {p:"efficiency", w:2, tag:"cuts"},
-      {p:"productivity", w:1, tag:"process"},
-      {p:"commitment and adaptability", w:1, tag:"tone"},
-      {p:"thank you for your continued", w:1, tag:"tone"}
+    const PHRASES = [
+      // High impact (4)
+      { text: "organizational adjustments", w: 4 },
+      { text: "restructur", w: 4 },
+      { text: "realign", w: 4 },
+      { text: "streamlin", w: 4 },
+      { text: "operating model", w: 4 },
+      { text: "rightsizing", w: 4 },
+      { text: "efficiency", w: 4 },
+      { text: "cost optimization", w: 4 },
+      { text: "role elimination", w: 4 },
+      { text: "position eliminat", w: 4 },
+      { text: "headcount", w: 4 },
+      { text: "reduction in force", w: 4 },
+      { text: "redundanc", w: 4 },
+      { text: "layoff", w: 4 },
+
+      // Medium (3)
+      { text: "align our resources", w: 3 },
+      { text: "strategic priorities", w: 3 },
+      { text: "short-term flexibility", w: 3 },
+      { text: "difficult decisions", w: 3 },
+      { text: "tough decisions", w: 3 },
+      { text: "making changes", w: 3 },
+      { text: "simplify", w: 3 },
+      { text: "optimize", w: 3 },
+      { text: "focus areas", w: 3 },
+      { text: "transformation", w: 3 },
+
+      // Light (2)
+      { text: "dynamic market", w: 2 },
+      { text: "macroeconomic", w: 2 },
+      { text: "uncertainty", w: 2 },
+      { text: "as we navigate", w: 2 },
+      { text: "over the coming weeks", w: 2 },
+      { text: "in the coming weeks", w: 2 },
+      { text: "effective immediately", w: 2 },
+      { text: "additional details will be shared", w: 2 },
+      { text: "as they become available", w: 2 },
+      { text: "business needs", w: 2 },
+
+      // Filler (1)
+      { text: "thank you for your continued commitment", w: 1 },
+      { text: "thank you for your continued support", w: 1 },
+      { text: "we appreciate", w: 1 },
+      { text: "your adaptability", w: 1 },
     ];
 
     const EXAMPLE = `Subject: Important Update on Our Operating Model
 
 Team,
 
-As we navigate a dynamic market environment, leadership has been evaluating opportunities to better align our resources with long-term strategic priorities.
+As we continue to navigate a dynamic market environment, we've been evaluating opportunities to better align our resources with long-term strategic priorities.
 
-Over the coming weeks, we will be implementing organizational adjustments designed to streamline workflows, enhance cross-functional collaboration, and ensure we remain competitive in the evolving landscape.
+Over the coming weeks, we will be implementing organizational adjustments designed to streamline workflows and improve cross-functional collaboration.
 
 While these changes may require some short-term flexibility, we are confident they will position us strongly for sustainable growth. Additional details will be shared by your managers as they become available.
 
@@ -443,271 +447,253 @@ Thank you for your continued commitment and adaptability.
 Best regards,
 Senior Leadership Team`;
 
-    const $ = (id)=>document.getElementById(id);
+    const $ = (id) => document.getElementById(id);
 
-    const btnTranslate = $("btnTranslate");
-    const btnExample = $("btnExample");
-    const btnCopy = $("btnCopy");
-    const btnReset = $("btnReset");
-    const useExampleLink = $("useExampleLink");
-
-    function normalize(text){
-      return (text || "").toLowerCase().replace(/\s+/g," ").trim();
+    function normalize(s){
+      return (s || "").toLowerCase().replace(/\s+/g," ").trim();
     }
 
-    function detectSignals(raw){
-      const text = normalize(raw);
-      const hits = [];
+    function countMatches(message){
+      const m = normalize(message);
+      let hits = [];
       let score = 0;
 
-      for (const item of APEX_PHRASES){
-        if (text.includes(item.p)){
-          hits.push(item);
-          score += item.w;
+      for(const p of PHRASES){
+        if(m.includes(p.text)){
+          hits.push(p);
+          score += p.w;
         }
       }
-
-      // bonus heuristics
-      const subjectLine = /subject:\s*(.+)/i.exec(raw || "");
-      if(subjectLine){
-        const subj = normalize(subjectLine[1]);
-        if (subj.includes("important update") || subj.includes("operating model") || subj.includes("organizational")){
-          score += 3;
-          hits.push({p:"subject: change signal", w:3, tag:"subject"});
-        }
-      }
-
-      // urgent verbs / opacity cues
-      if (text.includes("we will be implementing") || text.includes("we will be making")){
-        score += 2; hits.push({p:"implementation cue", w:2, tag:"action"});
-      }
-      if (text.includes("further information") || text.includes("more information") || text.includes("details will follow")){
-        score += 2; hits.push({p:"details deferred", w:2, tag:"delay"});
-      }
-
-      // return unique-ish signals by phrase
-      const uniq = [];
-      const seen = new Set();
-      for (const h of hits){
-        const k = h.p + "|" + h.w;
-        if(!seen.has(k)){ seen.add(k); uniq.push(h); }
-      }
-      return {score, signals: uniq};
+      // signals = number of matched phrases
+      return { hits, score, signals: hits.length };
     }
 
-    function classify(score, signalCount){
-      // status
-      let status = "WATCH";
-      if(score >= 24) status = "CRITICAL";
-      else if(score >= 14) status = "HIGH";
-      else if(score >= 8) status = "ELEVATED";
-      else status = "WATCH";
-
-      // confidence
-      let confidence = "Low";
-      if(signalCount >= 10 && score >= 18) confidence = "High";
-      else if(signalCount >= 6 && score >= 10) confidence = "Medium";
-      else confidence = "Low";
-
-      return {status, confidence};
+    function pickStatus(score, signals){
+      // tuned for punch, not academic
+      if(score >= 14 || signals >= 7) return "CRITICAL";
+      if(score >= 9  || signals >= 5) return "HIGH";
+      if(score >= 4  || signals >= 2) return "WATCH";
+      return "SAFE";
     }
 
-    function colorForStatus(status){
-      if(status === "CRITICAL") return "#ef4444"; // red
-      if(status === "HIGH") return "#f59e0b"; // amber
-      if(status === "ELEVATED") return "#60a5fa"; // blue
-      return "rgba(255,255,255,0.25)";
+    function pickConfidence(message, signals){
+      const m = normalize(message);
+      // confidence increases if the message is specific + has multiple signals
+      const hasTime = /\b(weeks?|days?|months?)\b/.test(m) || m.includes("effective immediately");
+      const hasOrgWords = m.includes("operating model") || m.includes("organizational") || m.includes("restructur") || m.includes("realign");
+      const len = (message || "").length;
+
+      let c = 0;
+      if(signals >= 6) c += 3;
+      else if(signals >= 3) c += 2;
+      else if(signals >= 1) c += 1;
+
+      if(hasTime) c += 1;
+      if(hasOrgWords) c += 1;
+      if(len > 500) c += 1;
+
+      if(c >= 5) return "High";
+      if(c >= 3) return "Medium";
+      return "Low";
     }
 
-    function summarizeTranslation(status, confidence){
-      if(status === "CRITICAL"){
-        return `This message signals a restructuring / reorganization. Expect role, workload, or reporting-line impact within weeks.`;
-      }
-      if(status === "HIGH"){
-        return `This message signals meaningful organizational change. Expect shifting priorities and increased ambiguity soon.`;
-      }
-      if(status === "ELEVATED"){
-        return `This message suggests operational pressure. Expect workflow/process changes and possible tightening.`;
-      }
-      return `This message looks mostly informational, but monitor for follow-up changes.`;
+    function extractSubject(message){
+      const lines = (message || "").split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      if(lines.length === 0) return "Update";
+      // common subject patterns
+      const first = lines[0].replace(/^subject:\s*/i,"").trim();
+      if(/subject:/i.test(lines[0])) return first.slice(0, 110);
+      // if first line is short, treat as subject-ish
+      if(first.length <= 90) return first.slice(0, 110);
+      return "Update";
     }
 
-    function makeFiveBullets(raw, signals, score, status){
-      const text = normalize(raw);
+    function inferCoreMove(status, hits, score){
+      const m = hits.map(h => h.text).join(" ");
+      const hasLayoff = m.includes("layoff") || m.includes("redundanc") || m.includes("reduction in force") || m.includes("role elimination") || m.includes("position eliminat") || m.includes("rightsizing");
+      const hasRestructure = m.includes("restructur") || m.includes("organizational adjustments") || m.includes("operating model") || m.includes("realign") || m.includes("align our resources");
 
-      // heuristics for timeline
-      let timeline = "Expect movement within 2–6 weeks.";
-      if(text.includes("effective immediately")) timeline = "Starts now. Assume changes are already in motion.";
-      else if(text.includes("over the coming weeks") || text.includes("in the coming weeks")) timeline = "Starts now. Decisions often lock within 2–6 weeks.";
+      if(hasLayoff) return "Cost-cutting / potential role cuts.";
+      if(hasRestructure) return "Restructure / reporting-line changes.";
+      if(status === "SAFE") return "Routine update / low risk.";
+      if(status === "WATCH") return "Early change signal / watch for follow-ups.";
+      return "Operational change signal.";
+    }
 
-      // core move
-      let coreMove = "Internal reorg / resource realignment.";
-      if(text.includes("operating model") || text.includes("organizational adjustments") || text.includes("restructure") || text.includes("reorganization")){
-        coreMove = "Restructure / reporting-line and ownership shifts.";
+    function inferNextStep(status, hits){
+      const m = hits.map(h => h.text).join(" ");
+      if(status === "SAFE") return "No immediate action — wait for specifics.";
+      if(m.includes("additional details will be shared") || m.includes("as they become available")) {
+        return "Manager-led meetings + role mapping soon.";
       }
-      if(text.includes("streamline") || text.includes("cost") || text.includes("efficiency") || text.includes("headcount") || text.includes("redundancy")){
-        coreMove = "Cost/efficiency push (possible role consolidation).";
+      if(m.includes("over the coming weeks") || m.includes("in the coming weeks")){
+        return "Changes start now; details land within 2–6 weeks.";
       }
+      return "More announcements + scope clarifications next.";
+    }
 
-      // next likely step
-      const nextStep = "Manager-led meetings → role mapping → new priorities/processes.";
+    function inferImpact(status){
+      if(status === "CRITICAL") return "Expect churn: shifting priorities, workload spikes, and possible role impact.";
+      if(status === "HIGH") return "Expect disruption: ownership changes, new processes, and tighter approvals.";
+      if(status === "WATCH") return "Expect uncertainty: minor shifts now, clarity later.";
+      return "Likely none: normal comms with minimal impact.";
+    }
 
-      // impact on people
-      const impact = (status === "CRITICAL" || status === "HIGH")
-        ? "Ambiguity first, workload shifts next; clarity comes after leadership locks decisions."
-        : "Some uncertainty possible; watch for follow-ups and team-level changes.";
+    function inferAction(status){
+      if(status === "CRITICAL") return "Ask 3 specifics today: (1) scope change, (2) reporting line, (3) role-impact timeline.";
+      if(status === "HIGH") return "Get clarity fast: confirm your scope, deliverables, and who approves your work.";
+      if(status === "WATCH") return "Track signals: save the message, watch for follow-ups, and ask for timeline if it repeats.";
+      return "Archive it; move on.";
+    }
 
-      // what to do
-      const toDo = (status === "CRITICAL" || status === "HIGH")
-        ? "Ask your manager 3 specifics: scope change, reporting line, and timeline for role impact."
-        : "Ask for scope + timeline; save the message and watch for follow-up language.";
+    function buildAlertLine(status, coreMove, nextStep){
+      if(status === "SAFE") return `Translation: Low-risk update. ${nextStep}`;
+      if(status === "WATCH") return `Translation: Early change signal. ${nextStep}`;
+      if(status === "HIGH") return `Translation: Operational shake-up likely. ${nextStep}`;
+      return `Translation: Major change likely. ${nextStep}`;
+    }
 
-      // headline: attempt to capture subject
-      let headline = "This is a change signal.";
-      const subjectLine = /subject:\s*(.+)/i.exec(raw || "");
-      if(subjectLine){
-        const subj = subjectLine[1].trim();
-        headline = `"${subj}" is a change signal — expect workflow and ownership shifts.`;
-      } else if (text.includes("operating model")){
-        headline = `"Operating model" language is a change signal — expect shifting ownership and priorities.`;
-      }
+    function classForStatus(status){
+      if(status === "CRITICAL") return "crit";
+      if(status === "HIGH") return "high";
+      if(status === "WATCH") return "watch";
+      return "safe";
+    }
 
-      return [
-        `Headline: ${headline}`,
+    function setRightTheme(status){
+      const right = $("rightCard");
+      right.classList.remove("crit","high","watch","safe");
+      right.classList.add(classForStatus(status));
+      $("alertBox").className = "alert " + classForStatus(status);
+    }
+
+    function renderVerdict(status, confidence, signals, score, message){
+      const subject = extractSubject(message);
+      const { hits } = countMatches(message);
+
+      const coreMove = inferCoreMove(status, hits, score);
+      const nextStep = inferNextStep(status, hits);
+      const impact = inferImpact(status);
+      const action = inferAction(status);
+
+      // EXACTLY 5 bullets — locked
+      const bullets = [
+        `Headline: “${subject}” = ${status === "SAFE" ? "routine update" : "change signal"} — expect ${status === "SAFE" ? "minimal disruption" : "workflow/ownership shifts"}.`,
         `Core move: ${coreMove}`,
         `Next likely step: ${nextStep}`,
-        `Impact on people: ${impact}`,
-        `Timeline / APEX move: ${timeline} ${toDo}`
+        `Impact: ${impact}`,
+        `APEX move: ${action}`
       ];
-    }
 
-    function setTopStatus(status){
-      const c = colorForStatus(status);
-      $("statusDotTop").style.background = c;
-      $("statusTopText").textContent = status ? `APEX ${status}` : "APEX Ready";
-    }
+      // top alert
+      $("statusText").textContent = `STATUS: ${status}`;
+      $("confText").textContent = `CONFIDENCE: ${confidence}`;
+      $("alertMsg").textContent = buildAlertLine(status, coreMove, nextStep);
 
-    function render({status, confidence, score, signalCount, alertText, bullets}){
-      $("statusValue").textContent = status;
-      $("confidenceValue").textContent = confidence;
-      $("signalCount").textContent = signalCount;
-      $("signalScore").textContent = score;
+      // stats
+      $("statStatus").innerHTML = `<span class="dot"></span>${status}`;
+      $("statConf").textContent = confidence;
+      $("statSignals").textContent = `${signals} (score ${score})`;
 
-      const c = colorForStatus(status);
-      $("statusDot").style.background = c;
-      $("sirDot").style.background = c;
-
-      $("alertStatus").textContent = status;
-      $("alertConfidence").textContent = confidence;
-      $("alertText").textContent = alertText;
-
+      // list
       const ul = $("verdictList");
       ul.innerHTML = "";
-      bullets.forEach(b=>{
+      bullets.forEach(b => {
         const li = document.createElement("li");
         li.textContent = b;
         ul.appendChild(li);
       });
 
-      $("emptyState").style.display = "none";
-      $("alertBox").style.display = "block";
-      setTopStatus(status);
+      // time tag
+      $("timeTag").textContent = new Date().toLocaleString();
+
+      setRightTheme(status);
+
+      return {
+        status, confidence, signals, score,
+        bullets,
+        // internal only if you ever need it later (NOT shown in UI)
+        internalHits: hits
+      };
     }
 
-    function reset(){
-      $("input").value = "";
-      $("statusValue").textContent = "—";
-      $("confidenceValue").textContent = "—";
-      $("signalCount").textContent = "—";
-      $("signalScore").textContent = "—";
-      $("statusDot").style.background = "rgba(255,255,255,0.25)";
-      $("sirDot").style.background = "rgba(255,255,255,0.25)";
-      $("alertBox").style.display = "none";
-      $("emptyState").style.display = "block";
-      setTopStatus(null);
-    }
+    let lastResult = null;
 
     function translate(){
-      const raw = $("input").value || "";
-      if(!raw.trim()){
-        setTopStatus(null);
+      const message = $("input").value;
+      if(!message || !message.trim()){
+        $("alertMsg").textContent = "Paste a message first.";
         return;
       }
 
-      const {score, signals} = detectSignals(raw);
-      const {status, confidence} = classify(score, signals.length);
+      const { signals, score } = countMatches(message);
+      const status = pickStatus(score, signals);
+      const confidence = pickConfidence(message, signals);
 
-      const alertText = summarizeTranslation(status, confidence);
-      const bullets = makeFiveBullets(raw, signals, score, status);
+      lastResult = renderVerdict(status, confidence, signals, score, message);
+    }
 
-      render({
-        status,
-        confidence,
-        score,
-        signalCount: signals.length,
-        alertText,
-        bullets
-      });
+    function loadExample(){
+      $("input").value = EXAMPLE;
+      translate();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function resetAll(){
+      $("input").value = "";
+      lastResult = null;
+
+      $("statusText").textContent = "STATUS: —";
+      $("confText").textContent = "CONFIDENCE: —";
+      $("alertMsg").innerHTML = `Paste a message and run <b>APEX Translate</b>.`;
+
+      $("statStatus").innerHTML = `<span class="dot"></span>—`;
+      $("statConf").textContent = "—";
+      $("statSignals").textContent = "—";
+
+      $("verdictList").innerHTML = "<li>—</li>";
+      $("timeTag").textContent = "—";
+
+      const right = $("rightCard");
+      right.classList.remove("crit","high","watch","safe");
+      $("alertBox").className = "alert watch";
     }
 
     async function copyVerdict(){
-      const alertBox = $("alertBox");
-      if(alertBox.style.display === "none") return;
+      if(!lastResult){
+        // try copying something useful anyway
+        const txt = $("verdictList").innerText.trim();
+        if(!txt || txt === "—") return;
+        await navigator.clipboard.writeText(txt);
+        return;
+      }
 
-      const status = $("alertStatus").textContent;
-      const confidence = $("alertConfidence").textContent;
-      const alertText = $("alertText").textContent;
-
-      const bullets = Array.from($("verdictList").querySelectorAll("li")).map(li=>li.textContent);
-
-      const text =
-`APEX ALERT
-Status: ${status}
-Confidence: ${confidence}
-
-Translation: ${alertText}
+      const out =
+`APEX Corporate Translator
+STATUS: ${lastResult.status}
+CONFIDENCE: ${lastResult.confidence}
+SIGNALS: ${lastResult.signals} (score ${lastResult.score})
 
 APEX Verdict (5 bullets)
-- ${bullets.join("\n- ")}`;
-
-      try{
-        await navigator.clipboard.writeText(text);
-        const old = btnCopy.textContent;
-        btnCopy.textContent = "Copied ✓";
-        setTimeout(()=>btnCopy.textContent = old, 1200);
-      }catch(e){
-        const old = btnCopy.textContent;
-        btnCopy.textContent = "Copy failed";
-        setTimeout(()=>btnCopy.textContent = old, 1200);
-      }
+- ${lastResult.bullets.join("\n- ")}
+`;
+      await navigator.clipboard.writeText(out);
     }
 
-    // Events
-    btnTranslate.addEventListener("click", translate);
-    btnExample.addEventListener("click", ()=>{
-      $("input").value = EXAMPLE;
-      translate();
-    });
-    useExampleLink.addEventListener("click", (e)=>{
-      e.preventDefault();
-      $("input").value = EXAMPLE;
-      translate();
-    });
-    btnCopy.addEventListener("click", copyVerdict);
-    btnReset.addEventListener("click", reset);
+    // wire
+    $("btnTranslate").addEventListener("click", translate);
+    $("btnExample").addEventListener("click", loadExample);
+    $("btnReset").addEventListener("click", resetAll);
+    $("btnCopy").addEventListener("click", copyVerdict);
+    $("useExampleLink").addEventListener("click", (e)=>{ e.preventDefault(); loadExample(); });
 
-    // Auto update top status when typing (light)
-    let t;
-    $("input").addEventListener("input", ()=>{
-      clearTimeout(t);
-      t = setTimeout(()=>{
-        const v = $("input").value.trim();
-        if(!v) setTopStatus(null);
-      }, 120);
+    // keyboard: Ctrl/Cmd+Enter to translate
+    $("input").addEventListener("keydown", (e)=>{
+      if((e.ctrlKey || e.metaKey) && e.key === "Enter") translate();
     });
 
-    // Initialize
-    reset();
+    // initial
+    resetAll();
   </script>
 </body>
 </html>
