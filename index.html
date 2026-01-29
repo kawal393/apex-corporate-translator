@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>APEX Corporate Translator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="APEX Corporate Translator converts corporate language into plain truth."/>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0b0f14;
+      color: #eaeaea;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .box {
+      max-width: 700px;
+      width: 100%;
+      padding: 32px;
+      background: #121826;
+      border-radius: 14px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.4);
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 36px;
+      letter-spacing: -1px;
+    }
+    p {
+      opacity: 0.85;
+      line-height: 1.6;
+    }
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      font-size: 15px;
+      background: #0b0f14;
+      color: #eaeaea;
+    }
+    button {
+      margin-top: 16px;
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      background: #4f8cff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #3b74d9;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 15px;
+      white-space: pre-wrap;
+    }
+    .label {
+      opacity: 0.6;
+      font-size: 12px;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>APEX Corporate Translator</h1>
+    <p>
+      <strong>APEX</strong> translates corporate language into what it actually means.
+    </p>
+
+    <textarea id="input" placeholder="Paste corporate email, HR announcement, or Slack message here..."></textarea>
+    <button onclick="translateText()">Translate</button>
+
+    <div id="output" class="result"></div>
+  </div>
+
+  <script>
+    function translateText() {
+      const text = document.getElementById("input").value.trim();
+      if (!text) return;
+
+      const rules = [
+        ["rightsizing", "layoffs"],
+        ["streamlining", "cutting staff or costs"],
+        ["exciting pivot", "the previous plan failed"],
+        ["restructuring", "job losses are coming"],
+        ["return to office", "management does not trust remote work"],
+        ["aligning resources", "budget cuts"],
+        ["performance-based separation", "firing people"],
+        ["enhancing efficiency", "doing more with fewer people"],
+        ["strategic realignment", "change due to pressure or failure"]
+      ];
+
+      let output = text.toLowerCase();
+      rules.forEach(rule => {
+        output = output.replaceAll(rule[0], rule[1]);
+      });
+
+      document.getElementById("output").innerHTML = `
+        <div class="label">APEX TRANSLATION</div>
+        ${output}
+      `;
+    }
+  </script>
+</body>
+</html>
