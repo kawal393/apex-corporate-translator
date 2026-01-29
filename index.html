@@ -2,467 +2,713 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APEX Corporate Translator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="APEX Corporate Translator — decode corporate language into a 5-point verdict."/>
+  <meta name="description" content="APEX Corporate Translator — paste any corporate message and get an APEX verdict in 5 bullets with status + confidence."/>
   <style>
     :root{
-      --bg:#070a10;
-      --panel:#0e1422;
-      --panel2:#0b111d;
-      --text:#e9eefc;
-      --muted:rgba(233,238,252,.72);
-      --muted2:rgba(233,238,252,.55);
-      --border:rgba(255,255,255,.10);
-      --a:#7c5cff;
-      --b:#22d3ee;
-      --safe:#56f39a;
-      --watch:#ffcc66;
-      --risk:#ff4d6d;
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --bg:#070b11;
+      --card:#0d1320;
+      --card2:#0b1220;
+      --stroke:rgba(255,255,255,0.08);
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,0.70);
+      --muted2:rgba(234,240,255,0.55);
+      --blue:#3b82f6;
+      --blue2:#2563eb;
+      --shadow:0 30px 80px rgba(0,0,0,0.55);
+      --radius:18px;
+      --radius2:14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    *{box-sizing:border-box}
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      font-family:var(--sans);
       color:var(--text);
-      min-height:100vh;
       background:
-        radial-gradient(1200px 600px at 20% 10%, rgba(124,92,255,.16), transparent 60%),
-        radial-gradient(900px 550px at 85% 20%, rgba(34,211,238,.13), transparent 55%),
-        linear-gradient(180deg, #05070c 0%, #070a10 40%, #05070c 100%);
+        radial-gradient(1000px 500px at 20% 10%, rgba(59,130,246,0.18), transparent 55%),
+        radial-gradient(900px 450px at 80% 20%, rgba(99,102,241,0.14), transparent 60%),
+        radial-gradient(1200px 700px at 50% 120%, rgba(16,185,129,0.10), transparent 60%),
+        var(--bg);
       display:flex;
+      align-items:center;
       justify-content:center;
       padding:24px;
     }
-    .wrap{width:min(980px, 100%); display:flex; flex-direction:column; gap:18px;}
-    .top{
-      border:1px solid var(--border);
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border-radius:18px;
-      padding:18px;
-      box-shadow:var(--shadow);
-      position:relative;
-      overflow:hidden;
-    }
-    .top:before{
-      content:"";
-      position:absolute; inset:-2px;
-      background:
-        radial-gradient(600px 120px at 30% 0%, rgba(124,92,255,.22), transparent 60%),
-        radial-gradient(600px 120px at 70% 0%, rgba(34,211,238,.18), transparent 60%);
-      filter: blur(10px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .brandRow{display:flex; gap:12px; align-items:center; position:relative; z-index:1;}
-    .sigil{
-      width:42px; height:42px; border-radius:14px;
-      background: linear-gradient(135deg, rgba(124,92,255,.9), rgba(34,211,238,.7));
-      box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 16px 50px rgba(124,92,255,.18);
-      display:flex; align-items:center; justify-content:center;
-      font-weight:900; letter-spacing:.5px;
-    }
-    h1{margin:0; font-size:26px; letter-spacing:-.6px; line-height:1.05;}
-    .sub{margin:6px 0 0; color:var(--muted); line-height:1.45; font-size:14px; max-width:72ch;}
-    .pillRow{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
-    .pill{
-      font-size:12px; color:rgba(255,255,255,.78);
-      padding:6px 10px; border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.03);
+
+    .wrap{ width:100%; max-width:980px; }
+
+    .hero{
+      display:flex;
+      gap:22px;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom:16px;
     }
 
-    .grid{display:grid; grid-template-columns: 1fr 1fr; gap:18px;}
-    @media (max-width: 920px){ .grid{grid-template-columns:1fr} }
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-width:520px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,0.03);
+      border-radius:999px;
+      width:max-content;
+      color:var(--muted);
+      font-size:13px;
+      letter-spacing:0.2px;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:999px;
+      background:rgba(59,130,246,0.9);
+      box-shadow:0 0 0 6px rgba(59,130,246,0.15);
+    }
+
+    h1{
+      margin:0;
+      font-size:44px;
+      line-height:1.02;
+      letter-spacing:-1.2px;
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      line-height:1.6;
+      font-size:16px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap:18px;
+    }
 
     .card{
-      border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.02));
-      border-radius:18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
       box-shadow:var(--shadow);
       overflow:hidden;
     }
+
     .cardHeader{
-      padding:14px 16px 10px;
-      border-bottom:1px solid rgba(255,255,255,.06);
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:18px 18px 0;
     }
-    .cardTitle{font-weight:800; letter-spacing:-.2px; font-size:14px; color:rgba(255,255,255,.88);}
-    .tiny{font-size:12px; color:var(--muted2);}
-    .cardBody{padding:14px 16px 16px;}
+    .cardBody{
+      padding:18px;
+    }
 
     textarea{
       width:100%;
-      min-height: 240px;
-      resize: vertical;
-      border-radius:16px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(8,12,20,.65);
-      color: var(--text);
-      padding: 14px 14px;
-      font-size: 14px;
-      line-height:1.45;
-      outline: none;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
+      min-height:240px;
+      resize:vertical;
+      border-radius:var(--radius2);
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,0.25);
+      color:var(--text);
+      padding:14px 14px;
+      font-size:15px;
+      line-height:1.55;
+      outline:none;
+    }
+    textarea::placeholder{
+      color:rgba(234,240,255,0.35);
     }
     textarea:focus{
-      border-color: rgba(124,92,255,.55);
-      box-shadow: 0 0 0 4px rgba(124,92,255,.12), inset 0 0 0 1px rgba(0,0,0,.25);
+      border-color:rgba(59,130,246,0.45);
+      box-shadow:0 0 0 6px rgba(59,130,246,0.12);
     }
 
-    .btnRow{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;}
+    .actions{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
     button{
-      border:none;
-      cursor:pointer;
+      width:100%;
+      border:0;
       border-radius:14px;
-      padding:12px 14px;
-      font-weight:800;
-      letter-spacing:.2px;
-      color:#071022;
-      background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(34,211,238,.78));
-      box-shadow: 0 16px 50px rgba(124,92,255,.18), 0 0 0 1px rgba(255,255,255,.10);
-      transition: transform .08s ease, filter .15s ease;
-    }
-    button:active{ transform: scale(.99); }
-    button.secondary{
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.86);
-      box-shadow: 0 0 0 1px rgba(255,255,255,.10);
+      padding:14px 14px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:16px;
+      letter-spacing:0.2px;
     }
 
-    .box{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(8,12,20,.55);
-      border-radius:16px;
-      padding:12px 14px;
+    .primary{
+      background: linear-gradient(180deg, rgba(59,130,246,1), rgba(37,99,235,1));
+      color:white;
+      box-shadow:0 18px 30px rgba(37,99,235,0.24);
+    }
+    .primary:hover{ filter:brightness(1.05); }
+    .secondary{
+      background:rgba(255,255,255,0.04);
+      color:var(--text);
+      border:1px solid var(--stroke);
+    }
+    .secondary:hover{ background:rgba(255,255,255,0.06); }
+
+    .miniRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
     }
 
-    .alert{
-      border-radius:16px;
-      padding:12px 14px;
-      border:1px solid rgba(255,255,255,.10);
-      background:
-        radial-gradient(700px 120px at 10% 0%, rgba(255,77,109,.18), transparent 55%),
-        rgba(8,12,20,.55);
-      margin-bottom:12px;
-    }
-
-    .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;}
-    .badge{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px; border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      font-size:12px; color:rgba(255,255,255,.88);
-    }
-    .dot{width:10px; height:10px; border-radius:999px;}
-    .bigLine{
+    .kpiRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
       margin-top:10px;
-      color: rgba(255,255,255,.90);
-      line-height:1.35;
+    }
+    .kpi{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,0.03);
+      min-height:84px;
+    }
+    .kpiLabel{
+      color:var(--muted2);
+      font-size:12px;
+      letter-spacing:0.35px;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+    .kpiValue{
+      font-size:20px;
+      font-weight:800;
+      letter-spacing:-0.4px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .statusPill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,0.20);
+      width:max-content;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .statusDot{ width:10px;height:10px;border-radius:999px; }
+
+    .outCard{
+      border-radius:var(--radius);
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,0.03);
+      padding:16px;
+      margin-top:12px;
+    }
+
+    .alertTitle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .alertLeft{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+      letter-spacing:0.2px;
+    }
+    .sirDot{
+      width:10px;height:10px;border-radius:999px;
+      box-shadow:0 0 0 8px rgba(255,255,255,0.06);
+    }
+    .alertMeta{
+      font-size:13px;
+      color:var(--muted);
+    }
+    .alertText{
+      margin:10px 0 0;
+      color:var(--text);
+      line-height:1.55;
       font-size:14px;
     }
-    .label{font-size:12px; color:var(--muted2); margin-top:10px;}
-    ul{margin:10px 0 0; padding-left:18px;}
-    li{margin:8px 0; line-height:1.45; color:rgba(255,255,255,.92);}
+    .verdictTitle{
+      margin:14px 0 8px;
+      color:var(--muted2);
+      font-size:12px;
+      letter-spacing:0.35px;
+      text-transform:uppercase;
+    }
+    ul{
+      margin:0;
+      padding-left:18px;
+      line-height:1.6;
+    }
+    li{ margin:8px 0; }
 
-    .footerNote{margin-top:10px; color:var(--muted2); font-size:12px; line-height:1.45;}
+    .tiny{
+      margin-top:12px;
+      color:rgba(234,240,255,0.40);
+      font-size:12px;
+      line-height:1.45;
+    }
+    .link{
+      color:#93c5fd;
+      text-decoration:none;
+    }
+    .link:hover{ text-decoration:underline; }
+
+    .mutedBlock{
+      margin-top:10px;
+      padding:14px;
+      border-radius:16px;
+      border:1px dashed rgba(255,255,255,0.12);
+      color:rgba(234,240,255,0.55);
+      background:rgba(0,0,0,0.18);
+      font-size:12.5px;
+      line-height:1.5;
+    }
+
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .hero{ flex-direction:column; }
+      h1{ font-size:40px; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="top">
-      <div class="brandRow">
-        <div class="sigil">A</div>
-        <div>
-          <h1>APEX Corporate Translator</h1>
-          <div class="sub">Paste any corporate email/announcement. APEX returns an <b>alert</b> plus a <b>5-point verdict</b>. No flags. No weights. Just reality.</div>
-          <div class="pillRow">
-            <span class="pill">APEX Alert</span>
-            <span class="pill">5-point Verdict</span>
-            <span class="pill">Fast</span>
-            <span class="pill">Copy / Share</span>
-          </div>
-        </div>
+    <div class="hero">
+      <div class="title">
+        <div class="badge"><span class="dot"></span> APEX · Verdict Engine</div>
+        <h1>APEX Corporate Translator</h1>
+        <p class="sub">
+          Paste any corporate email / Slack post / HR update.
+          Get an <b>APEX verdict</b> in <b>exactly 5 bullets</b> with <b>Status</b> + <b>Confidence</b>.
+        </p>
       </div>
     </div>
 
     <div class="grid">
+      <!-- LEFT: INPUT -->
       <div class="card">
         <div class="cardHeader">
-          <div class="cardTitle">Input</div>
-          <div class="tiny"><span id="count">0</span> chars</div>
+          <div class="statusPill">
+            <span class="statusDot" id="statusDotTop" style="background:rgba(255,255,255,0.25)"></span>
+            <span id="statusTopText">APEX Ready</span>
+          </div>
         </div>
+
         <div class="cardBody">
           <textarea id="input" placeholder="Paste corporate email / Slack post / HR update here..."></textarea>
-          <div class="btnRow">
-            <button id="translateBtn">APEX Translate</button>
-            <button class="secondary" id="demoBtn">Load Demo</button>
-            <button class="secondary" id="copyBtn">Copy Verdict</button>
-            <button class="secondary" id="clearBtn">Reset</button>
+
+          <div class="actions">
+            <button class="primary" id="btnTranslate">APEX Translate</button>
+
+            <div class="miniRow">
+              <button class="secondary" id="btnExample">Load APEX Example</button>
+              <button class="secondary" id="btnCopy">Copy Verdict</button>
+            </div>
+            <button class="secondary" id="btnReset">Reset</button>
+
+            <div class="kpiRow">
+              <div class="kpi">
+                <div class="kpiLabel">APEX Status</div>
+                <div class="kpiValue">
+                  <span class="statusDot" id="statusDot" style="background:rgba(255,255,255,0.25)"></span>
+                  <span id="statusValue">—</span>
+                </div>
+              </div>
+              <div class="kpi">
+                <div class="kpiLabel">APEX Confidence</div>
+                <div class="kpiValue" id="confidenceValue">—</div>
+              </div>
+              <div class="kpi">
+                <div class="kpiLabel">APEX Signals</div>
+                <div class="kpiValue"><span id="signalCount">—</span> <span style="color:rgba(234,240,255,0.55); font-weight:700">(<span id="signalScore">—</span>)</span></div>
+              </div>
+            </div>
+
+            <div class="tiny">
+              Tip: corporate emails often hide the real move behind “alignment”, “streamline”, “flexibility”.
+              <a class="link" href="#" id="useExampleLink">Use example</a>
+            </div>
           </div>
-          <div class="footerNote">Tip: This works best on leadership emails, HR announcements, “strategy updates”, and org change notes.</div>
         </div>
       </div>
 
+      <!-- RIGHT: OUTPUT -->
       <div class="card">
-        <div class="cardHeader">
-          <div class="cardTitle">APEX Output</div>
-          <div class="tiny">Always: Alert + 5 points.</div>
-        </div>
         <div class="cardBody">
-          <div class="alert" id="alertBox">
-            <div class="row">
-              <span class="badge">
-                <span class="dot" id="statusDot" style="background: var(--watch)"></span>
-                <span><b>APEX ALERT</b> · Status: <span id="statusText">WATCH</span></span>
-              </span>
-              <span class="badge"><b>Confidence:</b> <span id="confidenceText">Medium</span></span>
+          <div class="outCard" id="alertBox" style="display:none;">
+            <div class="alertTitle">
+              <div class="alertLeft">
+                <span class="sirDot" id="sirDot" style="background:rgba(255,255,255,0.25)"></span>
+                <span>APEX ALERT</span>
+              </div>
+              <div class="alertMeta">
+                Status: <b id="alertStatus">—</b> · Confidence: <b id="alertConfidence">—</b>
+              </div>
             </div>
-            <div class="bigLine" id="translationLine">Paste text and hit APEX Translate.</div>
+            <p class="alertText" id="alertText"></p>
+
+            <div class="verdictTitle">APEX Verdict (5 bullets)</div>
+            <ul id="verdictList"></ul>
           </div>
 
-          <div class="box">
-            <div class="label"><b>APEX VERDICT (5 POINTS)</b></div>
-            <ul id="points"></ul>
-            <div class="label"><b>Risk Summary</b></div>
-            <div class="bigLine" id="riskSummary">—</div>
+          <div class="mutedBlock" id="emptyState">
+            Paste a corporate message on the left, then press <b>APEX Translate</b>.
+            You’ll receive a compact <b>5-bullet verdict</b> designed for speed and clarity.
           </div>
         </div>
       </div>
     </div>
   </div>
 
-<script>
-  // --- Signals (backend only) ---
-  // We do NOT show flags/weights. We only output: status + confidence + translation + 5 bullets + risk summary.
-  const SIGNALS = [
-    // Pressure / justification
-    { phrases: ["dynamic market", "macro environment", "headwinds", "challenging environment", "market conditions", "cost pressures"], w: 2 },
-    // Reorg language
-    { phrases: ["organizational adjustments", "organizational changes", "restructuring", "restructure", "reorganization", "operating model", "realignment"], w: 4 },
-    // Cost / reduction euphemisms
-    { phrases: ["streamline", "efficiency", "optimize", "reduce redundancy", "rightsizing", "leaner"], w: 4 },
-    // Vagueness / control
-    { phrases: ["over the coming weeks", "in the coming weeks", "additional details", "as they become available", "more details will be shared"], w: 3 },
-    // Burden shift
-    { phrases: ["short-term flexibility", "flexibility", "adaptability", "agility"], w: 2 },
-    // Priority reshuffle
-    { phrases: ["strategic priorities", "align our resources", "better align our resources", "focus areas", "prioritization"], w: 2 },
-    // Competitive justification
-    { phrases: ["remain competitive", "evolving landscape", "fast-changing"], w: 1 }
-  ];
+  <script>
+    // ===== APEX ENGINE (local heuristic) =====
+    // No external APIs. No tracking. Works on GitHub Pages.
+    // Output is ALWAYS exactly 5 bullets + status + confidence.
 
-  const inputEl = document.getElementById("input");
-  const countEl = document.getElementById("count");
-  const translateBtn = document.getElementById("translateBtn");
-  const demoBtn = document.getElementById("demoBtn");
-  const copyBtn = document.getElementById("copyBtn");
-  const clearBtn = document.getElementById("clearBtn");
+    const APEX_PHRASES = [
+      // high weight: restructure / cuts / pressure
+      {p:"organizational adjustments", w:4, tag:"reorg"},
+      {p:"operating model", w:4, tag:"reorg"},
+      {p:"streamline", w:4, tag:"cuts"},
+      {p:"rightsizing", w:4, tag:"cuts"},
+      {p:"restructure", w:4, tag:"reorg"},
+      {p:"reorganization", w:4, tag:"reorg"},
+      {p:"cost discipline", w:4, tag:"cuts"},
+      {p:"cost optimization", w:4, tag:"cuts"},
+      {p:"reduce costs", w:4, tag:"cuts"},
+      {p:"headcount", w:4, tag:"cuts"},
+      {p:"redundancy", w:4, tag:"cuts"},
+      {p:"role elimination", w:4, tag:"cuts"},
+      {p:"position elimination", w:4, tag:"cuts"},
+      {p:"hiring freeze", w:4, tag:"freeze"},
+      {p:"freeze hiring", w:4, tag:"freeze"},
+      {p:"layoff", w:4, tag:"cuts"},
+      {p:"layoffs", w:4, tag:"cuts"},
+      {p:"separation", w:4, tag:"cuts"},
+      {p:"transition", w:3, tag:"reorg"},
+      {p:"realign", w:3, tag:"reorg"},
+      {p:"align our resources", w:3, tag:"reorg"},
+      {p:"strategic priorities", w:2, tag:"reorg"},
+      {p:"dynamic market", w:2, tag:"pressure"},
+      {p:"market environment", w:2, tag:"pressure"},
+      {p:"macroeconomic", w:2, tag:"pressure"},
+      {p:"uncertainty", w:2, tag:"pressure"},
+      {p:"short-term flexibility", w:3, tag:"pressure"},
+      {p:"additional details will be shared", w:3, tag:"delay"},
+      {p:"as they become available", w:2, tag:"delay"},
+      {p:"over the coming weeks", w:2, tag:"timeline"},
+      {p:"in the coming weeks", w:2, tag:"timeline"},
+      {p:"effective immediately", w:3, tag:"timeline"},
+      {p:"effective", w:1, tag:"timeline"},
+      {p:"manager", w:1, tag:"mgmt"},
+      {p:"cross-functional collaboration", w:1, tag:"process"},
+      {p:"workflow", w:1, tag:"process"},
+      {p:"efficiency", w:2, tag:"cuts"},
+      {p:"productivity", w:1, tag:"process"},
+      {p:"commitment and adaptability", w:1, tag:"tone"},
+      {p:"thank you for your continued", w:1, tag:"tone"}
+    ];
 
-  const statusDot = document.getElementById("statusDot");
-  const statusText = document.getElementById("statusText");
-  const confidenceText = document.getElementById("confidenceText");
-  const translationLine = document.getElementById("translationLine");
-  const pointsEl = document.getElementById("points");
-  const riskSummaryEl = document.getElementById("riskSummary");
-
-  inputEl.addEventListener("input", () => {
-    countEl.textContent = String(inputEl.value.length);
-  });
-
-  demoBtn.addEventListener("click", () => {
-    inputEl.value =
-`Subject: Strategic Realignment for Enhanced Operational Efficiency
+    const EXAMPLE = `Subject: Important Update on Our Operating Model
 
 Team,
 
-As we continue to navigate a dynamic market environment, leadership has been evaluating opportunities to better align our resources with long-term strategic priorities.
+As we navigate a dynamic market environment, leadership has been evaluating opportunities to better align our resources with long-term strategic priorities.
 
-Over the coming weeks, we will be implementing a series of organizational adjustments designed to streamline workflows and enhance cross-functional collaboration.
+Over the coming weeks, we will be implementing organizational adjustments designed to streamline workflows, enhance cross-functional collaboration, and ensure we remain competitive in the evolving landscape.
 
-While these changes may require some short-term flexibility, we are confident they will position us strongly for sustainable growth. Additional details will be shared by managers as they become available.
+While these changes may require some short-term flexibility, we are confident they will position us strongly for sustainable growth. Additional details will be shared by your managers as they become available.
 
 Thank you for your continued commitment and adaptability.
 
 Best regards,
 Senior Leadership Team`;
-    countEl.textContent = String(inputEl.value.length);
-    runVerdict();
-  });
 
-  clearBtn.addEventListener("click", () => resetAll());
-  translateBtn.addEventListener("click", () => runVerdict());
-  copyBtn.addEventListener("click", () => copyVerdict());
+    const $ = (id)=>document.getElementById(id);
 
-  function resetAll(){
-    inputEl.value = "";
-    countEl.textContent = "0";
-    setAlert("WATCH", "Medium", "Paste text and hit APEX Translate.");
-    pointsEl.innerHTML = "";
-    riskSummaryEl.textContent = "—";
-  }
+    const btnTranslate = $("btnTranslate");
+    const btnExample = $("btnExample");
+    const btnCopy = $("btnCopy");
+    const btnReset = $("btnReset");
+    const useExampleLink = $("useExampleLink");
 
-  function setAlert(status, conf, translation){
-    statusText.textContent = status;
-    confidenceText.textContent = conf;
-    translationLine.textContent = translation;
-
-    if(status === "SAFE"){
-      statusDot.style.background = "var(--safe)";
-    } else if(status === "WATCH"){
-      statusDot.style.background = "var(--watch)";
-    } else {
-      statusDot.style.background = "var(--risk)";
+    function normalize(text){
+      return (text || "").toLowerCase().replace(/\s+/g," ").trim();
     }
-  }
 
-  function scoreSignals(textLower){
-    let score = 0;
-    let hits = 0;
+    function detectSignals(raw){
+      const text = normalize(raw);
+      const hits = [];
+      let score = 0;
 
-    for(const s of SIGNALS){
-      const hit = s.phrases.some(p => textLower.includes(p));
-      if(hit){
-        score += s.w;
-        hits += 1;
+      for (const item of APEX_PHRASES){
+        if (text.includes(item.p)){
+          hits.push(item);
+          score += item.w;
+        }
       }
+
+      // bonus heuristics
+      const subjectLine = /subject:\s*(.+)/i.exec(raw || "");
+      if(subjectLine){
+        const subj = normalize(subjectLine[1]);
+        if (subj.includes("important update") || subj.includes("operating model") || subj.includes("organizational")){
+          score += 3;
+          hits.push({p:"subject: change signal", w:3, tag:"subject"});
+        }
+      }
+
+      // urgent verbs / opacity cues
+      if (text.includes("we will be implementing") || text.includes("we will be making")){
+        score += 2; hits.push({p:"implementation cue", w:2, tag:"action"});
+      }
+      if (text.includes("further information") || text.includes("more information") || text.includes("details will follow")){
+        score += 2; hits.push({p:"details deferred", w:2, tag:"delay"});
+      }
+
+      // return unique-ish signals by phrase
+      const uniq = [];
+      const seen = new Set();
+      for (const h of hits){
+        const k = h.p + "|" + h.w;
+        if(!seen.has(k)){ seen.add(k); uniq.push(h); }
+      }
+      return {score, signals: uniq};
     }
-    return { score, hits };
-  }
 
-  function statusFromScore(score){
-    // Tuned for “warning system” behavior.
-    // 0–2 SAFE, 3–6 WATCH, 7+ CRITICAL
-    if(score <= 2) return { status: "SAFE", conf: "Low" };
-    if(score <= 6) return { status: "WATCH", conf: "Medium" };
-    return { status: "CRITICAL", conf: "High" };
-  }
+    function classify(score, signalCount){
+      // status
+      let status = "WATCH";
+      if(score >= 24) status = "CRITICAL";
+      else if(score >= 14) status = "HIGH";
+      else if(score >= 8) status = "ELEVATED";
+      else status = "WATCH";
 
-  function buildTranslation(status){
-    if(status === "SAFE") return "This looks like routine messaging. Low risk signal density.";
-    if(status === "WATCH") return "This signals change. Expect workflow disruption and clarity to arrive via managers.";
-    return "This signals restructuring. Expect role or workload impact within weeks.";
-  }
+      // confidence
+      let confidence = "Low";
+      if(signalCount >= 10 && score >= 18) confidence = "High";
+      else if(signalCount >= 6 && score >= 10) confidence = "Medium";
+      else confidence = "Low";
 
-  function buildRiskSummary(status, hits, score){
-    if(status === "SAFE") return `Low risk. Few warning signals detected (signals: ${hits}, score: ${score}).`;
-    if(status === "WATCH") return `Medium risk. Multiple warning signals detected (signals: ${hits}, score: ${score}).`;
-    return `High risk. Strong restructuring signals detected (signals: ${hits}, score: ${score}). Treat as a reorg/reduction until proven otherwise.`;
-  }
+      return {status, confidence};
+    }
 
-  function extractSubject(raw){
-    const m = raw.match(/subject:\s*(.*)/i);
-    if(!m) return "";
-    return (m[1] || "").split("\n")[0].trim();
-  }
+    function colorForStatus(status){
+      if(status === "CRITICAL") return "#ef4444"; // red
+      if(status === "HIGH") return "#f59e0b"; // amber
+      if(status === "ELEVATED") return "#60a5fa"; // blue
+      return "rgba(255,255,255,0.25)";
+    }
 
-  function buildFivePoints(subject, status){
-    // Exactly 5 points. Short. Urgent. Human.
-    const headline = subject
-      ? `Headline: "${subject}" is a change signal. Not a routine update.`
-      : `Headline: This is a change signal. Not a routine update.`;
+    function summarizeTranslation(status, confidence){
+      if(status === "CRITICAL"){
+        return `This message signals a restructuring / reorganization. Expect role, workload, or reporting-line impact within weeks.`;
+      }
+      if(status === "HIGH"){
+        return `This message signals meaningful organizational change. Expect shifting priorities and increased ambiguity soon.`;
+      }
+      if(status === "ELEVATED"){
+        return `This message suggests operational pressure. Expect workflow/process changes and possible tightening.`;
+      }
+      return `This message looks mostly informational, but monitor for follow-up changes.`;
+    }
 
-    if(status === "SAFE"){
+    function makeFiveBullets(raw, signals, score, status){
+      const text = normalize(raw);
+
+      // heuristics for timeline
+      let timeline = "Expect movement within 2–6 weeks.";
+      if(text.includes("effective immediately")) timeline = "Starts now. Assume changes are already in motion.";
+      else if(text.includes("over the coming weeks") || text.includes("in the coming weeks")) timeline = "Starts now. Decisions often lock within 2–6 weeks.";
+
+      // core move
+      let coreMove = "Internal reorg / resource realignment.";
+      if(text.includes("operating model") || text.includes("organizational adjustments") || text.includes("restructure") || text.includes("reorganization")){
+        coreMove = "Restructure / reporting-line and ownership shifts.";
+      }
+      if(text.includes("streamline") || text.includes("cost") || text.includes("efficiency") || text.includes("headcount") || text.includes("redundancy")){
+        coreMove = "Cost/efficiency push (possible role consolidation).";
+      }
+
+      // next likely step
+      const nextStep = "Manager-led meetings → role mapping → new priorities/processes.";
+
+      // impact on people
+      const impact = (status === "CRITICAL" || status === "HIGH")
+        ? "Ambiguity first, workload shifts next; clarity comes after leadership locks decisions."
+        : "Some uncertainty possible; watch for follow-ups and team-level changes.";
+
+      // what to do
+      const toDo = (status === "CRITICAL" || status === "HIGH")
+        ? "Ask your manager 3 specifics: scope change, reporting line, and timeline for role impact."
+        : "Ask for scope + timeline; save the message and watch for follow-up language.";
+
+      // headline: attempt to capture subject
+      let headline = "This is a change signal.";
+      const subjectLine = /subject:\s*(.+)/i.exec(raw || "");
+      if(subjectLine){
+        const subj = subjectLine[1].trim();
+        headline = `"${subj}" is a change signal — expect workflow and ownership shifts.`;
+      } else if (text.includes("operating model")){
+        headline = `"Operating model" language is a change signal — expect shifting ownership and priorities.`;
+      }
+
       return [
-        headline,
-        "What this really means: Normal alignment messaging. No strong cut/reorg language.",
-        "What happens next: Minor process updates or clarification from managers.",
-        "Timeline reality: If changes exist, they’ll be incremental, not sudden.",
-        "APEX move (now): Ask one question: “Is my scope or reporting line changing?”"
+        `Headline: ${headline}`,
+        `Core move: ${coreMove}`,
+        `Next likely step: ${nextStep}`,
+        `Impact on people: ${impact}`,
+        `Timeline / APEX move: ${timeline} ${toDo}`
       ];
     }
 
-    if(status === "WATCH"){
-      return [
-        headline,
-        "What this really means: Pressure exists. Leadership is preparing changes.",
-        "What happens next: Manager meetings + shifting priorities + new workflows.",
-        "Who is most affected: Teams not tied to revenue/risk and overloaded IC roles.",
-        "Timeline reality: “Coming weeks” = starts now. Locks in 2–6 weeks.",
-        "APEX move (now): Ask 3 things: scope change, reporting impact, decision timeline."
-      ];
+    function setTopStatus(status){
+      const c = colorForStatus(status);
+      $("statusDotTop").style.background = c;
+      $("statusTopText").textContent = status ? `APEX ${status}` : "APEX Ready";
     }
 
-    // CRITICAL
-    return [
-      headline,
-      "What this really means: Restructuring is in motion. Messaging is the last step.",
-      "What happens next: Role mapping, process changes, and quiet responsibility shifts.",
-      "Who is most affected: Middle layers and non-core projects first. ICs feel workload shock.",
-      "Timeline reality: “Coming weeks” = starts now. Locks in 2–6 weeks.",
-      "APEX move (now): Ask 3 things: scope change, reporting impact, decision timeline."
-    ];
-  }
+    function render({status, confidence, score, signalCount, alertText, bullets}){
+      $("statusValue").textContent = status;
+      $("confidenceValue").textContent = confidence;
+      $("signalCount").textContent = signalCount;
+      $("signalScore").textContent = score;
 
-  function runVerdict(){
-    const raw = (inputEl.value || "").trim();
-    if(!raw){
-      resetAll();
-      return;
+      const c = colorForStatus(status);
+      $("statusDot").style.background = c;
+      $("sirDot").style.background = c;
+
+      $("alertStatus").textContent = status;
+      $("alertConfidence").textContent = confidence;
+      $("alertText").textContent = alertText;
+
+      const ul = $("verdictList");
+      ul.innerHTML = "";
+      bullets.forEach(b=>{
+        const li = document.createElement("li");
+        li.textContent = b;
+        ul.appendChild(li);
+      });
+
+      $("emptyState").style.display = "none";
+      $("alertBox").style.display = "block";
+      setTopStatus(status);
     }
 
-    const lower = raw.toLowerCase().replace(/\s+/g, " ");
-    const subject = extractSubject(raw);
-
-    const { score, hits } = scoreSignals(lower);
-    const { status, conf } = statusFromScore(score);
-
-    const translation = buildTranslation(status);
-    const points = buildFivePoints(subject, status);
-    const riskSummary = buildRiskSummary(status, hits, score);
-
-    setAlert(status, conf, translation);
-
-    // Render exactly 5 bullets
-    pointsEl.innerHTML = points.map(p => `<li>${escapeHtml(p)}</li>`).join("");
-    riskSummaryEl.textContent = riskSummary;
-  }
-
-  async function copyVerdict(){
-    const raw = (inputEl.value || "").trim();
-    if(!raw){
-      alert("Paste text and run APEX Translate first.");
-      return;
+    function reset(){
+      $("input").value = "";
+      $("statusValue").textContent = "—";
+      $("confidenceValue").textContent = "—";
+      $("signalCount").textContent = "—";
+      $("signalScore").textContent = "—";
+      $("statusDot").style.background = "rgba(255,255,255,0.25)";
+      $("sirDot").style.background = "rgba(255,255,255,0.25)";
+      $("alertBox").style.display = "none";
+      $("emptyState").style.display = "block";
+      setTopStatus(null);
     }
 
-    const status = statusText.textContent.trim();
-    const conf = confidenceText.textContent.trim();
-    const translation = translationLine.textContent.trim();
-    const bullets = Array.from(pointsEl.querySelectorAll("li")).map(li => `- ${li.textContent}`);
+    function translate(){
+      const raw = $("input").value || "";
+      if(!raw.trim()){
+        setTopStatus(null);
+        return;
+      }
 
-    const out =
+      const {score, signals} = detectSignals(raw);
+      const {status, confidence} = classify(score, signals.length);
+
+      const alertText = summarizeTranslation(status, confidence);
+      const bullets = makeFiveBullets(raw, signals, score, status);
+
+      render({
+        status,
+        confidence,
+        score,
+        signalCount: signals.length,
+        alertText,
+        bullets
+      });
+    }
+
+    async function copyVerdict(){
+      const alertBox = $("alertBox");
+      if(alertBox.style.display === "none") return;
+
+      const status = $("alertStatus").textContent;
+      const confidence = $("alertConfidence").textContent;
+      const alertText = $("alertText").textContent;
+
+      const bullets = Array.from($("verdictList").querySelectorAll("li")).map(li=>li.textContent);
+
+      const text =
 `APEX ALERT
 Status: ${status}
-Confidence: ${conf}
-Translation: ${translation}
+Confidence: ${confidence}
 
-APEX VERDICT (5)
-${bullets.join("\n")}
+Translation: ${alertText}
 
-Risk Summary: ${riskSummaryEl.textContent.trim()}`;
+APEX Verdict (5 bullets)
+- ${bullets.join("\n- ")}`;
 
-    try{
-      await navigator.clipboard.writeText(out);
-      alert("Copied APEX verdict.");
-    } catch(e){
-      // Fallback for some mobile browsers
-      prompt("Copy this APEX verdict:", out);
+      try{
+        await navigator.clipboard.writeText(text);
+        const old = btnCopy.textContent;
+        btnCopy.textContent = "Copied ✓";
+        setTimeout(()=>btnCopy.textContent = old, 1200);
+      }catch(e){
+        const old = btnCopy.textContent;
+        btnCopy.textContent = "Copy failed";
+        setTimeout(()=>btnCopy.textContent = old, 1200);
+      }
     }
-  }
 
-  function escapeHtml(str){
-    return (str || "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
+    // Events
+    btnTranslate.addEventListener("click", translate);
+    btnExample.addEventListener("click", ()=>{
+      $("input").value = EXAMPLE;
+      translate();
+    });
+    useExampleLink.addEventListener("click", (e)=>{
+      e.preventDefault();
+      $("input").value = EXAMPLE;
+      translate();
+    });
+    btnCopy.addEventListener("click", copyVerdict);
+    btnReset.addEventListener("click", reset);
 
-  resetAll();
-</script>
+    // Auto update top status when typing (light)
+    let t;
+    $("input").addEventListener("input", ()=>{
+      clearTimeout(t);
+      t = setTimeout(()=>{
+        const v = $("input").value.trim();
+        if(!v) setTopStatus(null);
+      }, 120);
+    });
+
+    // Initialize
+    reset();
+  </script>
 </body>
 </html>
 ```0
