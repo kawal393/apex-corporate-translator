@@ -4,207 +4,352 @@
   <meta charset="UTF-8" />
   <title>APEX Corporate Translator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="APEX Corporate Translator — decode corporate language into a 5–10 point verdict."/>
+  <meta name="description" content="APEX Corporate Translator — decode corporate language into a 5-point verdict."/>
   <style>
     :root{
-      --bg:#0b0f14; --panel:#121826; --ink:#eaeaea; --muted:rgba(234,234,234,.72);
-      --line:rgba(255,255,255,.10); --blue:#4f8cff; --blue2:#3b74d9; --gold:#d8b25a;
-      --bad:#ff5b5b; --warn:#ffcc66; --good:#6ee7a8;
+      --bg:#070a10;
+      --panel:#0e1422;
+      --panel2:#0b111d;
+      --text:#e9eefc;
+      --muted:rgba(233,238,252,.72);
+      --muted2:rgba(233,238,252,.55);
+      --border:rgba(255,255,255,.10);
+      --a:#7c5cff;
+      --b:#22d3ee;
+      --safe:#56f39a;
+      --watch:#ffcc66;
+      --risk:#ff4d6d;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
     }
     *{box-sizing:border-box}
     body{
-      margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-      background: radial-gradient(900px 500px at 20% 0%, rgba(79,140,255,.18), transparent 55%),
-                  radial-gradient(900px 500px at 80% 20%, rgba(216,178,90,.12), transparent 55%),
-                  var(--bg);
-      color:var(--ink);
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
       min-height:100vh;
-      display:flex; justify-content:center; align-items:flex-start;
-      padding:22px;
+      background:
+        radial-gradient(1200px 600px at 20% 10%, rgba(124,92,255,.16), transparent 60%),
+        radial-gradient(900px 550px at 85% 20%, rgba(34,211,238,.13), transparent 55%),
+        linear-gradient(180deg, #05070c 0%, #070a10 40%, #05070c 100%);
+      display:flex;
+      justify-content:center;
+      padding:24px;
     }
-    .box{
-      width:min(760px, 100%);
-      background: linear-gradient(180deg, rgba(18,24,38,.92), rgba(18,24,38,.84));
-      border:1px solid var(--line);
-      border-radius:18px;
-      box-shadow: 0 0 60px rgba(0,0,0,.45);
-      padding:22px;
-    }
+    .wrap{width:min(980px, 100%); display:flex; flex-direction:column; gap:18px;}
     .top{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
-      margin-bottom:10px;
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border-radius:18px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
     }
-    h1{margin:0; font-size:30px; letter-spacing:-.6px}
-    .sub{margin:6px 0 0; color:var(--muted); line-height:1.5}
-    .badge{
-      border:1px solid var(--line);
-      padding:8px 10px;
-      border-radius:999px;
-      font-size:12px;
-      color:var(--muted);
-      white-space:nowrap;
+    .top:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(600px 120px at 30% 0%, rgba(124,92,255,.22), transparent 60%),
+        radial-gradient(600px 120px at 70% 0%, rgba(34,211,238,.18), transparent 60%);
+      filter: blur(10px);
+      opacity:.9;
+      pointer-events:none;
     }
+    .brandRow{display:flex; gap:12px; align-items:center; position:relative; z-index:1;}
+    .sigil{
+      width:42px; height:42px; border-radius:14px;
+      background: linear-gradient(135deg, rgba(124,92,255,.9), rgba(34,211,238,.7));
+      box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 16px 50px rgba(124,92,255,.18);
+      display:flex; align-items:center; justify-content:center;
+      font-weight:900; letter-spacing:.5px;
+    }
+    h1{margin:0; font-size:26px; letter-spacing:-.6px; line-height:1.05;}
+    .sub{margin:6px 0 0; color:var(--muted); line-height:1.45; font-size:14px; max-width:72ch;}
+    .pillRow{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+    .pill{
+      font-size:12px; color:rgba(255,255,255,.78);
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+    }
+
+    .grid{display:grid; grid-template-columns: 1fr 1fr; gap:18px;}
+    @media (max-width: 920px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.02));
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .cardHeader{
+      padding:14px 16px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .cardTitle{font-weight:800; letter-spacing:-.2px; font-size:14px; color:rgba(255,255,255,.88);}
+    .tiny{font-size:12px; color:var(--muted2);}
+    .cardBody{padding:14px 16px 16px;}
+
     textarea{
       width:100%;
-      min-height:190px;
-      margin-top:14px;
-      padding:14px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background: rgba(11,15,20,.85);
-      color:var(--ink);
-      font-size:15px;
-      outline:none;
+      min-height: 240px;
+      resize: vertical;
+      border-radius:16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(8,12,20,.65);
+      color: var(--text);
+      padding: 14px 14px;
+      font-size: 14px;
+      line-height:1.45;
+      outline: none;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
     }
     textarea:focus{
-      border-color: rgba(216,178,90,.55);
-      box-shadow: 0 0 0 2px rgba(216,178,90,.15);
+      border-color: rgba(124,92,255,.55);
+      box-shadow: 0 0 0 4px rgba(124,92,255,.12), inset 0 0 0 1px rgba(0,0,0,.25);
     }
-    .row{
-      display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;
-    }
+
+    .btnRow{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;}
     button{
-      flex:1;
-      min-width:180px;
-      padding:14px;
-      border-radius:14px;
-      border:1px solid rgba(79,140,255,.35);
-      font-size:16px;
-      font-weight:700;
-      background: linear-gradient(180deg, var(--blue), var(--blue2));
-      color:white;
+      border:none;
       cursor:pointer;
-    }
-    button.secondary{
-      background: transparent;
-      color: var(--ink);
-      border:1px solid var(--line);
-      font-weight:600;
-    }
-    button:active{transform: translateY(1px);}
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:12px;
-      margin-top:14px;
-    }
-    .card{
-      border:1px solid var(--line);
-      background: rgba(11,15,20,.55);
-      border-radius:16px;
-      padding:14px;
-    }
-    .kpi{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:10px;
-    }
-    .kpi .mini{
-      border:1px solid var(--line);
       border-radius:14px;
-      padding:12px;
-      background: rgba(18,24,38,.35);
+      padding:12px 14px;
+      font-weight:800;
+      letter-spacing:.2px;
+      color:#071022;
+      background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(34,211,238,.78));
+      box-shadow: 0 16px 50px rgba(124,92,255,.18), 0 0 0 1px rgba(255,255,255,.10);
+      transition: transform .08s ease, filter .15s ease;
     }
-    .label{font-size:12px; color:var(--muted); margin-bottom:6px}
-    .value{font-size:16px; font-weight:800}
-    .statusDot{
-      display:inline-block; width:10px; height:10px; border-radius:99px; margin-right:8px;
-      vertical-align:middle;
+    button:active{ transform: scale(.99); }
+    button.secondary{
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.86);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.10);
     }
-    ul{margin:8px 0 0; padding-left:18px}
-    li{margin:7px 0; line-height:1.45; color:rgba(234,234,234,.92)}
-    .small{font-size:12px; color:var(--muted); line-height:1.45}
-    .footer{
-      margin-top:12px; padding-top:12px; border-top:1px solid var(--line);
-      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
-      color:var(--muted); font-size:12px;
+
+    .box{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(8,12,20,.55);
+      border-radius:16px;
+      padding:12px 14px;
     }
-    a{color:rgba(216,178,90,.95); text-decoration:none}
+
+    .alert{
+      border-radius:16px;
+      padding:12px 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(700px 120px at 10% 0%, rgba(255,77,109,.18), transparent 55%),
+        rgba(8,12,20,.55);
+      margin-bottom:12px;
+    }
+
+    .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;}
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      font-size:12px; color:rgba(255,255,255,.88);
+    }
+    .dot{width:10px; height:10px; border-radius:999px;}
+    .bigLine{
+      margin-top:10px;
+      color: rgba(255,255,255,.90);
+      line-height:1.35;
+      font-size:14px;
+    }
+    .label{font-size:12px; color:var(--muted2); margin-top:10px;}
+    ul{margin:10px 0 0; padding-left:18px;}
+    li{margin:8px 0; line-height:1.45; color:rgba(255,255,255,.92);}
+
+    .footerNote{margin-top:10px; color:var(--muted2); font-size:12px; line-height:1.45;}
   </style>
 </head>
 <body>
-  <div class="box">
+  <div class="wrap">
     <div class="top">
-      <div>
-        <h1>APEX Corporate Translator</h1>
-        <p class="sub">Paste any corporate message. Get an APEX verdict in <b>5–10 points</b> with status + confidence.</p>
+      <div class="brandRow">
+        <div class="sigil">A</div>
+        <div>
+          <h1>APEX Corporate Translator</h1>
+          <div class="sub">Paste any corporate email/announcement. APEX returns an <b>alert</b> plus a <b>5-point verdict</b>. No flags. No weights. Just reality.</div>
+          <div class="pillRow">
+            <span class="pill">APEX Alert</span>
+            <span class="pill">5-point Verdict</span>
+            <span class="pill">Fast</span>
+            <span class="pill">Copy / Share</span>
+          </div>
+        </div>
       </div>
-      <div class="badge">APEX · Verdict Engine</div>
-    </div>
-
-    <textarea id="input" placeholder="Paste corporate email / Slack post / HR update here..."></textarea>
-
-    <div class="row">
-      <button onclick="apexTranslate()">APEX Translate</button>
-      <button class="secondary" onclick="fillExample()">Load APEX Example</button>
-      <button class="secondary" onclick="copyVerdict()">Copy Verdict</button>
-      <button class="secondary" onclick="resetAll()">Reset</button>
     </div>
 
     <div class="grid">
       <div class="card">
-        <div class="kpi">
-          <div class="mini">
-            <div class="label">APEX Status</div>
-            <div class="value" id="statusValue"><span class="statusDot" style="background:rgba(255,255,255,.25)"></span>—</div>
+        <div class="cardHeader">
+          <div class="cardTitle">Input</div>
+          <div class="tiny"><span id="count">0</span> chars</div>
+        </div>
+        <div class="cardBody">
+          <textarea id="input" placeholder="Paste corporate email / Slack post / HR update here..."></textarea>
+          <div class="btnRow">
+            <button id="translateBtn">APEX Translate</button>
+            <button class="secondary" id="demoBtn">Load Demo</button>
+            <button class="secondary" id="copyBtn">Copy Verdict</button>
+            <button class="secondary" id="clearBtn">Reset</button>
           </div>
-          <div class="mini">
-            <div class="label">APEX Confidence</div>
-            <div class="value" id="confidenceValue">—</div>
-          </div>
-          <div class="mini">
-            <div class="label">APEX Signals</div>
-            <div class="value" id="signalsValue">—</div>
-          </div>
+          <div class="footerNote">Tip: This works best on leadership emails, HR announcements, “strategy updates”, and org change notes.</div>
         </div>
       </div>
 
       <div class="card">
-        <div class="label">APEX Verdict (5–10 points)</div>
-        <div id="verdict"></div>
-      </div>
+        <div class="cardHeader">
+          <div class="cardTitle">APEX Output</div>
+          <div class="tiny">Always: Alert + 5 points.</div>
+        </div>
+        <div class="cardBody">
+          <div class="alert" id="alertBox">
+            <div class="row">
+              <span class="badge">
+                <span class="dot" id="statusDot" style="background: var(--watch)"></span>
+                <span><b>APEX ALERT</b> · Status: <span id="statusText">WATCH</span></span>
+              </span>
+              <span class="badge"><b>Confidence:</b> <span id="confidenceText">Medium</span></span>
+            </div>
+            <div class="bigLine" id="translationLine">Paste text and hit APEX Translate.</div>
+          </div>
 
-      <div class="card">
-        <div class="label">APEX Flags (detected phrases)</div>
-        <div class="small" id="flags">—</div>
-      </div>
-
-      <div class="footer">
-        <div>Tip: corporate emails often hide the real move behind “alignment”, “streamline”, “flexibility”.</div>
-        <div><a href="#" onclick="fillExample();return false;">Use example</a></div>
+          <div class="box">
+            <div class="label"><b>APEX VERDICT (5 POINTS)</b></div>
+            <ul id="points"></ul>
+            <div class="label"><b>Risk Summary</b></div>
+            <div class="bigLine" id="riskSummary">—</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
 <script>
-  const LEXICON = [
-    // Layoff / cost-cut / reorg
-    {k:"dynamic market", w:2, t:"Pressure signal: business conditions are stressed."},
-    {k:"align our resources", w:3, t:"Translation: budget / headcount will be reallocated (some teams lose)."},
-    {k:"strategic priorities", w:2, t:"Translation: leadership is choosing winners/losers internally."},
-    {k:"organizational adjustments", w:4, t:"Translation: restructure / reporting-line changes (possible role cuts)."},
-    {k:"streamline", w:4, t:"Translation: remove steps and/or people (efficiency drive)."},
-    {k:"efficiency", w:3, t:"Translation: do more with less; cost controls tighten."},
-    {k:"rightsizing", w:6, t:"Translation: layoffs."},
-    {k:"restructure", w:5, t:"Translation: layoffs or major role changes."},
-    {k:"operating model", w:4, t:"Translation: your team’s shape and scope is changing."},
-    {k:"headcount", w:5, t:"Translation: hiring freeze or reductions."},
-    {k:"hiring freeze", w:6, t:"Translation: no new hires; backfills blocked."},
-
-    // Ambiguity / control
-    {k:"over the coming weeks", w:2, t:"Translation: uncertainty window — details intentionally delayed."},
-    {k:"short-term flexibility", w:3, t:"Translation: extra workload, schedule shifts, or new responsibilities."},
-    {k:"additional details will be shared", w:3, t:"Translation: you don’t get specifics now; managers will manage reactions."},
-    {k:"as they become available", w:2, t:"Translation: timeline is fluid; expect changes without notice."},
-    {k:"thank you for your continued commitment", w:1, t:"Translation: brace for inconvenience; morale management line."},
-    {k:"adaptability", w:2, t:"Translation: you will be asked to accept changes quickly."}
+  // --- Signals (backend only) ---
+  // We do NOT show flags/weights. We only output: status + confidence + translation + 5 bullets + risk summary.
+  const SIGNALS = [
+    // Pressure / justification
+    { phrases: ["dynamic market", "macro environment", "headwinds", "challenging environment", "market conditions", "cost pressures"], w: 2 },
+    // Reorg language
+    { phrases: ["organizational adjustments", "organizational changes", "restructuring", "restructure", "reorganization", "operating model", "realignment"], w: 4 },
+    // Cost / reduction euphemisms
+    { phrases: ["streamline", "efficiency", "optimize", "reduce redundancy", "rightsizing", "leaner"], w: 4 },
+    // Vagueness / control
+    { phrases: ["over the coming weeks", "in the coming weeks", "additional details", "as they become available", "more details will be shared"], w: 3 },
+    // Burden shift
+    { phrases: ["short-term flexibility", "flexibility", "adaptability", "agility"], w: 2 },
+    // Priority reshuffle
+    { phrases: ["strategic priorities", "align our resources", "better align our resources", "focus areas", "prioritization"], w: 2 },
+    // Competitive justification
+    { phrases: ["remain competitive", "evolving landscape", "fast-changing"], w: 1 }
   ];
 
-  function normalize(s){
-    return (s || "")
-      .toLowerCase()
-      .replace(/\s+/g, " ")
-      .trim();
+  const inputEl = document.getElementById("input");
+  const countEl = document.getElementById("count");
+  const translateBtn = document.getElementById("translateBtn");
+  const demoBtn = document.getElementById("demoBtn");
+  const copyBtn = document.getElementById("copyBtn");
+  const clearBtn = document.getElementById("clearBtn");
+
+  const statusDot = document.getElementById("statusDot");
+  const statusText = document.getElementById("statusText");
+  const confidenceText = document.getElementById("confidenceText");
+  const translationLine = document.getElementById("translationLine");
+  const pointsEl = document.getElementById("points");
+  const riskSummaryEl = document.getElementById("riskSummary");
+
+  inputEl.addEventListener("input", () => {
+    countEl.textContent = String(inputEl.value.length);
+  });
+
+  demoBtn.addEventListener("click", () => {
+    inputEl.value =
+`Subject: Strategic Realignment for Enhanced Operational Efficiency
+
+Team,
+
+As we continue to navigate a dynamic market environment, leadership has been evaluating opportunities to better align our resources with long-term strategic priorities.
+
+Over the coming weeks, we will be implementing a series of organizational adjustments designed to streamline workflows and enhance cross-functional collaboration.
+
+While these changes may require some short-term flexibility, we are confident they will position us strongly for sustainable growth. Additional details will be shared by managers as they become available.
+
+Thank you for your continued commitment and adaptability.
+
+Best regards,
+Senior Leadership Team`;
+    countEl.textContent = String(inputEl.value.length);
+    runVerdict();
+  });
+
+  clearBtn.addEventListener("click", () => resetAll());
+  translateBtn.addEventListener("click", () => runVerdict());
+  copyBtn.addEventListener("click", () => copyVerdict());
+
+  function resetAll(){
+    inputEl.value = "";
+    countEl.textContent = "0";
+    setAlert("WATCH", "Medium", "Paste text and hit APEX Translate.");
+    pointsEl.innerHTML = "";
+    riskSummaryEl.textContent = "—";
+  }
+
+  function setAlert(status, conf, translation){
+    statusText.textContent = status;
+    confidenceText.textContent = conf;
+    translationLine.textContent = translation;
+
+    if(status === "SAFE"){
+      statusDot.style.background = "var(--safe)";
+    } else if(status === "WATCH"){
+      statusDot.style.background = "var(--watch)";
+    } else {
+      statusDot.style.background = "var(--risk)";
+    }
+  }
+
+  function scoreSignals(textLower){
+    let score = 0;
+    let hits = 0;
+
+    for(const s of SIGNALS){
+      const hit = s.phrases.some(p => textLower.includes(p));
+      if(hit){
+        score += s.w;
+        hits += 1;
+      }
+    }
+    return { score, hits };
+  }
+
+  function statusFromScore(score){
+    // Tuned for “warning system” behavior.
+    // 0–2 SAFE, 3–6 WATCH, 7+ CRITICAL
+    if(score <= 2) return { status: "SAFE", conf: "Low" };
+    if(score <= 6) return { status: "WATCH", conf: "Medium" };
+    return { status: "CRITICAL", conf: "High" };
+  }
+
+  function buildTranslation(status){
+    if(status === "SAFE") return "This looks like routine messaging. Low risk signal density.";
+    if(status === "WATCH") return "This signals change. Expect workflow disruption and clarity to arrive via managers.";
+    return "This signals restructuring. Expect role or workload impact within weeks.";
+  }
+
+  function buildRiskSummary(status, hits, score){
+    if(status === "SAFE") return `Low risk. Few warning signals detected (signals: ${hits}, score: ${score}).`;
+    if(status === "WATCH") return `Medium risk. Multiple warning signals detected (signals: ${hits}, score: ${score}).`;
+    return `High risk. Strong restructuring signals detected (signals: ${hits}, score: ${score}). Treat as a reorg/reduction until proven otherwise.`;
   }
 
   function extractSubject(raw){
@@ -213,165 +358,111 @@
     return (m[1] || "").split("\n")[0].trim();
   }
 
-  function statusFromScore(score){
-    // 0–4: CLEAR, 5–10: WATCH, 11–17: HIGH RISK, 18+: CRITICAL
-    if(score >= 18) return {name:"CRITICAL", dot:"var(--bad)", conf:"High"};
-    if(score >= 11) return {name:"HIGH RISK", dot:"var(--warn)", conf:"High"};
-    if(score >= 5)  return {name:"WATCH", dot:"var(--warn)", conf:"Medium"};
-    return {name:"CLEAR", dot:"var(--good)", conf:"Low"};
+  function buildFivePoints(subject, status){
+    // Exactly 5 points. Short. Urgent. Human.
+    const headline = subject
+      ? `Headline: "${subject}" is a change signal. Not a routine update.`
+      : `Headline: This is a change signal. Not a routine update.`;
+
+    if(status === "SAFE"){
+      return [
+        headline,
+        "What this really means: Normal alignment messaging. No strong cut/reorg language.",
+        "What happens next: Minor process updates or clarification from managers.",
+        "Timeline reality: If changes exist, they’ll be incremental, not sudden.",
+        "APEX move (now): Ask one question: “Is my scope or reporting line changing?”"
+      ];
+    }
+
+    if(status === "WATCH"){
+      return [
+        headline,
+        "What this really means: Pressure exists. Leadership is preparing changes.",
+        "What happens next: Manager meetings + shifting priorities + new workflows.",
+        "Who is most affected: Teams not tied to revenue/risk and overloaded IC roles.",
+        "Timeline reality: “Coming weeks” = starts now. Locks in 2–6 weeks.",
+        "APEX move (now): Ask 3 things: scope change, reporting impact, decision timeline."
+      ];
+    }
+
+    // CRITICAL
+    return [
+      headline,
+      "What this really means: Restructuring is in motion. Messaging is the last step.",
+      "What happens next: Role mapping, process changes, and quiet responsibility shifts.",
+      "Who is most affected: Middle layers and non-core projects first. ICs feel workload shock.",
+      "Timeline reality: “Coming weeks” = starts now. Locks in 2–6 weeks.",
+      "APEX move (now): Ask 3 things: scope change, reporting impact, decision timeline."
+    ];
   }
 
-  function buildVerdictPoints(subject, hits){
-    // Always output 5–10 points
-    const points = [];
-
-    // 1) headline
-    if(subject){
-      points.push(`Headline: "${subject}" is a change signal — expect workflow and ownership shifts.`);
-    } else {
-      points.push(`Headline: This message is a change signal — expect workflow and ownership shifts.`);
-    }
-
-    // 2) core move (based on strongest hits)
-    const sorted = [...hits].sort((a,b)=>b.w-a.w);
-    if(sorted[0]){
-      points.push(`Core move: ${sorted[0].t}`);
-    } else {
-      points.push(`Core move: Leadership is repositioning teams; details are intentionally vague.`);
-    }
-
-    // 3) what will happen next
-    points.push(`Next likely step: manager-led meetings, role mapping, new processes, and shifting priorities.`);
-
-    // 4) what it means for staff
-    points.push(`Impact on people: increased load + ambiguity first; clarity comes after decisions are locked.`);
-
-    // 5) what to watch (top 3 flags)
-    const topFlags = sorted.slice(0,3).map(x=>`"${x.k}"`).join(", ");
-    if(topFlags){
-      points.push(`Watch phrases: ${topFlags} — these usually precede cuts, freezes, or reorganizations.`);
-    } else {
-      points.push(`Watch phrases: “alignment”, “streamline”, “flexibility”, “operating model”.`);
-    }
-
-    // 6) timeline
-    points.push(`Timeline: “coming weeks” usually means changes begin immediately and finalize in 2–6 weeks.`);
-
-    // 7) personal action
-    points.push(`APEX move: ask your manager 3 specifics — scope change, reporting line, and timeline for role impact.`);
-
-    // 8) risk call (if high score)
-    const score = hits.reduce((s,x)=>s+x.w,0);
-    if(score >= 11){
-      points.push(`Risk call: treat this as a potential reduction/reorg until proven otherwise.`);
-    }
-
-    // Trim to max 10
-    return points.slice(0,10);
-  }
-
-  function apexTranslate(){
-    const raw = document.getElementById("input").value || "";
-    const text = normalize(raw);
-    if(!text){
-      alert("Paste a corporate message first.");
+  function runVerdict(){
+    const raw = (inputEl.value || "").trim();
+    if(!raw){
+      resetAll();
       return;
     }
 
+    const lower = raw.toLowerCase().replace(/\s+/g, " ");
     const subject = extractSubject(raw);
-    const hits = [];
-    let score = 0;
 
-    for(const item of LEXICON){
-      if(text.includes(item.k)){
-        hits.push(item);
-        score += item.w;
-      }
-    }
+    const { score, hits } = scoreSignals(lower);
+    const { status, conf } = statusFromScore(score);
 
-    const st = statusFromScore(score);
-    const points = buildVerdictPoints(subject, hits);
+    const translation = buildTranslation(status);
+    const points = buildFivePoints(subject, status);
+    const riskSummary = buildRiskSummary(status, hits, score);
 
-    // Render KPIs
-    document.getElementById("statusValue").innerHTML =
-      `<span class="statusDot" style="background:${st.dot}"></span>${st.name}`;
-    document.getElementById("confidenceValue").textContent = st.conf;
-    document.getElementById("signalsValue").textContent = `${hits.length} (score ${score})`;
+    setAlert(status, conf, translation);
 
-    // Render bullets
-    const ul = document.createElement("ul");
-    points.forEach(p=>{
-      const li = document.createElement("li");
-      li.textContent = p;
-      ul.appendChild(li);
-    });
-
-    const verdict = document.getElementById("verdict");
-    verdict.innerHTML = "";
-    verdict.appendChild(ul);
-
-    // Flags
-    if(hits.length){
-      const flags = hits
-        .sort((a,b)=>b.w-a.w)
-        .map(x=>`• ${x.k} (weight ${x.w})`)
-        .join("<br/>");
-      document.getElementById("flags").innerHTML = flags;
-    } else {
-      document.getElementById("flags").textContent = "No known phrases detected. Try pasting the full email including HR/leadership language.";
-    }
-  }
-
-  function fillExample(){
-    document.getElementById("input").value =
-`Subject: Important Update on Our Operating Model
-
-Team,
-
-As we navigate a dynamic market environment, we’ve been evaluating opportunities to better align our resources with long-term strategic priorities.
-
-Over the coming weeks, we will be implementing organizational adjustments designed to streamline workflows and improve cross-functional collaboration.
-
-While these changes may require some short-term flexibility, we are confident they will position us strongly for sustainable growth. Additional details will be shared by your managers as they become available.
-
-Thank you for your continued commitment and adaptability.
-
-Best regards,
-Senior Leadership Team`;
-    apexTranslate();
+    // Render exactly 5 bullets
+    pointsEl.innerHTML = points.map(p => `<li>${escapeHtml(p)}</li>`).join("");
+    riskSummaryEl.textContent = riskSummary;
   }
 
   async function copyVerdict(){
-    const status = document.getElementById("statusValue").textContent.trim();
-    const conf = document.getElementById("confidenceValue").textContent.trim();
-    const sig = document.getElementById("signalsValue").textContent.trim();
-    const lis = Array.from(document.querySelectorAll("#verdict li")).map(li=>`- ${li.textContent}`);
-
-    if(!lis.length){
-      alert("Run APEX Translate first.");
+    const raw = (inputEl.value || "").trim();
+    if(!raw){
+      alert("Paste text and run APEX Translate first.");
       return;
     }
 
+    const status = statusText.textContent.trim();
+    const conf = confidenceText.textContent.trim();
+    const translation = translationLine.textContent.trim();
+    const bullets = Array.from(pointsEl.querySelectorAll("li")).map(li => `- ${li.textContent}`);
+
     const out =
-`APEX Status: ${status}
-APEX Confidence: ${conf}
-APEX Signals: ${sig}
+`APEX ALERT
+Status: ${status}
+Confidence: ${conf}
+Translation: ${translation}
 
-APEX Verdict:
-${lis.join("\n")}`;
+APEX VERDICT (5)
+${bullets.join("\n")}
 
-    await navigator.clipboard.writeText(out);
-    alert("Copied APEX verdict.");
+Risk Summary: ${riskSummaryEl.textContent.trim()}`;
+
+    try{
+      await navigator.clipboard.writeText(out);
+      alert("Copied APEX verdict.");
+    } catch(e){
+      // Fallback for some mobile browsers
+      prompt("Copy this APEX verdict:", out);
+    }
   }
 
-  function resetAll(){
-    document.getElementById("input").value = "";
-    document.getElementById("statusValue").innerHTML = `<span class="statusDot" style="background:rgba(255,255,255,.25)"></span>—`;
-    document.getElementById("confidenceValue").textContent = "—";
-    document.getElementById("signalsValue").textContent = "—";
-    document.getElementById("verdict").innerHTML = "";
-    document.getElementById("flags").textContent = "—";
+  function escapeHtml(str){
+    return (str || "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
   }
+
+  resetAll();
 </script>
 </body>
 </html>
+```0
