@@ -2,34 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>APEX Corporate Translator</title>
-
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js"></script>
-  <!-- jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     :root{
-      --bg0:#060a12;
-      --bg1:#0a0f1d;
-      --card:#0b1220cc;
-      --card2:#0c1526cc;
+      --bg0:#070A12;
+      --bg1:#0B1020;
+      --card:#0E162A;
+      --card2:#0B1223;
       --stroke:rgba(255,255,255,.08);
       --stroke2:rgba(255,255,255,.12);
-      --text:#e9eefc;
-      --muted:rgba(233,238,252,.62);
-      --muted2:rgba(233,238,252,.42);
-      --blue:#3b82f6;
-      --blue2:#2563eb;
-      --good:#22c55e;
-      --warn:#f59e0b;
-      --bad:#ef4444;
-      --chip:rgba(255,255,255,.06);
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.62);
+      --muted2:rgba(255,255,255,.45);
+      --blue:#2F7DFF;
+      --blue2:#1E5FFF;
+      --good:#2EE59D;
+      --warn:#F7B731;
+      --bad:#FF3B6B;
+      --shadow: 0 20px 70px rgba(0,0,0,.55);
       --radius:18px;
-      --radius2:22px;
+      --radius2:14px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
@@ -41,311 +35,442 @@
       font-family:var(--sans);
       color:var(--text);
       background:
-        radial-gradient(1200px 700px at 18% 0%, rgba(59,130,246,.22), transparent 55%),
-        radial-gradient(900px 600px at 82% 12%, rgba(37,99,235,.16), transparent 52%),
-        radial-gradient(1000px 700px at 50% 100%, rgba(255,255,255,.05), transparent 55%),
+        radial-gradient(1200px 600px at 20% 10%, rgba(47,125,255,.25), transparent 55%),
+        radial-gradient(900px 500px at 80% 35%, rgba(255,59,107,.12), transparent 55%),
+        radial-gradient(900px 500px at 40% 95%, rgba(46,229,157,.10), transparent 55%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      min-height:100vh;
+      overflow-x:hidden;
     }
 
+    a{color:#9FC2FF; text-decoration:none}
+    a:hover{text-decoration:underline}
+
     .wrap{
-      max-width:1100px;
-      margin:0 auto;
-      padding:18px 14px 28px;
+      max-width:1080px;
+      margin: 22px auto 80px;
+      padding: 0 14px;
     }
 
     .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
-      padding:10px 6px 14px;
+      gap:12px;
+      padding: 10px 12px;
+      border:1px solid var(--stroke);
+      background: rgba(14,22,42,.55);
+      backdrop-filter: blur(10px);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
     }
-
     .brand{
-      display:flex; align-items:center; gap:10px;
-      min-width:0;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
     }
     .dot{
-      width:12px;height:12px;border-radius:4px;
-      background:linear-gradient(180deg, rgba(59,130,246,1), rgba(37,99,235,1));
-      box-shadow:0 0 0 3px rgba(59,130,246,.18);
+      width:10px;height:10px;border-radius:50%;
+      background: linear-gradient(135deg, var(--blue), var(--blue2));
+      box-shadow: 0 0 0 6px rgba(47,125,255,.14);
       flex:0 0 auto;
     }
     .brand h1{
-      font-size:14px;margin:0;line-height:1.1;
+      margin:0;
+      font-size:14px;
       letter-spacing:.2px;
+      font-weight:800;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
     .brand .sub{
-      font-size:12px;color:var(--muted2);margin-top:2px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:500;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 52vw;
     }
-    .rightchips{
-      display:flex; align-items:center; gap:8px; flex-wrap:wrap;
-      justify-content:flex-end;
+    .rightpill{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex:0 0 auto;
+      color:var(--muted);
+      font-size:12px;
     }
     .chip{
-      font-size:12px;
-      padding:7px 10px;
-      border-radius:999px;
-      background:var(--chip);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
       border:1px solid var(--stroke);
-      color:var(--muted);
-      display:flex; align-items:center; gap:6px;
+      border-radius:999px;
+      background: rgba(0,0,0,.22);
+      white-space:nowrap;
     }
-    .chip .led{
+    .chip .live{
       width:8px;height:8px;border-radius:50%;
-      background:var(--good);
-      box-shadow:0 0 0 3px rgba(34,197,94,.16);
+      background: var(--good);
+      box-shadow: 0 0 0 6px rgba(46,229,157,.14);
     }
 
     .grid{
       display:grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap:14px;
-      align-items:start;
+      grid-template-columns: 1.15fr .85fr;
+      gap:16px;
+      margin-top:16px;
     }
 
     .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border:1px solid var(--stroke);
-      border-radius:var(--radius2);
-      box-shadow:var(--shadow);
+      background: rgba(14,22,42,.58);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       overflow:hidden;
     }
-    .card .inner{ padding:14px; }
-
-    .title{
-      font-size:24px;
+    .card .head{
+      padding:16px 16px 10px;
+    }
+    .card .head h2{
       margin:0 0 6px;
-      letter-spacing:.2px;
+      font-size:22px;
+      letter-spacing:-.2px;
     }
-    .desc{ margin:0 0 12px; color:var(--muted); font-size:13px; line-height:1.35; }
-
-    label.small{ display:block; font-size:12px; letter-spacing:.12em; color:var(--muted2); margin:10px 0 6px; text-transform:uppercase; }
-    textarea{
-      width:100%;
-      min-height:160px;
-      resize:vertical;
-      border-radius:16px;
-      border:1px solid var(--stroke);
-      background:rgba(0,0,0,.22);
-      color:var(--text);
-      padding:12px 12px;
-      font-family:var(--mono);
+    .card .head p{
+      margin:0;
+      color:var(--muted);
       font-size:13px;
-      line-height:1.45;
-      outline:none;
+      line-height:1.35;
     }
-    textarea:focus{ border-color:rgba(59,130,246,.55); box-shadow:0 0 0 3px rgba(59,130,246,.14); }
+    .card .body{ padding: 12px 16px 16px; }
+
+    .textarea{
+      width:100%;
+      min-height: 170px;
+      resize: vertical;
+      padding:14px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke2);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.45;
+      outline: none;
+    }
+    .textarea:focus{
+      border-color: rgba(47,125,255,.5);
+      box-shadow: 0 0 0 4px rgba(47,125,255,.12);
+    }
 
     .row{
       display:flex;
-      align-items:center;
-      justify-content:space-between;
       gap:10px;
+      align-items:center;
       flex-wrap:wrap;
       margin-top:10px;
     }
 
-    .pdfrow{
+    .btn{
+      border: 1px solid var(--stroke2);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: .2px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .06s ease, background .12s ease, border-color .12s ease;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(47,125,255,.95), rgba(30,95,255,.95));
+      border-color: rgba(47,125,255,.6);
+    }
+    .btn.primary:hover{ filter: brightness(1.05); }
+    .btn.ghost:hover{ background: rgba(255,255,255,.085); }
+    .btn:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      color:var(--muted2);
+      font-size:12px;
+      margin-top:10px;
+    }
+
+    .upload{
       display:flex;
       align-items:center;
       gap:10px;
-      flex-wrap:wrap;
+      border:1px dashed rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
       padding:10px 12px;
-      border:1px solid var(--stroke);
-      border-radius:14px;
-      background:rgba(0,0,0,.14);
+      border-radius: 14px;
+      margin-top: 10px;
     }
-    .pdfrow b{ font-size:12px; letter-spacing:.12em; color:var(--muted2); text-transform:uppercase; }
-    .pdfrow .status{ font-size:12px; color:var(--muted); }
-    input[type="file"]{ color:var(--muted); font-size:12px; }
+    .upload label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      letter-spacing:.25px;
+    }
+    .upload input[type="file"]{
+      max-width: 100%;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .upload .status{
+      margin-left:auto;
+      font-size:12px;
+      color: var(--muted2);
+      white-space:nowrap;
+    }
 
-    .hint{
+    .mini{
       color:var(--muted2);
       font-size:12px;
-      margin-top:8px;
+      margin-top:10px;
       line-height:1.35;
     }
-    .meta{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      margin-top:6px; color:var(--muted2); font-size:12px;
-    }
 
-    .btns{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
-    button{
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius:14px;
-      font-weight:600;
-      font-size:13px;
-      cursor:pointer;
-    }
-    button:hover{ border-color:var(--stroke2); background:rgba(255,255,255,.06); }
-    button.primary{
-      border-color:rgba(59,130,246,.45);
-      background:linear-gradient(180deg, rgba(59,130,246,1), rgba(37,99,235,1));
-      box-shadow:0 10px 22px rgba(37,99,235,.25);
-    }
-    button.primary:hover{ filter:brightness(1.02); }
-    button.ghost{ background:transparent; }
-    button.small{ padding:9px 10px; font-size:12px; border-radius:12px; }
-    button:disabled{ opacity:.45; cursor:not-allowed; }
-
-    .sectionHead{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:10px;
-    }
-    .sectionHead h2{
-      margin:0;
-      font-size:20px;
-      letter-spacing:.2px;
-    }
-    .sectionHead p{
-      margin:4px 0 0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
-      max-width:520px;
-    }
-
-    .stats{
+    .verdictTop{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap:10px;
       margin-top:10px;
     }
     .stat{
       border:1px solid var(--stroke);
-      border-radius:16px;
-      background:rgba(0,0,0,.16);
-      padding:10px 10px;
-      min-height:64px;
+      background: rgba(0,0,0,.20);
+      border-radius: 14px;
+      padding:10px 12px;
+      min-height: 58px;
     }
-    .stat .k{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted2); }
-    .stat .v{ margin-top:6px; font-size:15px; font-weight:800; }
+    .stat .k{
+      font-size:11px;
+      color:var(--muted2);
+      letter-spacing:.22em;
+      font-weight:900;
+    }
+    .stat .v{
+      margin-top:6px;
+      font-size:16px;
+      font-weight: 900;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .pillDot{
+      width:10px;height:10px;border-radius:50%;
+      background: rgba(255,255,255,.15);
+      box-shadow: 0 0 0 6px rgba(255,255,255,.06);
+    }
+    .pillDot.good{ background: var(--good); box-shadow: 0 0 0 6px rgba(46,229,157,.12); }
+    .pillDot.warn{ background: var(--warn); box-shadow: 0 0 0 6px rgba(247,183,49,.12); }
+    .pillDot.bad{ background: var(--bad); box-shadow: 0 0 0 6px rgba(255,59,107,.12); }
 
-    .alert{
+    .alertBox{
       margin-top:10px;
       border:1px solid var(--stroke);
-      border-radius:16px;
-      background:rgba(0,0,0,.18);
-      padding:12px;
+      background: rgba(0,0,0,.22);
+      border-radius: 14px;
+      padding: 12px;
       display:flex;
+      gap:10px;
       align-items:flex-start;
       justify-content:space-between;
-      gap:12px;
     }
-    .alertLeft{ min-width:0; }
+    .alertLeft{
+      min-width:0;
+    }
     .alertTitle{
-      display:flex; align-items:center; gap:8px;
-      font-weight:900;
-      letter-spacing:.04em;
-      font-size:13px;
-      margin-bottom:6px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight: 950;
+      letter-spacing:.4px;
+      font-size:12px;
+    }
+    .alertTitle span{
+      color: var(--muted);
+      font-weight:800;
+      letter-spacing:0;
+    }
+    .alertBody{
+      margin-top:6px;
+      color: var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+    .alertRight{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex:0 0 auto;
     }
     .badge{
-      padding:6px 10px;
+      border:1px solid var(--stroke2);
+      background: rgba(255,255,255,.06);
       border-radius:999px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.04);
-      font-size:12px;
-      font-weight:800;
+      padding:6px 10px;
+      font-size:11px;
+      color: var(--muted);
+      font-weight:900;
       white-space:nowrap;
-      align-self:flex-start;
     }
-    .pill{
-      width:10px;height:10px;border-radius:50%;
-      background:var(--warn);
-      box-shadow:0 0 0 3px rgba(245,158,11,.14);
-    }
-    .alertText{ color:var(--muted); font-size:13px; line-height:1.35; }
 
-    .verdictBox{
+    .bullets{
       margin-top:10px;
       border:1px solid var(--stroke);
-      border-radius:16px;
-      background:rgba(0,0,0,.16);
-      padding:12px;
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      padding: 12px;
     }
-    .verdictTop{
+    .bulletsHead{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:8px;
+      margin-bottom:10px;
     }
-    .verdictTop .h{
-      font-size:12px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
+    .bulletsHead .t{
+      font-weight: 950;
+      letter-spacing:.22em;
+      font-size:11px;
       color:var(--muted2);
-      font-weight:900;
     }
     ul{
       margin:0;
-      padding-left:18px;
-      color:var(--text);
-      font-size:13px;
-      line-height:1.45;
+      padding-left: 18px;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.5;
     }
-    li{ margin:7px 0; color:var(--muted); }
-    li strong{ color:var(--text); }
+    li{ margin: 8px 0; }
 
-    .actions{
+    .verdictActions{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
-      margin-top:12px;
+      margin-top:10px;
     }
 
     .foot{
-      margin-top:10px;
-      color:var(--muted2);
-      font-size:12px;
-      line-height:1.4;
+      margin-top: 10px;
+      color: var(--muted2);
+      font-size: 12px;
+      line-height: 1.35;
     }
 
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom:18px;
-      transform:translateX(-50%);
-      background:rgba(15,23,42,.92);
-      border:1px solid rgba(255,255,255,.12);
-      padding:10px 12px;
-      border-radius:14px;
-      color:var(--text);
-      font-size:13px;
+    /* Modal */
+    .modalBack{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
       display:none;
-      box-shadow:0 16px 42px rgba(0,0,0,.55);
-      max-width:min(92vw, 560px);
-      z-index:9999;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 50;
+    }
+    .modal{
+      width:min(900px, 96vw);
+      border:1px solid var(--stroke);
+      background: rgba(14,22,42,.92);
+      backdrop-filter: blur(14px);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modalHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 16px;
+      border-bottom:1px solid var(--stroke);
+    }
+    .modalHead b{
+      font-size:13px;
+      letter-spacing:.18em;
+      color: var(--muted);
+    }
+    .modalBody{
+      padding: 14px 16px 16px;
+      max-height: 70vh;
+      overflow:auto;
+    }
+    .histItem{
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .histItem .top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      color: var(--muted2);
+      font-size:12px;
+      margin-bottom: 6px;
+    }
+    .histItem .mid{
+      color: var(--text);
+      font-size: 13px;
+      line-height:1.4;
+      white-space:pre-wrap;
+    }
+    .histItem .btnRow{
+      margin-top: 10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
     }
 
-    /* Responsive: stack columns on smaller screens */
-    @media (max-width: 920px){
-      .grid{ grid-template-columns:1fr; }
-      textarea{ min-height:190px; }
-      .stats{ grid-template-columns:1fr; }
-      .stat{ min-height:auto; }
+    /* Toast */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.72);
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      box-shadow: var(--shadow);
+      max-width: min(720px, 92vw);
+      display:none;
+      z-index: 80;
+    }
+
+    /* Mobile */
+    @media (max-width: 860px){
+      .grid{ grid-template-columns: 1fr; }
+      .brand .sub{ max-width: 66vw; }
+      .verdictTop{ grid-template-columns: 1fr; }
+      .wrap{ margin-bottom: 120px; }
     }
   </style>
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.9.155/pdf.min.js"></script>
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
@@ -355,602 +480,659 @@
         <div class="dot"></div>
         <div style="min-width:0">
           <h1>APEX Corporate Translator</h1>
-          <div class="sub">Translate corporate language into consequences — fast verdict, no spin.</div>
-          <div style="font-size:11px;color:rgba(233,238,252,.45);margin-top:3px;">build: v10.10</div>
+          <span class="sub">Translate corporate language into consequences — fast verdict, no spin. <span style="opacity:.6">build: v10.11</span></span>
         </div>
       </div>
-      <div class="rightchips">
-        <div class="chip"><span class="led"></span>Local • No upload</div>
+      <div class="rightpill">
+        <span class="chip"><span class="live"></span> Local • No upload</span>
       </div>
     </div>
 
     <div class="grid">
       <!-- LEFT -->
       <div class="card">
-        <div class="inner">
-          <h2 class="title">Paste the message</h2>
-          <p class="desc">Paste an internal email, Slack message, or leadership announcement. For best results, include the subject + opening paragraphs.</p>
+        <div class="head">
+          <h2>Paste the message</h2>
+          <p>Paste an internal email, Slack message, or leadership announcement. For best results, include the subject + opening paragraphs.</p>
+        </div>
+        <div class="body">
+          <div style="color:var(--muted2);font-size:11px;letter-spacing:.22em;font-weight:950;margin-bottom:8px;">MESSAGE</div>
+          <textarea id="input" class="textarea" placeholder="Paste corporate email / announcement here..."></textarea>
 
-          <label class="small" for="input">Message</label>
-          <textarea id="input" placeholder="Paste corporate email / announcement here..."></textarea>
-
-          <div class="row">
-            <div class="pdfrow">
-              <b>PDF Upload</b>
-              <input id="pdfFile" type="file" accept="application/pdf" />
-              <span id="pdfStatus" class="status">No PDF loaded</span>
-            </div>
-            <div class="meta">
-              <span id="charCount">0 chars</span>
-            </div>
+          <div class="upload">
+            <label for="pdfFile">PDF UPLOAD</label>
+            <input id="pdfFile" type="file" accept="application/pdf" />
+            <div id="pdfStatus" class="status">No PDF loaded</div>
           </div>
 
-          <div class="hint">
-            Tip: include words like “operating model”, “over the coming weeks”, “align resources”, “streamline”, “organizational adjustments”.
+          <div class="meta">
+            <div id="tip">Tip: include words like “operating model”, “over the coming weeks”, “align resources”, “streamline”, “organizational adjustments”.</div>
+            <div><span id="charCount">0</span> chars</div>
           </div>
 
-          <div class="btns">
-            <button class="primary" id="runBtn">Translate with APEX</button>
-            <button id="examplesBtn">See Real Examples</button>
-            <button class="ghost" id="clearBtn">Clear</button>
+          <div class="row" style="margin-top:12px;">
+            <button id="translateBtn" class="btn primary">Translate with APEX</button>
+            <button id="examplesBtn" class="btn ghost">See Real Examples</button>
+            <button id="clearBtn" class="btn ghost">Clear</button>
           </div>
 
-          <div class="foot">
-            Built to decode language patterns that commonly appear before restructures, layoffs, and role changes.
-          </div>
+          <div class="mini">Built to decode language patterns that commonly appear before restructures, layoffs, and role changes.</div>
         </div>
       </div>
 
       <!-- RIGHT -->
       <div class="card">
-        <div class="inner">
-          <div class="sectionHead">
-            <div>
-              <h2 style="margin:0;">Verdict</h2>
-              <p>APEX outputs exactly five bullets: what’s happening, why now, what’s next, who’s exposed, what to do.</p>
+        <div class="head">
+          <h2>Verdict</h2>
+          <p>APEX outputs exactly five bullets: what’s happening, why now, what’s next, who’s exposed, what to do.</p>
+
+          <div class="verdictTop">
+            <div class="stat">
+              <div class="k">STATUS</div>
+              <div id="statusVal" class="v"><span class="pillDot"></span> —</div>
+            </div>
+            <div class="stat">
+              <div class="k">CONFIDENCE</div>
+              <div id="confVal" class="v"><span class="pillDot"></span> —</div>
+            </div>
+            <div class="stat">
+              <div class="k">SIGNALS</div>
+              <div id="sigVal" class="v"><span class="pillDot"></span> —</div>
             </div>
           </div>
 
-          <div class="stats">
-            <div class="stat">
-              <div class="k">Status</div>
-              <div class="v" id="statusVal">—</div>
-            </div>
-            <div class="stat">
-              <div class="k">Confidence</div>
-              <div class="v" id="confVal">—</div>
-            </div>
-            <div class="stat">
-              <div class="k">Signals</div>
-              <div class="v" id="signalsVal">—</div>
-            </div>
-          </div>
-
-          <div class="alert">
+          <div class="alertBox">
             <div class="alertLeft">
-              <div class="alertTitle"><span class="pill" id="pill"></span> APEX ALERT</div>
-              <div class="alertText" id="alertText">Paste a message and run APEX to get a verdict.</div>
+              <div class="alertTitle"><span class="pillDot warn" id="alertDot"></span> APEX ALERT <span id="alertMeta">Paste a message and run APEX to get a verdict.</span></div>
+              <div id="alertText" class="alertBody">—</div>
             </div>
-            <div class="badge" id="statusBadge">Status: —</div>
+            <div class="alertRight">
+              <span class="badge" id="statusBadge">Status: —</span>
+            </div>
           </div>
 
-          <div class="verdictBox">
-            <div class="verdictTop">
-              <div class="h">APEX VERDICT (EXACTLY 5 BULLETS)</div>
-              <button class="small" id="copyBtn">Copy Verdict</button>
+          <div class="bullets">
+            <div class="bulletsHead">
+              <div class="t">APEX VERDICT (EXACTLY 5 BULLETS)</div>
+              <button id="copyBtn" class="btn ghost">Copy Verdict</button>
             </div>
-            <ul id="verdictList">
+            <ul id="bulletsList">
               <li>No verdict yet.</li>
             </ul>
-
-            <div class="actions">
-              <button id="pdfBtn">Download PDF</button>
-              <button id="shareBtn">Share Link</button>
-              <button id="saveBtn">Save History</button>
-              <button id="viewBtn">View History</button>
-            </div>
-
-            <div class="foot">
-              Free now. PDF export, share links, and history work locally (no account). If you later add billing, keep the UI and flip the switches.
-            </div>
           </div>
 
+          <div class="verdictActions">
+            <button id="pdfBtn" class="btn ghost">Download PDF</button>
+            <button id="shareBtn" class="btn ghost">Share Link</button>
+            <button id="saveBtn" class="btn ghost">Save History</button>
+            <button id="viewBtn" class="btn ghost">View History</button>
+          </div>
+
+          <div class="foot">Free now. PDF export, share links, and history work locally (no account). If you later add billing, keep the UI and flip the switches.</div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <!-- Modal -->
+  <div id="modalBack" class="modalBack">
+    <div class="modal">
+      <div class="modalHead">
+        <b>HISTORY</b>
+        <button id="closeModal" class="btn ghost">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="row" style="margin-bottom:10px;">
+          <button id="clearHistory" class="btn ghost">Clear History</button>
+        </div>
+        <div id="historyList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
 
   <script>
-    // ---------- utilities ----------
-    const $ = (id) => document.getElementById(id);
+    (function () {
+      "use strict";
 
-    function toast(msg){
-      const t = $("toast");
-      t.textContent = msg;
-      t.style.display = "block";
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(()=> t.style.display="none", 2400);
-    }
+      // ---------- utilities ----------
+      const $ = (id) => document.getElementById(id);
 
-    function escapeHtml(s){
-      return String(s || "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    function clamp(n,a,b){ return Math.max(a, Math.min(b, n)); }
-
-    // ---------- APEX signal library ----------
-    // Weights tuned for corporate-meaning patterns.
-    const SIGNALS = [
-      { key:"roles will be eliminated", w:9, tag:"explicit job elimination" },
-      { key:"impacted employees", w:7, tag:"impact targeting" },
-      { key:"reduction in force", w:10, tag:"RIF" },
-      { key:"layoff", w:10, tag:"layoff" },
-      { key:"reducing costs", w:6, tag:"cost reduction" },
-      { key:"cost reduction", w:6, tag:"cost reduction" },
-      { key:"organizational adjustments", w:5, tag:"org change" },
-      { key:"operating model", w:5, tag:"operating model shift" },
-      { key:"restructur", w:6, tag:"restructure" }, // matches restructure/restructuring
-      { key:"realign", w:5, tag:"realignment" },
-      { key:"align resources", w:4, tag:"resource alignment" },
-      { key:"streamline", w:4, tag:"streamline" },
-      { key:"efficiency", w:3, tag:"efficiency push" },
-      { key:"accountability", w:2, tag:"accountability framing" },
-      { key:"focus resources", w:3, tag:"focus shift" },
-      { key:"strategic priorities", w:3, tag:"priority reshuffle" },
-      { key:"over the coming weeks", w:2, tag:"near-term window" },
-      { key:"managers will share", w:2, tag:"details deferred" },
-      { key:"as they become available", w:2, tag:"details deferred" },
-      { key:"flexibility", w:1, tag:"compliance language" },
-      { key:"adaptability", w:1, tag:"compliance language" }
-    ];
-
-    function analyze(text){
-      const t = (text || "").toLowerCase();
-      const hits = [];
-      let score = 0;
-
-      for(const s of SIGNALS){
-        if(t.includes(s.key)){
-          hits.push(s);
-          score += s.w;
-        }
+      function toast(msg) {
+        const el = $("toast");
+        el.textContent = msg;
+        el.style.display = "block";
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => (el.style.display = "none"), 2600);
       }
 
-      // Status bands
-      let status = "WATCH";
-      if(score >= 18) status = "CRITICAL";
-      else if(score >= 10) status = "HIGH";
-      else status = "WATCH";
-
-      // Confidence heuristics
-      // more hits + explicit language = higher confidence
-      const explicit = t.includes("roles will be eliminated") || t.includes("reduction in force") || t.includes("layoff") || t.includes("impacted employees");
-      let confidence = "Low";
-      if(score >= 18 || (explicit && hits.length >= 2)) confidence = "High";
-      else if(score >= 10 || hits.length >= 4) confidence = "Medium";
-
-      // Exactly 5 bullets, always
-      const bullets = buildBullets(t, status, confidence, hits, score);
-
-      return { status, confidence, hits, score, bullets };
-    }
-
-    function buildBullets(t, status, confidence, hits, score){
-      const subjectLine = (() => {
-        // Try to extract "Subject:" line if present, else first 90 chars
-        const lines = (t || "").split("\n").map(x=>x.trim()).filter(Boolean);
-        const subj = lines.find(l => l.startsWith("subject:"));
-        if(subj) return subj.replace(/^subject:\s*/,"").slice(0,90);
-        const first = (lines[0] || "").slice(0,90);
-        return first || "Update";
-      })();
-
-      const hasExplicit = t.includes("roles will be eliminated") || t.includes("reduction in force") || t.includes("layoff");
-
-      const whatHappening =
-        status === "CRITICAL"
-          ? `Headline: "${subjectLine}" is a ${status} change signal.`
-          : status === "HIGH"
-            ? `Headline: "${subjectLine}" signals elevated change risk (HIGH).`
-            : `Headline: "${subjectLine}" looks routine/low-signal on its face (WATCH).`;
-
-      const whyNow =
-        status === "CRITICAL"
-          ? (hasExplicit
-              ? `Core meaning: explicit risk detected (role cuts / eliminations) — treat as layoffs/reorg now.`
-              : `Core meaning: strong reorg language + “details later” pattern — role impact is plausible.`)
-          : status === "HIGH"
-            ? `Core meaning: resource alignment / operating model shift — reporting-line or priority changes likely.`
-            : `Core meaning: informational notice / process update — no structural change implied from this text alone.`;
-
-      const nextStep =
-        status === "CRITICAL"
-          ? `Next: decisions lock fast (1–6 weeks). Expect manager meetings, role mapping, and individual notices.`
-          : status === "HIGH"
-            ? `Next: manager-led meetings + scope clarification; decisions likely form within weeks.`
-            : `Next: proceed as normal; watch for follow-up emails introducing “efficiency”, “realignment”, or “org adjustments”.`;
-
-      const exposed =
-        status === "CRITICAL"
-          ? `Exposure: duplicated functions, non-core teams, and roles tied to “efficiency/streamline” initiatives.`
-          : status === "HIGH"
-            ? `Exposure: teams outside stated “core priorities”, or functions being “streamlined” / centralized.`
-            : `Exposure: low — unless your function is already under budget pressure or “non-core” narrative.`;
-
-      const doNow =
-        status === "CRITICAL"
-          ? `Do now: ask 3 specifics today — (1) scope, (2) reporting line, (3) timeline. Update your evidence trail (emails/notes/dates).`
-          : status === "HIGH"
-            ? `Do now: clarify (1) scope changes, (2) reporting line, (3) role-impact timeline. Save copies of messages.`
-            : `Do now: save for context; escalate only if later messages add change language.`;
-
-      return [whatHappening, whyNow, nextStep, exposed, doNow];
-    }
-
-    function setPill(status){
-      const pill = $("pill");
-      pill.style.background =
-        status === "CRITICAL" ? "var(--bad)" :
-        status === "HIGH" ? "var(--warn)" : "rgba(148,163,184,.9)";
-      pill.style.boxShadow =
-        status === "CRITICAL" ? "0 0 0 3px rgba(239,68,68,.14)" :
-        status === "HIGH" ? "0 0 0 3px rgba(245,158,11,.14)" : "0 0 0 3px rgba(148,163,184,.14)";
-    }
-
-    function render(res){
-      $("statusVal").textContent = res.status;
-      $("confVal").textContent = res.confidence;
-      $("signalsVal").textContent = `${res.hits.length} (score ${res.score})`;
-      $("statusBadge").textContent = `Status: ${res.status}`;
-      setPill(res.status);
-
-      const alertLine =
-        `Status: ${res.status} · Confidence: ${res.confidence} · Signals: ${res.hits.length} (score ${res.score}) — ` +
-        (res.status==="CRITICAL"
-          ? "Major change risk. Reorg and/or role impact possible. Act now."
-          : res.status==="HIGH"
-            ? "Change risk elevated. Clarify scope + reporting line."
-            : "Low risk / likely informational.");
-
-      $("alertText").textContent = alertLine;
-
-      const ul = $("verdictList");
-      ul.innerHTML = "";
-      res.bullets.forEach(b=>{
-        const li = document.createElement("li");
-        li.innerHTML = escapeHtml(b);
-        ul.appendChild(li);
-      });
-
-      window.__lastResult = res;
-    }
-
-    function getVerdictText(res){
-      const lines = [];
-      lines.push(`APEX Corporate Translator — Verdict`);
-      lines.push(`Status: ${res.status} | Confidence: ${res.confidence} | Signals: ${res.hits.length} (score ${res.score})`);
-      lines.push(``);
-      lines.push(`APEX ALERT`);
-      lines.push(`Status: ${res.status} · Confidence: ${res.confidence} · Signals: ${res.hits.length} (score ${res.score})`);
-      lines.push(``);
-      lines.push(`Verdict (exactly 5 bullets)`);
-      res.bullets.forEach((b,i)=> lines.push(`${i+1}. ${b}`));
-      lines.push(``);
-      lines.push(`Generated locally in your browser. No text is uploaded by this page.`);
-      return lines.join("\n");
-    }
-
-    // ---------- PDF extraction ----------
-    // Configure PDF.js worker
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.js";
-
-    async function extractTextFromPDF(file){
-      const data = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data }).promise;
-
-      let full = "";
-      const maxPages = Math.min(pdf.numPages, 12); // keep it safe/fast
-      for(let i=1;i<=maxPages;i++){
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        const strings = content.items.map(it => it.str).filter(Boolean);
-        const pageText = strings.join(" ").replace(/\s+/g," ").trim();
-        if(pageText) full += pageText + "\n\n";
+      function safeText(s) {
+        return String(s ?? "").replace(/\u0000/g, "");
       }
-      return full.trim();
-    }
 
-    // ---------- share links ----------
-    function b64urlEncode(str){
-      const b64 = btoa(unescape(encodeURIComponent(str)));
-      return b64.replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
-    }
-    function b64urlDecode(b64url){
-      const b64 = b64url.replaceAll("-","+").replaceAll("_","/") + "===".slice((b64url.length+3)%4);
-      return decodeURIComponent(escape(atob(b64)));
-    }
-
-    function setFromHashIfPresent(){
-      const hash = location.hash || "";
-      const m = hash.match(/#t=([A-Za-z0-9\-_]+)/);
-      if(!m) return;
-      try{
-        const txt = b64urlDecode(m[1]);
-        $("input").value = txt;
-        $("charCount").textContent = `${txt.length} chars`;
-        const res = analyze(txt);
-        render(res);
-        toast("Loaded from share link");
-      }catch(e){
-        console.error(e);
-        toast("Invalid share link");
+      function nowISO() {
+        const d = new Date();
+        return d.toISOString();
       }
-    }
 
-    // ---------- local history ----------
-    const HIST_KEY = "apex_history_v1";
-
-    function loadHistory(){
-      try{
-        return JSON.parse(localStorage.getItem(HIST_KEY) || "[]");
-      }catch{
-        return [];
+      function shortTime(iso) {
+        try {
+          const d = new Date(iso);
+          return d.toLocaleString();
+        } catch { return iso; }
       }
-    }
-    function saveHistory(arr){
-      localStorage.setItem(HIST_KEY, JSON.stringify(arr.slice(-50)));
-    }
 
-    function historyModal(items){
-      const html = items.map((it, idx)=>`
-        <div style="border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:10px;margin:10px 0;background:rgba(0,0,0,.20)">
-          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
-            <div style="font-weight:800">${escapeHtml(it.status)} <span style="color:rgba(233,238,252,.55);font-weight:600">· ${escapeHtml(it.confidence)} · score ${it.score}</span></div>
-            <div style="color:rgba(233,238,252,.45);font-size:12px">${escapeHtml(new Date(it.ts).toLocaleString())}</div>
-          </div>
-          <div style="color:rgba(233,238,252,.62);font-family:${varMono()};font-size:12px;margin-top:8px;white-space:pre-wrap">${escapeHtml(it.preview)}</div>
-          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-            <button data-idx="${idx}" class="small" style="padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#e9eefc;font-weight:700;cursor:pointer">Load</button>
-          </div>
-        </div>
-      `).join("");
+      function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
 
-      const overlay = document.createElement("div");
-      overlay.style.position="fixed";
-      overlay.style.inset="0";
-      overlay.style.background="rgba(0,0,0,.55)";
-      overlay.style.zIndex="9998";
-      overlay.style.display="grid";
-      overlay.style.placeItems="center";
-      overlay.innerHTML = `
-        <div style="width:min(94vw,860px);max-height:82vh;overflow:auto;background:rgba(15,23,42,.96);border:1px solid rgba(255,255,255,.12);border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.6);padding:14px">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;background:rgba(15,23,42,.96);padding:6px 0">
-            <div style="font-weight:900;font-size:16px">History</div>
-            <button id="closeHist" class="small" style="padding:8px 10px;border-radius:12px;">Close</button>
-          </div>
-          <div style="color:rgba(233,238,252,.55);font-size:12px;margin-bottom:10px">Stored locally in your browser.</div>
-          ${items.length ? html : `<div style="color:rgba(233,238,252,.65);padding:10px">No history yet.</div>`}
-        </div>
-      `;
-      document.body.appendChild(overlay);
+      // URL-safe base64 (no + /)
+      function b64UrlEncode(str) {
+        const bytes = new TextEncoder().encode(str);
+        let bin = "";
+        bytes.forEach(b => bin += String.fromCharCode(b));
+        const b64 = btoa(bin);
+        return b64.replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", ".");
+      }
+      function b64UrlDecode(b64u) {
+        const b64 = b64u.replaceAll("-", "+").replaceAll("_", "/").replaceAll(".", "=");
+        const bin = atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        return new TextDecoder().decode(bytes);
+      }
 
-      overlay.querySelector("#closeHist").addEventListener("click", ()=> overlay.remove());
-      overlay.addEventListener("click", (e)=>{ if(e.target===overlay) overlay.remove(); });
+      // Simple compression: remove extra whitespace to keep URLs short
+      function compressText(s) {
+        return safeText(s).replace(/\r/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+      }
 
-      overlay.querySelectorAll("button[data-idx]").forEach(btn=>{
-        btn.addEventListener("click", ()=>{
-          const i = Number(btn.getAttribute("data-idx"));
-          const it = items[i];
-          $("input").value = it.text;
-          $("charCount").textContent = `${it.text.length} chars`;
-          render(analyze(it.text));
-          overlay.remove();
-          toast("Loaded from history");
-        });
-      });
-    }
-
-    function varMono(){ return "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"; }
-
-    // ---------- events ----------
-    $("input").addEventListener("input", ()=>{
-      const v = $("input").value || "";
-      $("charCount").textContent = `${v.length} chars`;
-    });
-
-    $("runBtn").addEventListener("click", ()=>{
-      const txt = ($("input").value || "").trim();
-      if(!txt){ toast("Paste a message first"); return; }
-      const res = analyze(txt);
-      render(res);
-      toast("Verdict generated");
-    });
-
-    $("clearBtn").addEventListener("click", ()=>{
-      $("input").value = "";
-      $("charCount").textContent = "0 chars";
-      $("pdfFile").value = "";
-      $("pdfStatus").textContent = "No PDF loaded";
-
-      $("statusVal").textContent = "—";
-      $("confVal").textContent = "—";
-      $("signalsVal").textContent = "—";
-      $("statusBadge").textContent = "Status: —";
-      $("alertText").textContent = "Paste a message and run APEX to get a verdict.";
-      $("verdictList").innerHTML = "<li>No verdict yet.</li>";
-      setPill("WATCH");
-      window.__lastResult = null;
-
-      toast("Cleared");
-    });
-
-    $("examplesBtn").addEventListener("click", ()=>{
-      const ex = [
-`Subject: Important Update on Our Operating Model
-As we navigate a dynamic market environment, we’re evaluating opportunities to better align resources with strategic priorities.
-Over the coming weeks we will implement organizational adjustments designed to streamline workflows.
-Additional details will be shared by your managers as they become available.
-Thank you for your continued commitment and adaptability.`,
-`Subject: FYI — Office Closed Friday
-Team, reminder that the office will be closed this Friday for scheduled maintenance. Please work from home if needed. Thanks.`,
-`Subject: Organizational Changes
-Due to current market conditions, we are reducing costs and restructuring teams. Some roles will be eliminated. Impacted employees will be contacted this week. Thank you.`
+      // ---------- APEX Engine ----------
+      const SIGNALS = [
+        { key: "layoff", w: 6, re: /\b(layoff|redundan(cy|cies)|workforce reduction|headcount reduction|position(s)? eliminated|role(s)? eliminated|severance)\b/i },
+        { key: "reorg",  w: 4, re: /\b(reorg|re-?organization|operating model|org(ani[sz])?ational (adjustment|change|evolution)|new structure|reporting line|role mapping)\b/i },
+        { key: "streamline", w: 4, re: /\b(streamline|simplif(y|ication)|efficien(cy|cies)|optimi[sz]e|right-?size|lean(er)?|reduce costs)\b/i },
+        { key: "align", w: 3, re: /\b(align resources|resource alignment|focus resources|strategic priorit(ies|y)|core priorities|focus on core|portfolio review)\b/i },
+        { key: "timelineSoon", w: 2, re: /\b(over the coming weeks|in the coming weeks|effective immediately|near term|short[- ]term|this week|next few weeks)\b/i },
+        { key: "managerDetails", w: 2, re: /\b(additional details will be shared|as they become available|your manager(s)? will|leaders? will meet|1:1|town hall|all-hands)\b/i },
+        { key: "uncertainty", w: 2, re: /\b(transition|ambigu(ity|ous)|changes in scope|changes in ownership|changes in responsibilities)\b/i },
+        { key: "thanksAdapt", w: 1, re: /\b(thank you for your continued (commitment|support)|adaptability|flexibility)\b/i },
       ];
-      const txt = ex[Math.floor(Math.random()*ex.length)];
-      $("input").value = txt;
-      $("charCount").textContent = `${txt.length} chars`;
-      render(analyze(txt));
-      toast("Example loaded");
-    });
 
-    $("copyBtn").addEventListener("click", async ()=>{
-      const res = window.__lastResult;
-      if(!res){ toast("Run a verdict first"); return; }
-      const out = getVerdictText(res);
-      try{
-        await navigator.clipboard.writeText(out);
-        toast("Copied verdict");
-      }catch{
-        // fallback
-        const ta = document.createElement("textarea");
-        ta.value = out;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        ta.remove();
-        toast("Copied verdict");
-      }
-    });
-
-    $("pdfBtn").addEventListener("click", ()=>{
-      const res = window.__lastResult;
-      if(!res){ toast("Run a verdict first"); return; }
-
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit:"pt", format:"a4" });
-
-      const margin = 44;
-      const w = doc.internal.pageSize.getWidth();
-      let y = 56;
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(16);
-      doc.text("APEX Corporate Translator — Verdict", margin, y);
-      y += 18;
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
-      doc.text(`Status: ${res.status}   |   Confidence: ${res.confidence}   |   Signals: ${res.hits.length} (score ${res.score})`, margin, y);
-      y += 22;
-
-      doc.setFont("helvetica", "bold");
-      doc.text("APEX ALERT", margin, y);
-      y += 14;
-
-      doc.setFont("helvetica", "normal");
-      const alertLine =
-        `Status: ${res.status} · Confidence: ${res.confidence} · Signals: ${res.hits.length} (score ${res.score})`;
-      const alertWrap = doc.splitTextToSize(alertLine, w - margin*2);
-      doc.text(alertWrap, margin, y);
-      y += alertWrap.length * 14 + 12;
-
-      doc.setFont("helvetica", "bold");
-      doc.text("Verdict (exactly 5 bullets)", margin, y);
-      y += 16;
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
-      res.bullets.forEach((b, i)=>{
-        const line = `${i+1}. ${b}`;
-        const wrap = doc.splitTextToSize(line, w - margin*2);
-        if(y + wrap.length*14 > doc.internal.pageSize.getHeight() - 70){
-          doc.addPage();
-          y = 56;
+      function scoreText(text) {
+        const hits = [];
+        let score = 0;
+        for (const s of SIGNALS) {
+          if (s.re.test(text)) {
+            score += s.w;
+            hits.push({ key: s.key, w: s.w });
+          }
         }
-        doc.text(wrap, margin, y);
-        y += wrap.length * 14 + 8;
-      });
-
-      y += 8;
-      doc.setFontSize(9);
-      doc.setTextColor(90);
-      doc.text("Generated locally in your browser. No text is uploaded by this page.", margin, doc.internal.pageSize.getHeight() - 44);
-
-      doc.save("apex-verdict.pdf");
-      toast("PDF downloaded");
-    });
-
-    $("shareBtn").addEventListener("click", async ()=>{
-      const txt = ($("input").value || "").trim();
-      if(!txt){ toast("Paste a message first"); return; }
-      const token = b64urlEncode(txt.slice(0, 9000)); // cap
-      const url = `${location.origin}${location.pathname}#t=${token}`;
-      try{
-        await navigator.clipboard.writeText(url);
-        toast("Share link copied");
-      }catch{
-        prompt("Copy share link:", url);
+        return { score, hits };
       }
-    });
 
-    $("saveBtn").addEventListener("click", ()=>{
-      const txt = ($("input").value || "").trim();
-      const res = window.__lastResult;
-      if(!txt || !res){ toast("Run a verdict first"); return; }
+      function statusFromScore(score, explicitLayoff) {
+        if (explicitLayoff) return "CRITICAL";
+        if (score >= 10) return "CRITICAL";
+        if (score >= 6) return "HIGH";
+        return "WATCH";
+      }
 
-      const items = loadHistory();
-      items.push({
-        ts: Date.now(),
-        text: txt,
-        status: res.status,
-        confidence: res.confidence,
-        score: res.score,
-        preview: txt.slice(0, 260) + (txt.length>260 ? "…" : "")
-      });
-      saveHistory(items);
-      toast("Saved to history");
-    });
+      function confidenceFromSignals(count, explicitLayoff) {
+        if (explicitLayoff) return "High";
+        if (count >= 6) return "High";
+        if (count >= 3) return "Medium";
+        return "Low";
+      }
 
-    $("viewBtn").addEventListener("click", ()=>{
-      const items = loadHistory().reverse();
-      historyModal(items);
-    });
+      function buildBullets(text, status, score, sigCount, explicitLayoff) {
+        // Always exactly 5 bullets
+        const firstLine = (compressText(text).split("\n").find(Boolean) || "").slice(0, 120);
+        const headline = firstLine ? `"${firstLine}${firstLine.length >= 120 ? "…" : ""}"` : "This message";
+        const why = explicitLayoff
+          ? "Explicit reduction language detected — treat as real layoffs/redundancy now."
+          : (status === "CRITICAL"
+              ? "Multiple restructure signals stacking — language indicates role impact risk."
+              : (status === "HIGH"
+                  ? "Change language elevated — likely reorg / scope / reporting-line shift."
+                  : "Low structural signal — likely informational or routine ops change."));
 
-    // PDF upload -> extract -> put text into textarea (optional: auto-run verdict)
-    $("pdfFile").addEventListener("change", async ()=>{
-      const f = $("pdfFile").files && $("pdfFile").files[0];
-      if(!f){ $("pdfStatus").textContent = "No PDF loaded"; return; }
-      $("pdfStatus").textContent = "Extracting…";
-      try{
-        const text = await extractTextFromPDF(f);
-        if(!text){
-          $("pdfStatus").textContent = "PDF loaded (no text found)";
-          toast("PDF has no extractable text");
+        const next = (status === "WATCH")
+          ? "Next: manager clarification or follow-up note if anything changes."
+          : "Next: manager-led meetings + role mapping; decisions lock fast (1–6 weeks).";
+
+        const exposed = (status === "WATCH")
+          ? "Exposure: none implied by text alone."
+          : "Exposure: duplicated functions, non-core teams, and roles tied to ‘efficiency/streamline’ initiatives.";
+
+        const doNow = (status === "WATCH")
+          ? "Do now: save for context; escalate only if later messages introduce reorg/cost language."
+          : "Do now: ask 3 specifics today — (1) scope, (2) reporting line, (3) timeline. Document dates/messages.";
+
+        return [
+          `Headline: ${headline} is a ${status} change signal.`,
+          `Core meaning: ${why}`,
+          next,
+          exposed,
+          doNow
+        ];
+      }
+
+      function renderVerdict(model) {
+        const { status, confidence, signalsCount, score, bullets } = model;
+
+        // status card
+        const statusDot = status === "CRITICAL" ? "bad" : (status === "HIGH" ? "warn" : "warn");
+        $("statusVal").innerHTML = `<span class="pillDot ${statusDot}"></span> ${status}`;
+        $("confVal").innerHTML   = `<span class="pillDot ${confidence === "High" ? "good" : (confidence === "Medium" ? "warn" : "warn")}"></span> ${confidence}`;
+        $("sigVal").innerHTML    = `<span class="pillDot ${signalsCount >= 6 ? "bad" : (signalsCount >= 3 ? "warn" : "warn")}"></span> ${signalsCount} (score ${score})`;
+
+        $("statusBadge").textContent = `Status: ${status}`;
+
+        // alert text
+        const alertDot = $("alertDot");
+        alertDot.className = "pillDot " + (status === "CRITICAL" ? "bad" : (status === "HIGH" ? "warn" : "warn"));
+
+        $("alertMeta").textContent = `Status: ${status} • Confidence: ${confidence} • Signals: ${signalsCount} (score ${score})`;
+
+        const alertText =
+          status === "CRITICAL"
+            ? "Major change risk. Reorg and/or role impact possible. Act now."
+            : status === "HIGH"
+              ? "Change risk elevated. Clarify scope + reporting line."
+              : "Low risk / likely informational.";
+
+        $("alertText").textContent = alertText;
+
+        // bullets
+        const ul = $("bulletsList");
+        ul.innerHTML = "";
+        bullets.forEach(b => {
+          const li = document.createElement("li");
+          li.textContent = b;
+          ul.appendChild(li);
+        });
+
+        // save last
+        window.__APEX_LAST__ = model;
+      }
+
+      function emptyState() {
+        $("statusVal").innerHTML = `<span class="pillDot"></span> —`;
+        $("confVal").innerHTML   = `<span class="pillDot"></span> —`;
+        $("sigVal").innerHTML    = `<span class="pillDot"></span> —`;
+        $("statusBadge").textContent = "Status: —";
+        $("alertMeta").textContent = "Paste a message and run APEX to get a verdict.";
+        $("alertText").textContent = "—";
+        $("alertDot").className = "pillDot warn";
+        $("bulletsList").innerHTML = "<li>No verdict yet.</li>";
+        window.__APEX_LAST__ = null;
+      }
+
+      function computeAndRender(text) {
+        const t = compressText(text);
+        if (!t) {
+          toast("Paste a message or upload a PDF first.");
           return;
         }
-        $("pdfStatus").textContent = `PDF loaded: ${f.name}`;
-        $("input").value = text.slice(0, 12000);
-        $("charCount").textContent = `${$("input").value.length} chars`;
-        // Optional auto-run:
-        render(analyze($("input").value));
-        toast("PDF text extracted");
-      }catch(e){
-        console.error(e);
-        $("pdfStatus").textContent = "PDF failed (try another file)";
-        toast("Failed to read PDF");
-      }
-    });
 
-    // Load shared hash on open
-    setFromHashIfPresent();
+        const explicitLayoff = /\b(role(s)? will be eliminated|positions? eliminated|layoff|redundancy|workforce reduction|headcount reduction)\b/i.test(t);
+        const scored = scoreText(t);
+        const status = statusFromScore(scored.score, explicitLayoff);
+        const confidence = confidenceFromSignals(scored.hits.length, explicitLayoff);
+
+        const bullets = buildBullets(t, status, scored.score, scored.hits.length, explicitLayoff);
+
+        renderVerdict({
+          createdAt: nowISO(),
+          input: t,
+          status,
+          confidence,
+          signalsCount: scored.hits.length,
+          score: scored.score,
+          bullets
+        });
+
+        toast("Verdict generated.");
+      }
+
+      // ---------- PDF extract ----------
+      async function extractTextFromPDF(file) {
+        // Configure worker
+        try {
+          if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+              "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.9.155/pdf.worker.min.js";
+          }
+        } catch (e) { /* ignore */ }
+
+        const buf = await file.arrayBuffer();
+        const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
+
+        const maxPages = clamp(pdf.numPages, 1, 20); // safe cap
+        let out = [];
+        for (let p = 1; p <= maxPages; p++) {
+          const page = await pdf.getPage(p);
+          const content = await page.getTextContent();
+          const strings = content.items.map(it => it.str).filter(Boolean);
+          out.push(strings.join(" "));
+        }
+        return compressText(out.join("\n\n"));
+      }
+
+      // ---------- PDF export ----------
+      function exportPDF(model) {
+        if (!model) { toast("Run APEX first."); return; }
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: "pt", format: "a4" });
+
+        const margin = 46;
+        const pageW = doc.internal.pageSize.getWidth();
+        const usableW = pageW - margin*2;
+        let y = 56;
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.text("APEX Corporate Translator — Verdict", margin, y);
+        y += 22;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        doc.text(`Status: ${model.status}   |   Confidence: ${model.confidence}   |   Signals: ${model.signalsCount} (score ${model.score})`, margin, y);
+        y += 20;
+
+        doc.setFont("helvetica", "bold");
+        doc.text("APEX ALERT", margin, y);
+        y += 14;
+        doc.setFont("helvetica", "normal");
+        const alertLine = (model.status === "CRITICAL")
+          ? "Major change risk. Reorg and/or role impact possible. Act now."
+          : (model.status === "HIGH")
+            ? "Change risk elevated. Clarify scope + reporting line."
+            : "Low risk / likely informational.";
+        const alertLines = doc.splitTextToSize(alertLine, usableW);
+        doc.text(alertLines, margin, y);
+        y += alertLines.length * 14 + 14;
+
+        doc.setFont("helvetica", "bold");
+        doc.text("Verdict (exactly 5 bullets)", margin, y);
+        y += 16;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+
+        model.bullets.forEach((b, i) => {
+          const line = `${i+1}. ${b}`;
+          const lines = doc.splitTextToSize(line, usableW);
+          if (y + lines.length * 14 > doc.internal.pageSize.getHeight() - 60) {
+            doc.addPage();
+            y = 56;
+          }
+          doc.text(lines, margin, y);
+          y += lines.length * 14 + 8;
+        });
+
+        doc.setFontSize(9);
+        doc.setTextColor(100);
+        const foot = "Generated locally in your browser. No text is uploaded by this page.";
+        doc.text(doc.splitTextToSize(foot, usableW), margin, doc.internal.pageSize.getHeight() - 40);
+
+        doc.save("apex-verdict.pdf");
+      }
+
+      // ---------- Share link ----------
+      function shareLink(model) {
+        if (!model) { toast("Run APEX first."); return; }
+        const payload = JSON.stringify({
+          i: model.input,
+          t: model.createdAt
+        });
+        const compressed = compressText(payload);
+        const token = b64UrlEncode(compressed);
+        const url = `${location.origin}${location.pathname}#v=${token}`;
+
+        navigator.clipboard?.writeText(url).then(() => {
+          toast("Share link copied.");
+        }).catch(() => {
+          toast("Copy failed — long press the URL in the address bar.");
+          console.log(url);
+        });
+      }
+
+      function tryLoadFromHash() {
+        const h = location.hash || "";
+        const m = h.match(/v=([A-Za-z0-9\-\_\.]+)/);
+        if (!m) return;
+        try {
+          const decoded = b64UrlDecode(m[1]);
+          const obj = JSON.parse(decoded);
+          if (obj && obj.i) {
+            $("input").value = obj.i;
+            $("charCount").textContent = String(obj.i.length);
+            computeAndRender(obj.i);
+            toast("Loaded from share link.");
+          }
+        } catch (e) {
+          console.error(e);
+          toast("Invalid share link.");
+        }
+      }
+
+      // ---------- History ----------
+      const HIST_KEY = "apex_history_v1";
+
+      function loadHist() {
+        try {
+          return JSON.parse(localStorage.getItem(HIST_KEY) || "[]") || [];
+        } catch { return []; }
+      }
+      function saveHist(items) {
+        localStorage.setItem(HIST_KEY, JSON.stringify(items.slice(0, 100)));
+      }
+
+      function saveCurrent(model) {
+        if (!model) { toast("Run APEX first."); return; }
+        const items = loadHist();
+        items.unshift(model);
+        saveHist(items);
+        toast("Saved to history.");
+      }
+
+      function renderHistory() {
+        const list = $("historyList");
+        const items = loadHist();
+        list.innerHTML = "";
+        if (!items.length) {
+          list.innerHTML = `<div style="color:var(--muted);font-size:13px;">No history yet.</div>`;
+          return;
+        }
+        items.forEach((it, idx) => {
+          const div = document.createElement("div");
+          div.className = "histItem";
+          div.innerHTML = `
+            <div class="top">
+              <div>${shortTime(it.createdAt || "")}</div>
+              <div>${it.status} • ${it.confidence} • ${it.signalsCount} (score ${it.score})</div>
+            </div>
+            <div class="mid">${it.bullets.map((b,i)=>`${i+1}. ${b}`).join("\n")}</div>
+            <div class="btnRow">
+              <button class="btn ghost" data-act="load" data-idx="${idx}">Load</button>
+              <button class="btn ghost" data-act="copy" data-idx="${idx}">Copy</button>
+              <button class="btn ghost" data-act="pdf" data-idx="${idx}">PDF</button>
+              <button class="btn ghost" data-act="del" data-idx="${idx}">Delete</button>
+            </div>
+          `;
+          list.appendChild(div);
+        });
+
+        list.querySelectorAll("button[data-act]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const act = btn.getAttribute("data-act");
+            const idx = Number(btn.getAttribute("data-idx"));
+            const items2 = loadHist();
+            const model = items2[idx];
+            if (!model) return;
+
+            if (act === "load") {
+              $("input").value = model.input || "";
+              $("charCount").textContent = String(($("input").value || "").length);
+              renderVerdict(model);
+              toast("Loaded from history.");
+              $("modalBack").style.display = "none";
+            } else if (act === "copy") {
+              copyModel(model);
+            } else if (act === "pdf") {
+              exportPDF(model);
+            } else if (act === "del") {
+              items2.splice(idx, 1);
+              saveHist(items2);
+              renderHistory();
+              toast("Deleted.");
+            }
+          });
+        });
+      }
+
+      // ---------- Copy ----------
+      function copyModel(model) {
+        if (!model) { toast("Run APEX first."); return; }
+        const text =
+`APEX Corporate Translator — Verdict
+Status: ${model.status} | Confidence: ${model.confidence} | Signals: ${model.signalsCount} (score ${model.score})
+
+APEX ALERT
+${model.status === "CRITICAL"
+  ? "Major change risk. Reorg and/or role impact possible. Act now."
+  : model.status === "HIGH"
+    ? "Change risk elevated. Clarify scope + reporting line."
+    : "Low risk / likely informational."}
+
+Verdict (exactly 5 bullets)
+${model.bullets.map((b,i)=>`${i+1}. ${b}`).join("\n")}
+`;
+        navigator.clipboard?.writeText(text).then(() => {
+          toast("Verdict copied.");
+        }).catch(() => {
+          toast("Copy failed. Try again.");
+        });
+      }
+
+      // ---------- examples ----------
+      const EXAMPLES = [
+        {
+          title: "Hidden restructure (high)",
+          text:
+`Subject: Operating Model Update
+Over the coming weeks we will implement organizational adjustments to streamline execution and align resources to strategic priorities. Some roles may be impacted. Additional details will be shared by your managers as they become available. Thank you for your continued adaptability.`
+        },
+        {
+          title: "Explicit cuts (critical)",
+          text:
+`Subject: Organizational Changes
+Due to current market conditions, we are reducing costs and restructuring teams. Some roles will be eliminated. Impacted employees will be contacted this week.`
+        },
+        {
+          title: "Routine ops (watch)",
+          text:
+`Subject: FYI — Office Closed Friday
+Team, reminder that the office will be closed this Friday for scheduled maintenance. Please work from home if needed. Thanks.`
+        }
+      ];
+
+      // ---------- boot ----------
+      document.addEventListener("DOMContentLoaded", () => {
+        // Bind UI
+        const input = $("input");
+        const pdfFile = $("pdfFile");
+
+        input.addEventListener("input", () => {
+          $("charCount").textContent = String((input.value || "").length);
+        });
+
+        $("translateBtn").addEventListener("click", () => {
+          try {
+            computeAndRender(input.value);
+          } catch (e) {
+            console.error(e);
+            toast("Translate failed — check console.");
+          }
+        });
+
+        $("clearBtn").addEventListener("click", () => {
+          input.value = "";
+          $("charCount").textContent = "0";
+          pdfFile.value = "";
+          $("pdfStatus").textContent = "No PDF loaded";
+          emptyState();
+          toast("Cleared.");
+        });
+
+        $("examplesBtn").addEventListener("click", () => {
+          // simple cycle example into textarea
+          const idx = Math.floor(Math.random() * EXAMPLES.length);
+          input.value = EXAMPLES[idx].text;
+          $("charCount").textContent = String(input.value.length);
+          toast(`Loaded: ${EXAMPLES[idx].title}`);
+        });
+
+        $("copyBtn").addEventListener("click", () => copyModel(window.__APEX_LAST__));
+
+        $("pdfBtn").addEventListener("click", () => exportPDF(window.__APEX_LAST__));
+
+        $("shareBtn").addEventListener("click", () => shareLink(window.__APEX_LAST__));
+
+        $("saveBtn").addEventListener("click", () => saveCurrent(window.__APEX_LAST__));
+
+        $("viewBtn").addEventListener("click", () => {
+          renderHistory();
+          $("modalBack").style.display = "flex";
+        });
+
+        $("closeModal").addEventListener("click", () => $("modalBack").style.display = "none");
+        $("modalBack").addEventListener("click", (e) => {
+          if (e.target === $("modalBack")) $("modalBack").style.display = "none";
+        });
+
+        $("clearHistory").addEventListener("click", () => {
+          localStorage.removeItem(HIST_KEY);
+          renderHistory();
+          toast("History cleared.");
+        });
+
+        // PDF upload
+        pdfFile.addEventListener("change", async () => {
+          const f = pdfFile.files && pdfFile.files[0];
+          if (!f) return;
+
+          $("pdfStatus").textContent = "Extracting…";
+          try {
+            const text = await extractTextFromPDF(f);
+
+            if (!text) {
+              $("pdfStatus").textContent = "No text found (scanned PDF?)";
+              toast("PDF has no extractable text (likely scanned).");
+              return;
+            }
+
+            input.value = text;
+            $("charCount").textContent = String(text.length);
+            $("pdfStatus").textContent = "PDF text loaded";
+            toast("PDF extracted. Now press Translate.");
+          } catch (e) {
+            console.error(e);
+            $("pdfStatus").textContent = "Failed";
+            toast("PDF extraction failed. Try a different PDF.");
+          }
+        });
+
+        // load share link if present
+        emptyState();
+        tryLoadFromHash();
+
+        // sanity check
+        toast("Ready.");
+      });
+    })();
   </script>
 </body>
 </html>
