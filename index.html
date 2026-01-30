@@ -2,299 +2,326 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>APEX Corporate Translator</title>
-  <meta name="description" content="APEX Corporate Translator — paste corporate emails/Slack/HR updates and get a 5-bullet verdict with status + confidence." />
-
+  <meta name="description" content="Paste any corporate email / Slack / HR update. Get an APEX verdict in exactly 5 bullets with status + confidence.">
   <style>
     :root{
-      --bg:#070b12;
-      --card:#0c1220;
-      --card2:#0a1020;
-      --stroke:rgba(255,255,255,.08);
+      --bg0:#070A10;
+      --bg1:#0B1020;
+      --card:#0E1426;
+      --card2:#0C1222;
+      --stroke:rgba(255,255,255,.09);
       --stroke2:rgba(255,255,255,.12);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.62);
-      --muted2:rgba(255,255,255,.44);
-      --blue:#3b82f6;
-      --blue2:#2563eb;
-      --shadow: 0 24px 80px rgba(0,0,0,.55);
+      --text:#E9EEF9;
+      --muted:rgba(233,238,249,.68);
+      --muted2:rgba(233,238,249,.52);
+      --blue:#2F7DFF;
+      --blue2:#1F60FF;
+      --good:#24D18F;
+      --warn:#FFB020;
+      --crit:#FF4D4D;
+      --watch:#9CA6B7;
+      --shadow: 0 24px 70px rgba(0,0,0,.55);
       --radius: 22px;
+      --radius2: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
-
     *{box-sizing:border-box}
     body{
       margin:0;
-      background: radial-gradient(1200px 800px at 20% 10%, rgba(59,130,246,.18), transparent 55%),
-                  radial-gradient(900px 700px at 80% 20%, rgba(99,102,241,.14), transparent 50%),
-                  var(--bg);
+      font-family:var(--sans);
       color:var(--text);
-      font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+      background:
+        radial-gradient(1200px 600px at 22% 8%, rgba(47,125,255,.22), transparent 60%),
+        radial-gradient(900px 500px at 80% 18%, rgba(255,77,77,.14), transparent 58%),
+        radial-gradient(700px 420px at 50% 92%, rgba(36,209,143,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
       min-height:100vh;
-      display:flex;
-      justify-content:center;
-      padding:28px 14px 60px;
+      padding:28px 14px 40px;
     }
-
-    .wrap{width:100%; max-width:820px;}
-    .top{
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    .wrap{max-width:980px;margin:0 auto;}
+    .hero{
+      background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
       border:1px solid var(--stroke);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-
-    .hero{
-      padding:26px 22px 18px;
+    .heroTop{
+      padding:28px 24px 18px;
       display:flex;
-      gap:18px;
       align-items:flex-start;
+      gap:16px;
       justify-content:space-between;
     }
-
-    .brand{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .h1{
-      font-size: 44px;
-      letter-spacing:-1px;
+    .title{
       line-height:1.02;
+      font-size: clamp(34px, 5vw, 54px);
+      letter-spacing:-.02em;
       margin:0;
-      font-weight:800;
     }
-    .sub{
-      margin:0;
-      max-width: 54ch;
+    .subtitle{
+      margin:10px 0 0;
       color:var(--muted);
+      font-size: 15.5px;
       line-height:1.55;
-      font-size:15.5px;
+      max-width: 580px;
     }
-
     .pill{
-      align-self:flex-start;
-      font-size:12px;
-      color:rgba(255,255,255,.80);
-      border:1px solid var(--stroke2);
+      flex:0 0 auto;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.03);
       padding:8px 12px;
       border-radius:999px;
-      background: rgba(255,255,255,.04);
-      backdrop-filter: blur(10px);
+      color:var(--muted);
+      font-size:12.5px;
+      letter-spacing:.03em;
+      text-transform: none;
+      margin-top: 6px;
       white-space:nowrap;
     }
 
     .panel{
-      padding:18px 22px 22px;
       border-top:1px solid var(--stroke);
-      background: rgba(0,0,0,.10);
+      padding:18px 24px 24px;
+      background: linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.14));
     }
 
+    .inputBox{
+      background: rgba(0,0,0,.22);
+      border:1px solid var(--stroke2);
+      border-radius: var(--radius2);
+      padding:14px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+    }
     textarea{
       width:100%;
-      min-height:220px;
-      resize:vertical;
-      background: rgba(0,0,0,.25);
-      color:var(--text);
-      border:1px solid var(--stroke);
-      border-radius: 18px;
-      padding:16px 16px;
-      font-size:15px;
-      line-height:1.55;
+      min-height: 150px;
+      border:0;
+      resize: vertical;
       outline:none;
+      background: transparent;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13.5px;
+      line-height: 1.5;
+      padding: 4px 2px;
     }
-    textarea::placeholder{color:rgba(255,255,255,.35)}
-    textarea:focus{border-color: rgba(59,130,246,.45); box-shadow: 0 0 0 4px rgba(59,130,246,.14);}
+    textarea::placeholder{color: rgba(233,238,249,.35);}
 
-    .btnrow{
-      display:flex;
-      gap:12px;
-      margin-top:14px;
-      flex-wrap:wrap;
+    .btnRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap:10px;
+      margin-top: 14px;
     }
-    button{
+    .btn{
       border:1px solid var(--stroke);
       background: rgba(255,255,255,.04);
-      color:var(--text);
+      color: var(--text);
       padding:12px 14px;
       border-radius: 14px;
-      font-weight:700;
+      font-weight: 650;
+      letter-spacing:.01em;
       cursor:pointer;
-      font-size:14px;
+      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
     }
-    button.primary{
-      background: linear-gradient(180deg, rgba(59,130,246,1), rgba(37,99,235,1));
-      border:1px solid rgba(255,255,255,.10);
-      flex:1 1 220px;
-      padding:14px 16px;
-      font-size:15px;
+    .btn:active{transform: translateY(1px);}
+    .btn:hover{border-color: rgba(255,255,255,.16); background: rgba(255,255,255,.06);}
+    .btnPrimary{
+      background: linear-gradient(180deg, var(--blue), var(--blue2));
+      border-color: rgba(47,125,255,.55);
+      box-shadow: 0 12px 32px rgba(47,125,255,.20);
     }
-    button.primary:hover{filter:brightness(1.05)}
-    button:hover{border-color:rgba(255,255,255,.18)}
-    button:active{transform: translateY(1px)}
-    .mini{flex: 1 1 160px;}
-    .small{flex: 1 1 140px;}
+    .btnPrimary:hover{background: linear-gradient(180deg, #3A88FF, #2367FF);}
 
     .out{
-      margin-top:18px;
-      padding:18px;
-      border-radius: 18px;
+      margin-top:16px;
+      background: rgba(0,0,0,.20);
       border:1px solid var(--stroke);
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border-radius: var(--radius2);
+      overflow:hidden;
     }
-
-    .outhead{
+    .outHead{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
-      margin-bottom:12px;
+      gap:12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--stroke);
+      background: rgba(255,255,255,.03);
     }
-    .outtitle{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:800;
-      letter-spacing:.18em;
-      font-size:12px;
-      color:rgba(255,255,255,.72);
+    .outTitle{
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    .mini{
+      color: var(--muted2);
+      font-size: 12px;
+      font-family: var(--mono);
+      user-select:none;
     }
 
     .cards{
       display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap:12px;
-      margin-bottom:12px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+      padding: 14px;
     }
     .card{
-      background: rgba(0,0,0,.18);
-      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--stroke);
       border-radius: 16px;
-      padding:14px 14px;
-      min-height:74px;
+      padding: 12px;
+      min-height: 84px;
     }
-    .label{
-      font-size:12px;
-      color:rgba(255,255,255,.55);
-      margin-bottom:8px;
-      letter-spacing:.06em;
-      text-transform:uppercase;
+    .k{
+      color: var(--muted2);
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-weight: 850;
+      margin-bottom: 8px;
     }
-    .value{
-      font-size:18px;
-      font-weight:900;
-      letter-spacing:-.02em;
+    .v{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing:.01em;
     }
     .dot{
-      display:inline-block;
-      width:10px; height:10px;
-      border-radius:99px;
-      margin-right:8px;
-      vertical-align:middle;
-      background: rgba(255,255,255,.20);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
+      width:10px;height:10px;border-radius:999px;
+      background: var(--watch);
+      box-shadow: 0 0 0 6px rgba(255,255,255,.02);
+      flex: 0 0 auto;
     }
 
     .alert{
+      margin:0 14px 14px;
+      background: rgba(255,255,255,.03);
       border:1px solid var(--stroke);
       border-radius: 16px;
-      padding:12px 14px;
-      background: rgba(0,0,0,.20);
-      margin-bottom:12px;
-      line-height:1.45;
+      padding: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 13px;
     }
-    .alert strong{font-weight:900}
-    .alert .muted{color:var(--muted)}
+    .alert strong{color:var(--text)}
+
     .verdict{
-      margin-top:10px;
-      padding:14px 14px;
+      margin: 0 14px 16px;
+      background: rgba(255,255,255,.03);
       border:1px solid var(--stroke);
       border-radius: 16px;
-      background: rgba(0,0,0,.16);
+      padding: 12px 12px 10px;
+    }
+    .verdictHead{
+      color: var(--muted2);
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-weight: 900;
+      margin-bottom: 8px;
     }
     ul{
-      margin:0;
-      padding-left:18px;
-      color:rgba(255,255,255,.86);
+      margin: 0;
+      padding-left: 18px;
+      color: var(--text);
       line-height:1.55;
-      font-size:14.5px;
+      font-size: 13.5px;
     }
-    li{margin:10px 0}
-    .tip{
-      margin-top:14px;
-      color:var(--muted2);
-      font-size:12.8px;
-      line-height:1.5;
-    }
-    .tip a{color: rgba(59,130,246,.95); text-decoration:none}
-    .tip a:hover{text-decoration:underline}
+    li{margin: 8px 0;}
+    li span{color: var(--muted);}
 
-    @media (max-width: 740px){
-      .h1{font-size:38px}
-      .cards{grid-template-columns: 1fr;}
-      button.primary{flex: 1 1 100%}
-      .mini,.small{flex: 1 1 calc(50% - 6px)}
+    .tip{
+      margin: 0 14px 16px;
+      color: rgba(233,238,249,.40);
+      font-size: 12px;
+      line-height:1.4;
+    }
+    .tip a{
+      color: rgba(47,125,255,.85);
+      text-decoration:none;
+      font-weight: 700;
+    }
+    .tip a:hover{text-decoration:underline;}
+
+    @media (max-width: 760px){
+      .heroTop{padding:22px 18px 14px;}
+      .panel{padding:16px 18px 18px;}
+      .btnRow{grid-template-columns: 1fr 1fr; }
+      .cards{grid-template-columns: 1fr; }
     }
   </style>
 </head>
-
 <body>
   <div class="wrap">
-    <div class="top">
-      <div class="hero">
-        <div class="brand">
-          <h1 class="h1">APEX<br/>Corporate Translator</h1>
-          <p class="sub">Paste any corporate email / Slack / HR update. Get an <b>APEX verdict in exactly 5 bullets</b> with status + confidence.</p>
+    <div class="hero">
+      <div class="heroTop">
+        <div>
+          <h1 class="title">APEX<br/>Corporate Translator</h1>
+          <p class="subtitle">
+            Paste any corporate email / Slack / HR update. Get an <strong>APEX verdict</strong> in <strong>exactly 5 bullets</strong> with status + confidence.
+          </p>
         </div>
         <div class="pill">APEX · Verdict Engine</div>
       </div>
 
       <div class="panel">
-        <textarea id="input" placeholder="Paste corporate message here… (email / Slack / HR update)"></textarea>
-
-        <div class="btnrow">
-          <button class="primary" id="btnTranslate">APEX Translate</button>
-          <button class="mini" id="btnExample">Load APEX Example</button>
-          <button class="small" id="btnCopy">Copy Verdict</button>
-          <button class="small" id="btnReset">Reset</button>
+        <div class="inputBox">
+          <textarea id="apexInput" placeholder="Paste corporate message here… (email / Slack / HR update)"></textarea>
         </div>
 
-        <div class="out" id="output">
-          <div class="outhead">
-            <div class="outtitle">APEX OUTPUT</div>
-            <div style="color:rgba(255,255,255,.40); font-size:12px">—</div>
+        <div class="btnRow">
+          <button class="btn btnPrimary" id="apexTranslateBtn">APEX Translate</button>
+          <button class="btn" id="apexExampleBtn">Load APEX Example</button>
+          <button class="btn" id="apexCopyBtn">Copy Verdict</button>
+          <button class="btn" id="apexResetBtn">Reset</button>
+        </div>
+
+        <div class="out" id="apexOut">
+          <div class="outHead">
+            <div class="outTitle">APEX Output</div>
+            <div class="mini" id="apexMini">—</div>
           </div>
 
           <div class="cards">
             <div class="card">
-              <div class="label">APEX Status</div>
-              <div class="value"><span class="dot" id="dotStatus"></span><span id="status">—</span></div>
+              <div class="k">APEX Status</div>
+              <div class="v"><span class="dot" id="apexDot"></span><span id="apexStatus">—</span></div>
             </div>
             <div class="card">
-              <div class="label">APEX Confidence</div>
-              <div class="value" id="confidence">—</div>
+              <div class="k">APEX Confidence</div>
+              <div class="v" id="apexConfidence">—</div>
             </div>
             <div class="card">
-              <div class="label">APEX Signals</div>
-              <div class="value" id="signals">—</div>
+              <div class="k">APEX Signals</div>
+              <div class="v" id="apexSignals">—</div>
             </div>
           </div>
 
-          <div class="alert" id="alertBox">
-            <strong>APEX ALERT</strong> <span class="muted">— Paste a message and run APEX Translate.</span>
+          <div class="alert" id="apexAlert">
+            Paste a message and run <strong>APEX Translate</strong>.
           </div>
 
           <div class="verdict">
-            <div class="label" style="margin-bottom:10px">APEX Verdict (exactly 5 bullets)</div>
-            <ul id="verdictList">
-              <li>—</li>
+            <div class="verdictHead">APEX Verdict (exactly 5 bullets)</div>
+            <ul id="apexBullets">
+              <li><span>—</span></li>
             </ul>
           </div>
 
           <div class="tip">
-            Tip: corporate emails often hide the real move behind “alignment”, “streamline”, “flexibility”.<br/>
-            <a href="#" id="useExampleLink">Use example</a>
+            Tip: corporate emails often hide the real move behind “alignment”, “streamline”, “flexibility”.
+            <br/><a href="#" id="apexUseExampleLink">Use example</a>
           </div>
         </div>
       </div>
@@ -302,250 +329,328 @@
   </div>
 
 <script>
-/* =========================
-   APEX Corporate Translator
-   - Exactly 5 bullets, always
-   - No user-facing “flags/weights”
-   - Clean APEX ALERT summary
-   ========================= */
+/* ================================
+   APEX Corporate Translator Engine
+   (Client-side, deterministic)
+================================== */
 
-const APEX_RULES = [
-  { key:"layoff", weight:5, phrases:["reduction in force","rif","position eliminated","role impacted","role elimination","headcount reduction","workforce reduction","separation","redundancy","redundancies"] },
-  { key:"reorg",  weight:4, phrases:["organizational adjustments","operating model","restructure","restructuring","realignment","reorg","org changes","reporting-line changes","new reporting line","new structure"] },
-  { key:"cuts",   weight:4, phrases:["streamline","efficiency","cost optimization","optimize costs","rightsizing","runway","expense control","margin improvement"] },
-  { key:"freeze", weight:3, phrases:["hiring freeze","pause hiring","backfill approval","travel freeze","spend freeze","budget freeze"] },
-  { key:"urgency",weight:2, phrases:["effective immediately","coming weeks","as soon as possible","near-term","short-term flexibility","rapidly evolving","dynamic market"] },
-  { key:"vague",  weight:2, phrases:["additional details will be shared","more information to follow","as they become available","leaders are evaluating","we are assessing","ongoing review"] },
-  { key:"pressure",weight:2,phrases:["macroeconomic","market headwinds","challenging environment","uncertainty","competitive landscape","demand softness"] },
-  { key:"control",weight:1, phrases:["thank you for your adaptability","we appreciate your commitment","alignment with priorities","strategic priorities"] }
+const APEX_HARD_CRITICAL_PHRASES = [
+  "roles will be eliminated",
+  "role will be eliminated",
+  "position eliminated",
+  "positions eliminated",
+  "headcount reduction",
+  "reduce headcount",
+  "reducing headcount",
+  "layoff",
+  "layoffs",
+  "reducing workforce",
+  "reduce workforce",
+  "workforce reduction",
+  "redundancy",
+  "redundancies",
+  "impacted employees will be contacted",
+  "impacted employees",
+  "severance",
+  "separation package",
+  "termination",
+  "terminated",
+  "let go",
+  "job cuts",
+  "eliminate roles"
 ];
 
-const EXAMPLE_TEXT =
-`Subject: Important Update on Our Operating Model
+// Weighted signal library (phrase -> weight)
+const APEX_SIGNALS = [
+  { phrase: "operating model", weight: 4 },
+  { phrase: "organizational adjustments", weight: 4 },
+  { phrase: "organizational changes", weight: 4 },
+  { phrase: "restructure", weight: 4 },
+  { phrase: "restructuring", weight: 4 },
+  { phrase: "streamline", weight: 4 },
+  { phrase: "realign", weight: 4 },
+  { phrase: "realignment", weight: 4 },
+  { phrase: "rightsizing", weight: 4 },
+  { phrase: "cost reduction", weight: 4 },
+  { phrase: "reduce costs", weight: 4 },
+  { phrase: "optimize costs", weight: 3 },
+  { phrase: "efficiency", weight: 3 },
+  { phrase: "strategic priorities", weight: 2 },
+  { phrase: "align our resources", weight: 3 },
+  { phrase: "dynamic market", weight: 2 },
+  { phrase: "business needs", weight: 2 },
+  { phrase: "difficult decisions", weight: 3 },
+  { phrase: "short-term flexibility", weight: 3 },
+  { phrase: "changes may require", weight: 2 },
+  { phrase: "over the coming weeks", weight: 2 },
+  { phrase: "in the coming weeks", weight: 2 },
+  { phrase: "as they become available", weight: 2 },
+  { phrase: "additional details will be shared", weight: 3 },
+  { phrase: "manager will share", weight: 2 },
+  { phrase: "role impact", weight: 4 },
+  { phrase: "role impacts", weight: 4 },
+  { phrase: "impacted roles", weight: 4 },
+  { phrase: "impacted employees", weight: 4 },
+  { phrase: "hiring freeze", weight: 4 },
+  { phrase: "pause hiring", weight: 3 },
+  { phrase: "budget constraints", weight: 3 },
+  { phrase: "team consolidation", weight: 4 },
+  { phrase: "org consolidation", weight: 4 },
+  { phrase: "reporting line", weight: 3 },
+  { phrase: "reporting lines", weight: 3 }
+];
+
+// Thresholds
+const APEX_THRESHOLDS = {
+  criticalScore: 18,
+  highScore: 10,
+  watchScore: 4
+};
+
+// DOM
+const apexInput = document.getElementById("apexInput");
+const apexTranslateBtn = document.getElementById("apexTranslateBtn");
+const apexExampleBtn = document.getElementById("apexExampleBtn");
+const apexCopyBtn = document.getElementById("apexCopyBtn");
+const apexResetBtn = document.getElementById("apexResetBtn");
+const apexUseExampleLink = document.getElementById("apexUseExampleLink");
+
+const apexMini = document.getElementById("apexMini");
+const apexDot = document.getElementById("apexDot");
+const apexStatus = document.getElementById("apexStatus");
+const apexConfidence = document.getElementById("apexConfidence");
+const apexSignals = document.getElementById("apexSignals");
+const apexAlert = document.getElementById("apexAlert");
+const apexBullets = document.getElementById("apexBullets");
+
+const APEX_EXAMPLE = `Subject: Important Update on Our Operating Model
 
 Team,
-
-As we navigate a dynamic market environment, leadership has been evaluating opportunities to better align our resources with long-term strategic priorities.
-
+As we navigate a dynamic market environment, we've been evaluating opportunities to better align our resources with long-term strategic priorities.
 Over the coming weeks, we will be implementing organizational adjustments designed to streamline workflows and improve cross-functional collaboration.
-
-While these changes may require some short-term flexibility, we are confident they will position us strongly for sustainable growth. Additional details will be shared by your managers as they become available.
+While these changes may require some short-term flexibility, we are confident they will position us strongly for sustainable growth.
+Additional details will be shared by your managers as they become available.
 
 Thank you for your continued commitment and adaptability.
-
 Best regards,
 Senior Leadership Team`;
 
-const els = {
-  input: document.getElementById("input"),
-  status: document.getElementById("status"),
-  confidence: document.getElementById("confidence"),
-  signals: document.getElementById("signals"),
-  dotStatus: document.getElementById("dotStatus"),
-  verdictList: document.getElementById("verdictList"),
-  alertBox: document.getElementById("alertBox"),
-  btnTranslate: document.getElementById("btnTranslate"),
-  btnExample: document.getElementById("btnExample"),
-  btnCopy: document.getElementById("btnCopy"),
-  btnReset: document.getElementById("btnReset"),
-  useExampleLink: document.getElementById("useExampleLink")
-};
-
-function normalize(s){
-  return (s || "")
+function apexNormalize(text){
+  return (text || "")
     .toLowerCase()
-    .replace(/\s+/g," ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
-function scoreText(text){
-  const t = normalize(text);
-  let signals = [];
+function apexExtractSubject(raw){
+  const m = raw.match(/^\s*subject\s*:\s*(.+)$/im);
+  if (!m) return null;
+  return m[1].trim().slice(0, 120);
+}
+
+function apexHardCriticalHit(norm){
+  return APEX_HARD_CRITICAL_PHRASES.find(p => norm.includes(p));
+}
+
+function apexScanSignals(norm){
+  const hits = [];
   let score = 0;
 
-  for (const rule of APEX_RULES){
-    for (const p of rule.phrases){
-      if (t.includes(p)){
-        signals.push({ phrase:p, weight:rule.weight, key:rule.key });
-        score += rule.weight;
-      }
+  for (const s of APEX_SIGNALS){
+    if (norm.includes(s.phrase)){
+      hits.push(s);
+      score += s.weight;
     }
   }
-  // dedupe by phrase
-  const seen = new Set();
-  signals = signals.filter(x => {
-    if (seen.has(x.phrase)) return false;
-    seen.add(x.phrase);
-    return true;
-  });
 
-  return { score, signals };
+  return { hits, score };
 }
 
-function classify(score, signalCount){
-  // tuned for corporate comms: more signals => higher confidence
-  let status = "WATCH";
-  if (score >= 16) status = "CRITICAL";
-  else if (score >= 9) status = "HIGH";
-  else if (score >= 5) status = "ELEVATED";
-
-  let confidence = "Medium";
-  if (signalCount >= 8 || score >= 16) confidence = "High";
-  else if (signalCount <= 2 && score < 6) confidence = "Low";
-
-  return { status, confidence };
-}
-
-function statusColor(status){
-  if (status === "CRITICAL") return "#ef4444";
-  if (status === "HIGH") return "#f59e0b";
-  if (status === "ELEVATED") return "#60a5fa";
-  return "rgba(255,255,255,.25)";
-}
-
-function extractSubject(raw){
-  const m = raw.match(/^\s*subject\s*:\s*(.+)$/im);
-  return m ? m[1].trim().slice(0,120) : "";
-}
-
-function build5Bullets(raw, status, confidence, score, signalCount){
-  // Exactly 5 bullets. Always.
-  const subject = extractSubject(raw);
-  const t = normalize(raw);
-
-  // Core move inference
-  let coreMove = "internal process/priority shift";
-  if (t.includes("hiring freeze") || t.includes("pause hiring") || t.includes("budget freeze")) coreMove = "cost control / freezes";
-  if (t.includes("restructure") || t.includes("restructuring") || t.includes("operating model") || t.includes("organizational adjustments") || t.includes("reporting-line")) coreMove = "reorg / reporting-line changes";
-  if (t.includes("reduction in force") || t.includes("position eliminated") || t.includes("headcount reduction") || t.includes("redundancy")) coreMove = "headcount reduction risk";
-
-  // Next step inference
-  let nextStep = "manager meetings + scope clarification requests";
-  if (status === "CRITICAL" || status === "HIGH") nextStep = "manager-led meetings + role mapping; decisions lock fast";
-
-  // Impact inference
-  let impact = "workflow disruption + ambiguity first; clarity later";
-  if (coreMove.includes("headcount")) impact = "possible role impact; start documenting + preparing";
-
-  // Action inference
-  let action = "ask 3 specifics: scope change, reporting line, and timeline for role impact";
-  if (status === "CRITICAL") action = "ask 3 specifics today + update your evidence trail (emails, notes, dates)";
-
-  // Headline bullet
-  const headline = subject
-    ? `Headline: “${subject}” = a change signal; expect ownership/workflow shifts.`
-    : `Headline: This message is a change signal; expect ownership/workflow shifts.`;
-
-  // Timeline bullet (short, urgent)
-  let timeline = `Timing: language like “coming weeks” usually means changes start now and lock in within 2–6 weeks.`;
-  if (!t.includes("coming weeks") && (status === "CRITICAL" || status === "HIGH")) {
-    timeline = `Timing: high-signal announcements usually precede concrete changes within 2–6 weeks.`;
+function apexDecideStatus({hardHit, score, hitsCount}){
+  // Hard override
+  if (hardHit){
+    return { status: "CRITICAL", confidence: "High" };
   }
 
-  // Keep them short and punchy; exactly 5.
+  // Score-based
+  if (score >= APEX_THRESHOLDS.criticalScore) return { status: "CRITICAL", confidence: "High" };
+  if (score >= APEX_THRESHOLDS.highScore)     return { status: "HIGH", confidence: "Medium" };
+  if (score >= APEX_THRESHOLDS.watchScore)    return { status: "WATCH", confidence: "Low" };
+
+  // Also treat many weak hints as WATCH
+  if (hitsCount >= 2) return { status: "WATCH", confidence: "Low" };
+
+  return { status: "WATCH", confidence: "Low" };
+}
+
+function apexDotColor(status){
+  if (status === "CRITICAL") return getComputedStyle(document.documentElement).getPropertyValue('--crit').trim();
+  if (status === "HIGH") return getComputedStyle(document.documentElement).getPropertyValue('--warn').trim();
+  return getComputedStyle(document.documentElement).getPropertyValue('--watch').trim();
+}
+
+/* ====== Bullet templates ====== */
+
+// EXACTLY 5 bullets always, but content changes by status.
+function apexBulletsWATCH(subjectLine){
+  const head = subjectLine ? `Headline: “${subjectLine}” is informational; no structural change implied.` :
+                             `Headline: This is informational; no structural change implied.`;
   return [
-    headline,
-    `Core move: translation → ${coreMove}.`,
-    `Next step: ${nextStep}.`,
-    `Impact: ${impact}.`,
-    `APEX move: ${action}. ${timeline}`
+    head,
+    "Core meaning: Routine operational notice; nothing points to reorg, layoffs, or scope shifts.",
+    "Impact: No ownership/workflow changes expected based on this text alone.",
+    "Risk: Low — treat as FYI unless new messages introduce change language.",
+    "APEX move: Save it for context; escalate only if later emails mention reorg/cost cuts/role impact."
   ];
 }
 
-function buildAlert(status, confidence, score, signalCount){
-  // One-line protective framing
-  let translation = "Low risk / likely informational.";
-  if (status === "ELEVATED") translation = "Change likely. Expect some disruption.";
-  if (status === "HIGH") translation = "High change risk. Reorg / freezes likely soon.";
-  if (status === "CRITICAL") translation = "Major change risk. Reorg and/or role impact possible. Act now.";
-
-  return `Status: ${status} · Confidence: ${confidence} · Signals: ${signalCount} (score ${score}) — ${translation}`;
+function apexBulletsHIGH(subjectLine){
+  const head = subjectLine ? `Headline: “${subjectLine}” signals a likely change event.` :
+                             `Headline: This message signals a likely change event.`;
+  return [
+    head,
+    "Core move: Resource alignment / process reshaping (possible reporting-line or priority shifts).",
+    "Next step: Manager-led meetings, scope clarification, and role mapping.",
+    "Impact: Short-term ambiguity first; clarity later after decisions lock.",
+    "APEX move: Ask 3 specifics: scope change, reporting line, and timeline for any role impact."
+  ];
 }
 
-function renderVerdict(bullets){
-  // Force exactly 5 items
-  const five = bullets.slice(0,5);
-  els.verdictList.innerHTML = five.map(b => `<li>${escapeHtml(b)}</li>`).join("");
+function apexBulletsCRITICAL(subjectLine, hardHit){
+  const head = subjectLine ? `Headline: “${subjectLine}” is a CRITICAL change signal.` :
+                             `Headline: This is a CRITICAL change signal.`;
+  const core = hardHit
+    ? `Core move: Explicit risk detected (“${hardHit}”) — treat as layoffs/reorg now.`
+    : "Core move: Reorg / reporting-line changes likely; role impact is plausible.";
+  return [
+    head,
+    core,
+    "Next step: Decisions lock fast (1–6 weeks). Expect manager meetings and role mapping.",
+    "Impact: Workflow disruption + uncertainty first; individual outcomes communicated later.",
+    "APEX move: Ask today: (1) your scope, (2) your reporting line, (3) your role risk + timing. Document dates."
+  ];
 }
 
-function escapeHtml(str){
-  return String(str)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+function apexAlertText(status, confidence, hitsCount, score){
+  if (status === "CRITICAL"){
+    return `APEX ALERT — Status: ${status} · Confidence: ${confidence} · Signals: ${hitsCount} (score ${score}) — Major change risk. Reorg and/or role impact possible. Act now.`;
+  }
+  if (status === "HIGH"){
+    return `APEX ALERT — Status: ${status} · Confidence: ${confidence} · Signals: ${hitsCount} (score ${score}) — Change risk elevated. Clarify scope + reporting line.`;
+  }
+  // WATCH
+  if (hitsCount === 0){
+    return `APEX ALERT — Status: ${status} · Confidence: ${confidence} · Signals: None detected — Likely informational.`;
+  }
+  return `APEX ALERT — Status: ${status} · Confidence: ${confidence} · Signals: ${hitsCount} (score ${score}) — Low risk / monitor for escalation language.`;
 }
 
-function translate(){
-  const raw = els.input.value || "";
-  if (!raw.trim()){
+function apexRender({status, confidence, hitsCount, score, subjectLine, hardHit}){
+  apexStatus.textContent = status;
+  apexConfidence.textContent = confidence;
+
+  if (hitsCount === 0) apexSignals.textContent = `None`;
+  else apexSignals.textContent = `${hitsCount} (score ${score})`;
+
+  apexDot.style.background = apexDotColor(status);
+  apexMini.textContent = `${status} · ${confidence} · signals ${hitsCount}`;
+
+  apexAlert.textContent = apexAlertText(status, confidence, hitsCount, score);
+
+  // Build EXACTLY 5 bullets depending on severity
+  let bullets;
+  if (status === "CRITICAL") bullets = apexBulletsCRITICAL(subjectLine, hardHit);
+  else if (status === "HIGH") bullets = apexBulletsHIGH(subjectLine);
+  else bullets = apexBulletsWATCH(subjectLine);
+
+  // Render list
+  apexBullets.innerHTML = "";
+  bullets.slice(0,5).forEach(b => {
+    const li = document.createElement("li");
+    li.textContent = b;
+    apexBullets.appendChild(li);
+  });
+}
+
+function apexTranslate(){
+  const raw = apexInput.value || "";
+  const norm = apexNormalize(raw);
+
+  if (!norm){
+    apexAlert.innerHTML = `Paste a message and run <strong>APEX Translate</strong>.`;
+    apexStatus.textContent = "—";
+    apexConfidence.textContent = "—";
+    apexSignals.textContent = "—";
+    apexDot.style.background = apexDotColor("WATCH");
+    apexMini.textContent = "—";
+    apexBullets.innerHTML = `<li><span>—</span></li>`;
     return;
   }
-  const { score, signals } = scoreText(raw);
-  const { status, confidence } = classify(score, signals.length);
 
-  // Top cards
-  els.status.textContent = status;
-  els.confidence.textContent = confidence;
-  els.signals.textContent = `${signals.length} (score ${score})`;
-  els.dotStatus.style.background = statusColor(status);
-  els.dotStatus.style.boxShadow = `0 0 0 4px rgba(255,255,255,.06), 0 0 18px ${statusColor(status)}55`;
+  const subjectLine = apexExtractSubject(raw);
+  const hardHit = apexHardCriticalHit(norm);
 
-  // Alert
-  els.alertBox.innerHTML = `<strong>APEX ALERT</strong> <span class="muted">— ${escapeHtml(buildAlert(status, confidence, score, signals.length))}</span>`;
+  const scan = apexScanSignals(norm);
+  const hitsCount = scan.hits.length;
+  const score = scan.score;
 
-  // Exactly 5 bullets
-  const bullets = build5Bullets(raw, status, confidence, score, signals.length);
-  renderVerdict(bullets);
+  const decision = apexDecideStatus({ hardHit, score, hitsCount });
+
+  apexRender({
+    status: decision.status,
+    confidence: decision.confidence,
+    hitsCount,
+    score,
+    subjectLine,
+    hardHit
+  });
 }
 
-function loadExample(){
-  els.input.value = EXAMPLE_TEXT;
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
+function apexCopyVerdict(){
+  const status = apexStatus.textContent;
+  const conf = apexConfidence.textContent;
+  const sig = apexSignals.textContent;
 
-function resetAll(){
-  els.input.value = "";
-  els.status.textContent = "—";
-  els.confidence.textContent = "—";
-  els.signals.textContent = "—";
-  els.dotStatus.style.background = "rgba(255,255,255,.20)";
-  els.dotStatus.style.boxShadow = "0 0 0 4px rgba(255,255,255,.06)";
-  els.alertBox.innerHTML = `<strong>APEX ALERT</strong> <span class="muted">— Paste a message and run APEX Translate.</span>`;
-  els.verdictList.innerHTML = `<li>—</li>`;
-}
-
-async function copyVerdict(){
-  const items = Array.from(els.verdictList.querySelectorAll("li")).map(li => li.innerText.trim()).filter(Boolean);
-  const status = els.status.textContent;
-  const confidence = els.confidence.textContent;
-  const signals = els.signals.textContent;
-
+  const bullets = Array.from(apexBullets.querySelectorAll("li")).map(li => `- ${li.textContent}`);
   const text =
 `APEX Corporate Translator — Verdict
+
 Status: ${status}
-Confidence: ${confidence}
-Signals: ${signals}
+Confidence: ${conf}
+Signals: ${sig}
 
-- ${items.join("\n- ")}`;
+${bullets.join("\n")}
+`;
 
-  try{
-    await navigator.clipboard.writeText(text);
-    els.btnCopy.textContent = "Copied ✓";
-    setTimeout(()=> els.btnCopy.textContent = "Copy Verdict", 1200);
-  }catch(e){
-    // fallback
-    prompt("Copy this:", text);
-  }
+  navigator.clipboard.writeText(text).then(() => {
+    apexCopyBtn.textContent = "Copied";
+    setTimeout(() => apexCopyBtn.textContent = "Copy Verdict", 900);
+  }).catch(() => {
+    apexCopyBtn.textContent = "Copy failed";
+    setTimeout(() => apexCopyBtn.textContent = "Copy Verdict", 900);
+  });
 }
 
-els.btnTranslate.addEventListener("click", translate);
-els.btnExample.addEventListener("click", loadExample);
-els.btnReset.addEventListener("click", resetAll);
-els.btnCopy.addEventListener("click", copyVerdict);
-els.useExampleLink.addEventListener("click", (e)=>{ e.preventDefault(); loadExample(); });
+function apexReset(){
+  apexInput.value = "";
+  apexStatus.textContent = "—";
+  apexConfidence.textContent = "—";
+  apexSignals.textContent = "—";
+  apexDot.style.background = apexDotColor("WATCH");
+  apexMini.textContent = "—";
+  apexAlert.innerHTML = `Paste a message and run <strong>APEX Translate</strong>.`;
+  apexBullets.innerHTML = `<li><span>—</span></li>`;
+}
 
+// Wire
+apexTranslateBtn.addEventListener("click", apexTranslate);
+apexExampleBtn.addEventListener("click", () => { apexInput.value = APEX_EXAMPLE; apexTranslate(); });
+apexUseExampleLink.addEventListener("click", (e) => { e.preventDefault(); apexInput.value = APEX_EXAMPLE; apexTranslate(); });
+apexCopyBtn.addEventListener("click", apexCopyVerdict);
+apexResetBtn.addEventListener("click", apexReset);
+
+// First paint
+apexReset();
 </script>
 </body>
 </html>
