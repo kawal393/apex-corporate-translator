@@ -1,33 +1,38 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>APEX Corporate Translator</title>
+  <meta name="description" content="Paste a corporate email / Slack / HR update. Get an APEX verdict in exactly 5 bullets with status + confidence." />
+
+  <!-- PDF extract (pdf.js) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js"></script>
+  <!-- PDF export (jsPDF) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     :root{
       --bg0:#070A12;
-      --bg1:#0B1020;
-      --card:#0E162A;
-      --card2:#0B1223;
-      --stroke:rgba(255,255,255,.08);
-      --stroke2:rgba(255,255,255,.12);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.62);
-      --muted2:rgba(255,255,255,.45);
-      --blue:#2F7DFF;
-      --blue2:#1E5FFF;
-      --good:#2EE59D;
-      --warn:#F7B731;
-      --bad:#FF3B6B;
-      --shadow: 0 20px 70px rgba(0,0,0,.55);
+      --bg1:#0A1020;
+      --card:rgba(255,255,255,.06);
+      --card2:rgba(255,255,255,.04);
+      --stroke:rgba(255,255,255,.10);
+      --stroke2:rgba(255,255,255,.14);
+      --text:#EAF0FF;
+      --muted:rgba(234,240,255,.72);
+      --muted2:rgba(234,240,255,.52);
+      --blue:#2E7DFF;
+      --blue2:#1F63DA;
+      --green:#30D158;
+      --amber:#FF9F0A;
+      --red:#FF453A;
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
       --radius:18px;
-      --radius2:14px;
+      --radius2:22px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
@@ -35,442 +40,266 @@
       font-family:var(--sans);
       color:var(--text);
       background:
-        radial-gradient(1200px 600px at 20% 10%, rgba(47,125,255,.25), transparent 55%),
-        radial-gradient(900px 500px at 80% 35%, rgba(255,59,107,.12), transparent 55%),
-        radial-gradient(900px 500px at 40% 95%, rgba(46,229,157,.10), transparent 55%),
+        radial-gradient(1200px 800px at 20% 10%, rgba(46,125,255,.25), transparent 55%),
+        radial-gradient(900px 700px at 80% 20%, rgba(255,159,10,.12), transparent 60%),
+        radial-gradient(1200px 900px at 50% 110%, rgba(48,209,88,.10), transparent 55%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
       overflow-x:hidden;
     }
-
-    a{color:#9FC2FF; text-decoration:none}
-    a:hover{text-decoration:underline}
-
-    .wrap{
-      max-width:1080px;
-      margin: 22px auto 80px;
-      padding: 0 14px;
-    }
-
+    .wrap{max-width:1150px;margin:0 auto;padding:22px 18px 40px}
     .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding: 10px 12px;
-      border:1px solid var(--stroke);
-      background: rgba(14,22,42,.55);
+      display:flex;align-items:center;justify-content:space-between;gap:14px;
+      padding:14px 16px;border:1px solid var(--stroke);border-radius:var(--radius2);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow:var(--shadow);
+      position:sticky;top:10px;z-index:5;
       backdrop-filter: blur(10px);
-      border-radius: 999px;
-      box-shadow: var(--shadow);
     }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 0;
-    }
+    .brand{display:flex;align-items:center;gap:10px;min-width:0}
     .dot{
-      width:10px;height:10px;border-radius:50%;
-      background: linear-gradient(135deg, var(--blue), var(--blue2));
-      box-shadow: 0 0 0 6px rgba(47,125,255,.14);
+      width:12px;height:12px;border-radius:4px;background:var(--blue);
+      box-shadow:0 0 0 4px rgba(46,125,255,.18);
       flex:0 0 auto;
     }
     .brand h1{
-      margin:0;
-      font-size:14px;
-      letter-spacing:.2px;
-      font-weight:800;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      font-size:14px;margin:0;letter-spacing:.2px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
     }
-    .brand .sub{
-      display:block;
-      font-size:12px;
+    .brand p{margin:0;font-size:12px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .badge{
+      display:flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:999px;border:1px solid var(--stroke);
+      background:rgba(0,0,0,.22);
       color:var(--muted);
-      font-weight:500;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 52vw;
-    }
-    .rightpill{
-      display:flex;
-      align-items:center;
-      gap:10px;
+      font-size:12px;
       flex:0 0 auto;
-      color:var(--muted);
-      font-size:12px;
     }
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border:1px solid var(--stroke);
-      border-radius:999px;
-      background: rgba(0,0,0,.22);
-      white-space:nowrap;
-    }
-    .chip .live{
+    .badge .live{
       width:8px;height:8px;border-radius:50%;
-      background: var(--good);
-      box-shadow: 0 0 0 6px rgba(46,229,157,.14);
+      background:var(--green);
+      box-shadow:0 0 0 4px rgba(48,209,88,.15);
     }
 
     .grid{
+      margin-top:18px;
       display:grid;
-      grid-template-columns: 1.15fr .85fr;
+      grid-template-columns: 1.1fr .9fr;
       gap:16px;
-      margin-top:16px;
+      align-items:start;
+    }
+    @media (max-width: 920px){
+      .grid{grid-template-columns:1fr}
+      .topbar{position:relative;top:auto}
     }
 
     .card{
       border:1px solid var(--stroke);
-      background: rgba(14,22,42,.58);
-      backdrop-filter: blur(12px);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      border-radius:var(--radius2);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow:var(--shadow);
       overflow:hidden;
     }
     .card .head{
-      padding:16px 16px 10px;
+      padding:18px 18px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
     }
-    .card .head h2{
-      margin:0 0 6px;
-      font-size:22px;
-      letter-spacing:-.2px;
+    .title{font-size:30px;line-height:1.05;margin:0 0 8px;font-weight:800;letter-spacing:-.4px}
+    .subtitle{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+    .section{
+      padding:16px 18px 18px;
     }
-    .card .head p{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
+    label.small{
+      display:block;
+      color:var(--muted2);
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      margin:0 0 8px;
     }
-    .card .body{ padding: 12px 16px 16px; }
-
-    .textarea{
+    textarea{
       width:100%;
-      min-height: 170px;
-      resize: vertical;
+      min-height:170px;
+      resize:vertical;
       padding:14px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--stroke2);
-      background: rgba(0,0,0,.25);
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 13px;
-      line-height: 1.45;
-      outline: none;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      outline:none;
+      background:rgba(0,0,0,.24);
+      color:var(--text);
+      font-family:var(--mono);
+      font-size:12.5px;
+      line-height:1.45;
     }
-    .textarea:focus{
-      border-color: rgba(47,125,255,.5);
-      box-shadow: 0 0 0 4px rgba(47,125,255,.12);
-    }
-
+    textarea::placeholder{color:rgba(234,240,255,.35)}
     .row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-top:10px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;flex-wrap:wrap;
     }
-
-    .btn{
-      border: 1px solid var(--stroke2);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: .2px;
-      cursor:pointer;
-      user-select:none;
-      transition: transform .06s ease, background .12s ease, border-color .12s ease;
-    }
-    .btn:active{ transform: translateY(1px); }
-    .btn.primary{
-      background: linear-gradient(180deg, rgba(47,125,255,.95), rgba(30,95,255,.95));
-      border-color: rgba(47,125,255,.6);
-    }
-    .btn.primary:hover{ filter: brightness(1.05); }
-    .btn.ghost:hover{ background: rgba(255,255,255,.085); }
-    .btn:disabled{
-      opacity:.5;
-      cursor:not-allowed;
-      transform:none;
-    }
-
-    .meta{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
+    .hint{
+      margin-top:8px;
       color:var(--muted2);
       font-size:12px;
-      margin-top:10px;
+      line-height:1.4;
+    }
+    .chars{color:var(--muted2);font-size:12px}
+    .btnrow{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;
+    }
+    button{
+      appearance:none;border:none;cursor:pointer;
+      padding:10px 14px;border-radius:14px;
+      font-weight:700;font-size:13px;
+      transition:transform .06s ease, filter .12s ease, background .12s ease;
+    }
+    button:active{transform:translateY(1px)}
+    .primary{
+      background:linear-gradient(180deg, var(--blue), var(--blue2));
+      color:white;
+      box-shadow:0 10px 30px rgba(46,125,255,.28);
+    }
+    .ghost{
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .ghost:hover{filter:brightness(1.05)}
+    .danger{
+      background:rgba(255,69,58,.14);
+      color:#FFD7D5;
+      border:1px solid rgba(255,69,58,.25);
+    }
+    .file{
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+      background:rgba(255,255,255,.04);
+      border:1px dashed rgba(255,255,255,.14);
+      padding:10px 12px;border-radius:14px;margin-top:10px;
+    }
+    .file .meta{
+      font-size:12px;color:var(--muted2)
+    }
+    input[type="file"]{max-width:240px}
+    .pill{
+      font-size:11px;color:var(--muted);
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
+      font-family:var(--mono);
     }
 
-    .upload{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      border:1px dashed rgba(255,255,255,.16);
-      background: rgba(0,0,0,.18);
-      padding:10px 12px;
-      border-radius: 14px;
-      margin-top: 10px;
-    }
-    .upload label{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:800;
-      letter-spacing:.25px;
-    }
-    .upload input[type="file"]{
-      max-width: 100%;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .upload .status{
-      margin-left:auto;
-      font-size:12px;
-      color: var(--muted2);
-      white-space:nowrap;
-    }
-
-    .mini{
-      color:var(--muted2);
-      font-size:12px;
-      margin-top:10px;
-      line-height:1.35;
-    }
-
-    .verdictTop{
+    /* Verdict panel */
+    .kpi{
       display:grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns:repeat(3,1fr);
       gap:10px;
       margin-top:10px;
     }
-    .stat{
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.20);
-      border-radius: 14px;
-      padding:10px 12px;
-      min-height: 58px;
+    .kbox{
+      padding:12px 12px;border-radius:16px;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.08);
+      min-height:68px;
     }
-    .stat .k{
-      font-size:11px;
-      color:var(--muted2);
-      letter-spacing:.22em;
-      font-weight:900;
+    .kbox .k{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);margin-bottom:6px}
+    .kbox .v{font-size:14px;font-weight:800}
+    .statusline{
+      margin-top:12px;
+      padding:12px 12px;border-radius:16px;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.08);
+      display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
     }
-    .stat .v{
-      margin-top:6px;
-      font-size:16px;
-      font-weight: 900;
-      display:flex;
-      align-items:center;
-      gap:8px;
+    .statusline .left{display:flex;gap:10px;align-items:flex-start}
+    .light{
+      width:10px;height:10px;border-radius:50%;margin-top:4px;flex:0 0 auto;
+      background:var(--amber);
+      box-shadow:0 0 0 4px rgba(255,159,10,.14);
     }
-    .pillDot{
-      width:10px;height:10px;border-radius:50%;
-      background: rgba(255,255,255,.15);
-      box-shadow: 0 0 0 6px rgba(255,255,255,.06);
-    }
-    .pillDot.good{ background: var(--good); box-shadow: 0 0 0 6px rgba(46,229,157,.12); }
-    .pillDot.warn{ background: var(--warn); box-shadow: 0 0 0 6px rgba(247,183,49,.12); }
-    .pillDot.bad{ background: var(--bad); box-shadow: 0 0 0 6px rgba(255,59,107,.12); }
-
-    .alertBox{
-      margin-top:10px;
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.22);
-      border-radius: 14px;
-      padding: 12px;
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      justify-content:space-between;
-    }
-    .alertLeft{
-      min-width:0;
-    }
-    .alertTitle{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight: 950;
-      letter-spacing:.4px;
-      font-size:12px;
-    }
-    .alertTitle span{
-      color: var(--muted);
-      font-weight:800;
-      letter-spacing:0;
-    }
-    .alertBody{
-      margin-top:6px;
-      color: var(--muted);
-      font-size:12px;
-      line-height:1.35;
-    }
-    .alertRight{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex:0 0 auto;
-    }
-    .badge{
-      border:1px solid var(--stroke2);
-      background: rgba(255,255,255,.06);
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:11px;
-      color: var(--muted);
-      font-weight:900;
+    .statusline .h{font-weight:900}
+    .statusline .s{color:var(--muted);font-size:12px;line-height:1.35;margin-top:2px}
+    .tag{
+      font-size:11px;font-weight:800;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
       white-space:nowrap;
     }
 
-    .bullets{
+    .verdictbox{
+      margin-top:12px;
+      padding:12px 12px;border-radius:16px;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .verdicthead{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;
+    }
+    .verdicthead .k{
+      font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);
+    }
+    ul{margin:0;padding-left:18px}
+    li{margin:8px 0;color:var(--text);font-size:13px;line-height:1.4}
+    .actions{
+      margin-top:12px;
+      display:flex;gap:10px;flex-wrap:wrap;
+    }
+    .smallnote{
       margin-top:10px;
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.18);
-      border-radius: 14px;
-      padding: 12px;
-    }
-    .bulletsHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:10px;
-    }
-    .bulletsHead .t{
-      font-weight: 950;
-      letter-spacing:.22em;
-      font-size:11px;
       color:var(--muted2);
-    }
-    ul{
-      margin:0;
-      padding-left: 18px;
-      color: var(--text);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-    li{ margin: 8px 0; }
-
-    .verdictActions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-
-    .foot{
-      margin-top: 10px;
-      color: var(--muted2);
-      font-size: 12px;
-      line-height: 1.35;
+      font-size:12px;
     }
 
     /* Modal */
     .modalBack{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-      z-index: 50;
+      position:fixed;inset:0;background:rgba(0,0,0,.62);
+      display:none;align-items:center;justify-content:center;
+      padding:18px;z-index:20;
     }
     .modal{
-      width:min(900px, 96vw);
-      border:1px solid var(--stroke);
-      background: rgba(14,22,42,.92);
-      backdrop-filter: blur(14px);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
+      width:min(860px, 100%);
+      border-radius:22px;border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(180deg, rgba(20,24,40,.98), rgba(12,14,24,.98));
+      box-shadow:0 22px 90px rgba(0,0,0,.70);
       overflow:hidden;
     }
-    .modalHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding: 14px 16px;
-      border-bottom:1px solid var(--stroke);
+    .modalTop{
+      padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
     }
-    .modalHead b{
-      font-size:13px;
-      letter-spacing:.18em;
-      color: var(--muted);
+    .modalTop .t{font-weight:900}
+    .xbtn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);color:var(--text);border-radius:12px;padding:8px 10px}
+    .modalBody{padding:14px 16px}
+    .examplesGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:760px){ .examplesGrid{grid-template-columns:1fr} }
+    .exCard{
+      padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
     }
-    .modalBody{
-      padding: 14px 16px 16px;
-      max-height: 70vh;
-      overflow:auto;
-    }
-    .histItem{
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.18);
-      border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-    .histItem .top{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      color: var(--muted2);
-      font-size:12px;
-      margin-bottom: 6px;
-    }
-    .histItem .mid{
-      color: var(--text);
-      font-size: 13px;
-      line-height:1.4;
+    .exCard .name{font-size:12px;color:var(--muted2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+    .exCard pre{
+      margin:0;
       white-space:pre-wrap;
+      color:rgba(234,240,255,.90);
+      font-family:var(--mono);
+      font-size:12px;line-height:1.35;
+      max-height:180px;overflow:auto;
+      padding:10px;border-radius:12px;
+      background:rgba(0,0,0,.24);
+      border:1px solid rgba(255,255,255,.08);
     }
-    .histItem .btnRow{
-      margin-top: 10px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    /* Toast */
+    .exCard .use{margin-top:10px}
     .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 16px;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,.72);
-      border: 1px solid rgba(255,255,255,.12);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      box-shadow: var(--shadow);
-      max-width: min(720px, 92vw);
+      position:fixed;left:50%;transform:translateX(-50%);
+      bottom:18px;
+      padding:10px 12px;border-radius:12px;
+      background:rgba(0,0,0,.72);
+      border:1px solid rgba(255,255,255,.14);
+      color:var(--text);
+      font-size:13px;
       display:none;
-      z-index: 80;
-    }
-
-    /* Mobile */
-    @media (max-width: 860px){
-      .grid{ grid-template-columns: 1fr; }
-      .brand .sub{ max-width: 66vw; }
-      .verdictTop{ grid-template-columns: 1fr; }
-      .wrap{ margin-bottom: 120px; }
+      z-index:30;
+      max-width:min(560px, 92vw);
+      text-align:center;
+      backdrop-filter: blur(8px);
     }
   </style>
-
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.9.155/pdf.min.js"></script>
-  <!-- jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
@@ -480,659 +309,717 @@
         <div class="dot"></div>
         <div style="min-width:0">
           <h1>APEX Corporate Translator</h1>
-          <span class="sub">Translate corporate language into consequences — fast verdict, no spin. <span style="opacity:.6">build: v10.11</span></span>
+          <p>Translate corporate language into consequences — fast verdict, no spin. <span style="opacity:.7">build: v10.12</span></p>
         </div>
       </div>
-      <div class="rightpill">
-        <span class="chip"><span class="live"></span> Local • No upload</span>
+      <div class="badge" title="This page runs locally in your browser.">
+        <span class="live"></span>
+        <span><b>Local</b> • No upload</span>
       </div>
     </div>
 
     <div class="grid">
-      <!-- LEFT -->
+      <!-- LEFT: Input -->
       <div class="card">
         <div class="head">
-          <h2>Paste the message</h2>
-          <p>Paste an internal email, Slack message, or leadership announcement. For best results, include the subject + opening paragraphs.</p>
+          <h2 class="title">Paste the message</h2>
+          <p class="subtitle">Paste an internal email, Slack message, or leadership announcement. For best results, include the subject + opening paragraphs.</p>
         </div>
-        <div class="body">
-          <div style="color:var(--muted2);font-size:11px;letter-spacing:.22em;font-weight:950;margin-bottom:8px;">MESSAGE</div>
-          <textarea id="input" class="textarea" placeholder="Paste corporate email / announcement here..."></textarea>
+        <div class="section">
+          <label class="small" for="inputText">Message</label>
+          <textarea id="inputText" placeholder="Paste corporate email / announcement here..."></textarea>
 
-          <div class="upload">
-            <label for="pdfFile">PDF UPLOAD</label>
+          <div class="file">
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:170px">
+              <div class="pill">PDF Upload</div>
+              <div class="meta">Upload a PDF → we extract text → APEX verdict</div>
+            </div>
             <input id="pdfFile" type="file" accept="application/pdf" />
-            <div id="pdfStatus" class="status">No PDF loaded</div>
+            <div class="meta" id="pdfStatus">No PDF loaded</div>
           </div>
 
-          <div class="meta">
-            <div id="tip">Tip: include words like “operating model”, “over the coming weeks”, “align resources”, “streamline”, “organizational adjustments”.</div>
-            <div><span id="charCount">0</span> chars</div>
+          <div class="row">
+            <div class="hint">
+              Tip: include words like <span class="pill">operating model</span>, <span class="pill">over the coming weeks</span>, <span class="pill">align resources</span>, <span class="pill">streamline</span>, <span class="pill">organizational adjustments</span>.
+            </div>
+            <div class="chars" id="charCount">0 chars</div>
           </div>
 
-          <div class="row" style="margin-top:12px;">
-            <button id="translateBtn" class="btn primary">Translate with APEX</button>
-            <button id="examplesBtn" class="btn ghost">See Real Examples</button>
-            <button id="clearBtn" class="btn ghost">Clear</button>
+          <div class="btnrow">
+            <button class="primary" id="runBtn">Translate with APEX</button>
+            <button class="ghost" id="examplesBtn">See Real Examples</button>
+            <button class="ghost" id="clearBtn">Clear</button>
           </div>
-
-          <div class="mini">Built to decode language patterns that commonly appear before restructures, layoffs, and role changes.</div>
         </div>
       </div>
 
-      <!-- RIGHT -->
+      <!-- RIGHT: Verdict -->
       <div class="card">
         <div class="head">
-          <h2>Verdict</h2>
-          <p>APEX outputs exactly five bullets: what’s happening, why now, what’s next, who’s exposed, what to do.</p>
-
-          <div class="verdictTop">
-            <div class="stat">
-              <div class="k">STATUS</div>
-              <div id="statusVal" class="v"><span class="pillDot"></span> —</div>
+          <h2 class="title" style="font-size:26px;margin-bottom:6px">Verdict</h2>
+          <p class="subtitle">APEX outputs exactly five bullets: what’s happening, why now, what’s next, who’s exposed, what to do.</p>
+          <div class="kpi">
+            <div class="kbox">
+              <div class="k">Status</div>
+              <div class="v" id="statusVal">—</div>
             </div>
-            <div class="stat">
-              <div class="k">CONFIDENCE</div>
-              <div id="confVal" class="v"><span class="pillDot"></span> —</div>
+            <div class="kbox">
+              <div class="k">Confidence</div>
+              <div class="v" id="confVal">—</div>
             </div>
-            <div class="stat">
-              <div class="k">SIGNALS</div>
-              <div id="sigVal" class="v"><span class="pillDot"></span> —</div>
-            </div>
-          </div>
-
-          <div class="alertBox">
-            <div class="alertLeft">
-              <div class="alertTitle"><span class="pillDot warn" id="alertDot"></span> APEX ALERT <span id="alertMeta">Paste a message and run APEX to get a verdict.</span></div>
-              <div id="alertText" class="alertBody">—</div>
-            </div>
-            <div class="alertRight">
-              <span class="badge" id="statusBadge">Status: —</span>
+            <div class="kbox">
+              <div class="k">Signals</div>
+              <div class="v" id="signalsVal">—</div>
             </div>
           </div>
+        </div>
 
-          <div class="bullets">
-            <div class="bulletsHead">
-              <div class="t">APEX VERDICT (EXACTLY 5 BULLETS)</div>
-              <button id="copyBtn" class="btn ghost">Copy Verdict</button>
+        <div class="section">
+          <div class="statusline">
+            <div class="left">
+              <div class="light" id="light"></div>
+              <div>
+                <div class="h">APEX ALERT</div>
+                <div class="s" id="alertText">Paste a message and run APEX to get a verdict.</div>
+              </div>
             </div>
-            <ul id="bulletsList">
-              <li>No verdict yet.</li>
+            <div class="tag" id="statusTag">Status: —</div>
+          </div>
+
+          <div class="verdictbox">
+            <div class="verdicthead">
+              <div class="k">APEX VERDICT (EXACTLY 5 BULLETS)</div>
+              <button class="ghost" id="copyBtn">Copy Verdict</button>
+            </div>
+            <ul id="bullets">
+              <li style="color:rgba(234,240,255,.65)">No verdict yet.</li>
             </ul>
           </div>
 
-          <div class="verdictActions">
-            <button id="pdfBtn" class="btn ghost">Download PDF</button>
-            <button id="shareBtn" class="btn ghost">Share Link</button>
-            <button id="saveBtn" class="btn ghost">Save History</button>
-            <button id="viewBtn" class="btn ghost">View History</button>
+          <div class="actions">
+            <button class="ghost" id="downloadBtn">Download PDF</button>
+            <button class="ghost" id="shareBtn">Share Link</button>
+            <button class="ghost" id="saveBtn">Save History</button>
+            <button class="ghost" id="viewBtn">View History</button>
           </div>
 
-          <div class="foot">Free now. PDF export, share links, and history work locally (no account). If you later add billing, keep the UI and flip the switches.</div>
+          <!-- IMPORTANT: No weird footer paragraphs. Keep it clean. -->
+          <div class="smallnote" id="miniNote">Generated locally in your browser.</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal -->
-  <div id="modalBack" class="modalBack">
-    <div class="modal">
-      <div class="modalHead">
-        <b>HISTORY</b>
-        <button id="closeModal" class="btn ghost">Close</button>
+  <!-- Examples Modal -->
+  <div class="modalBack" id="modalBack">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modalTop">
+        <div class="t">Real Examples</div>
+        <button class="xbtn" id="closeModal">Close</button>
       </div>
       <div class="modalBody">
-        <div class="row" style="margin-bottom:10px;">
-          <button id="clearHistory" class="btn ghost">Clear History</button>
-        </div>
-        <div id="historyList"></div>
+        <div class="examplesGrid" id="examplesGrid"></div>
       </div>
     </div>
   </div>
 
-  <!-- Toast -->
-  <div id="toast" class="toast"></div>
+  <div class="toast" id="toast"></div>
 
-  <script>
-    (function () {
-      "use strict";
+<script>
+(() => {
+  // ---------- Helpers ----------
+  const $ = (id) => document.getElementById(id);
 
-      // ---------- utilities ----------
-      const $ = (id) => document.getElementById(id);
+  const toastEl = $("toast");
+  let toastTimer = null;
+  function showToast(msg){
+    clearTimeout(toastTimer);
+    toastEl.textContent = msg;
+    toastEl.style.display = "block";
+    toastTimer = setTimeout(() => toastEl.style.display = "none", 2200);
+  }
 
-      function toast(msg) {
-        const el = $("toast");
-        el.textContent = msg;
-        el.style.display = "block";
-        clearTimeout(toast._t);
-        toast._t = setTimeout(() => (el.style.display = "none"), 2600);
+  function clampText(s, n){
+    if (!s) return "";
+    return s.length <= n ? s : s.slice(0, n) + "…";
+  }
+
+  function normalizeText(s){
+    return (s || "")
+      .replace(/\u0000/g,"")
+      .replace(/[ \t]+\n/g,"\n")
+      .replace(/\n{3,}/g,"\n\n")
+      .trim();
+  }
+
+  function escapeHtml(s){
+    return (s || "").replace(/[&<>"']/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+    }[c]));
+  }
+
+  // ---------- Elements ----------
+  const inputEl = $("inputText");
+  const charCountEl = $("charCount");
+  const pdfFileEl = $("pdfFile");
+  const pdfStatusEl = $("pdfStatus");
+
+  const runBtn = $("runBtn");
+  const examplesBtn = $("examplesBtn");
+  const clearBtn = $("clearBtn");
+
+  const statusVal = $("statusVal");
+  const confVal = $("confVal");
+  const signalsVal = $("signalsVal");
+  const alertText = $("alertText");
+  const statusTag = $("statusTag");
+  const light = $("light");
+  const bulletsEl = $("bullets");
+
+  const copyBtn = $("copyBtn");
+  const downloadBtn = $("downloadBtn");
+  const shareBtn = $("shareBtn");
+  const saveBtn = $("saveBtn");
+  const viewBtn = $("viewBtn");
+
+  const modalBack = $("modalBack");
+  const closeModal = $("closeModal");
+  const examplesGrid = $("examplesGrid");
+
+  // ---------- State ----------
+  let lastResult = null;
+  let lastInput = "";
+  let pdfLoadedText = "";
+
+  // ---------- Signals / Scoring ----------
+  const SIGNALS = [
+    { key:"operating model", w:5, statusHint:"CRITICAL", why:"Operating model change often precedes org redesign." },
+    { key:"organizational adjustments", w:5, statusHint:"CRITICAL", why:"Generic phrasing used to soften restructure/layoff comms." },
+    { key:"restructure", w:6, statusHint:"CRITICAL", why:"Direct restructure wording." },
+    { key:"reorganization", w:6, statusHint:"CRITICAL", why:"Reorg is structural change." },
+    { key:"realign", w:4, statusHint:"HIGH", why:"Resource realignment often means cuts + priority shift." },
+    { key:"align resources", w:4, statusHint:"HIGH", why:"Signals budget/team reallocation." },
+    { key:"streamline", w:4, statusHint:"HIGH", why:"Efficiency language often maps to headcount reduction." },
+    { key:"efficiency", w:3, statusHint:"HIGH", why:"Cost/efficiency language is a cut precursor." },
+    { key:"cost reduction", w:6, statusHint:"CRITICAL", why:"Explicit cost reduction." },
+    { key:"reducing costs", w:6, statusHint:"CRITICAL", why:"Explicit cost reduction." },
+    { key:"headcount", w:7, statusHint:"CRITICAL", why:"Headcount language is direct risk." },
+    { key:"roles will be eliminated", w:9, statusHint:"CRITICAL", why:"Direct elimination language." },
+    { key:"role impact", w:4, statusHint:"HIGH", why:"Signals individuals may be affected." },
+    { key:"impacted employees", w:8, statusHint:"CRITICAL", why:"Direct impact language." },
+    { key:"over the coming weeks", w:3, statusHint:"HIGH", why:"Timing window; decisions often lock soon after." },
+    { key:"transition", w:2, statusHint:"WATCH", why:"Sometimes neutral, sometimes change." },
+    { key:"manager-led", w:2, statusHint:"WATCH", why:"Usually indicates cascading comms + mapping." },
+    { key:"scope", w:2, statusHint:"WATCH", why:"Scope changes imply role/priority shifts." },
+    { key:"reporting line", w:4, statusHint:"HIGH", why:"Reporting-line changes are structural." },
+    { key:"accountability", w:2, statusHint:"WATCH", why:"Often paired with restructure language." },
+    { key:"strategic priorities", w:3, statusHint:"HIGH", why:"Priority reset implies cuts elsewhere." },
+    { key:"focus resources", w:3, statusHint:"HIGH", why:"Resource focusing implies deprioritization." },
+  ];
+
+  function computeSignals(text){
+    const t = (text || "").toLowerCase();
+    let hits = [];
+    for (const s of SIGNALS){
+      if (t.includes(s.key)){
+        hits.push(s);
       }
+    }
+    const score = hits.reduce((a,b) => a + b.w, 0);
+    return { hits, score };
+  }
 
-      function safeText(s) {
-        return String(s ?? "").replace(/\u0000/g, "");
+  function statusFrom(score, hits){
+    // Direct eliminations -> CRITICAL
+    const directCritical = hits.some(h => h.key === "roles will be eliminated" || h.key === "impacted employees" || h.key === "headcount" || h.key === "cost reduction" || h.key === "reducing costs");
+    if (directCritical) return "CRITICAL";
+    if (score >= 16) return "CRITICAL";
+    if (score >= 9) return "HIGH";
+    if (score >= 4) return "WATCH";
+    return "WATCH";
+  }
+
+  function confidenceFrom(text, hits){
+    const len = (text || "").length;
+    if (hits.length >= 6 && len >= 220) return "High";
+    if (hits.length >= 3 && len >= 120) return "Medium";
+    return "Low";
+  }
+
+  function lightColor(status){
+    if (status === "CRITICAL") return { bg:"var(--red)", ring:"rgba(255,69,58,.14)" };
+    if (status === "HIGH") return { bg:"var(--amber)", ring:"rgba(255,159,10,.14)" };
+    return { bg:"var(--green)", ring:"rgba(48,209,88,.14)" };
+  }
+
+  function buildAlert(status, confidence, signalsCount, score){
+    if (!signalsCount) {
+      return `Status: ${status} · Confidence: ${confidence} · Signals: none — likely informational.`;
+    }
+    if (status === "CRITICAL"){
+      return `Status: CRITICAL · Confidence: ${confidence} · Signals: ${signalsCount} (score ${score}) — Major change risk. Reorg and/or role impact possible. Act now.`;
+    }
+    if (status === "HIGH"){
+      return `Status: HIGH · Confidence: ${confidence} · Signals: ${signalsCount} (score ${score}) — Change risk elevated. Clarify scope + reporting line.`;
+    }
+    return `Status: WATCH · Confidence: ${confidence} · Signals: ${signalsCount} (score ${score}) — Low/medium risk. Monitor for follow-up comms.`;
+  }
+
+  function buildFiveBullets(text, status, confidence, hits, score){
+    const t = text.trim();
+    const headline = (() => {
+      const m = t.match(/^\s*subject\s*:\s*(.+)$/im);
+      if (m && m[1]) return clampText(m[1].trim(), 82);
+      const firstLine = t.split("\n").map(x=>x.trim()).find(Boolean) || "Leadership update";
+      return clampText(firstLine.replace(/^[-–—•*]+\s*/,""), 82);
+    })();
+
+    const whyNow = (() => {
+      if (status === "CRITICAL") return "Why now: multiple restructure markers stacking; leadership is preparing a structural move.";
+      if (status === "HIGH") return "Why now: change language indicates resource re-allocation and reporting/priorities shifting.";
+      return "Why now: informational or early-stage; not enough change markers to confirm impact.";
+    })();
+
+    const whatsNext = (() => {
+      if (status === "CRITICAL") return "What’s next: decisions lock fast (1–6 weeks). Expect manager meetings, role mapping, and individual notices.";
+      if (status === "HIGH") return "What’s next: manager-led follow-ups + scope clarification; org chart / priorities likely to shift.";
+      return "What’s next: watch for second message that mentions scope, reporting lines, cost, or timelines.";
+    })();
+
+    const exposed = (() => {
+      const hasEfficiency = hits.some(h => ["streamline","efficiency","cost reduction","reducing costs"].includes(h.key));
+      const hasReorg = hits.some(h => ["operating model","organizational adjustments","restructure","reorganization","reporting line"].includes(h.key));
+      if (status === "CRITICAL" && (hasEfficiency || hasReorg)){
+        return "Who’s exposed: duplicated functions, non-core teams, and roles tied to “efficiency/streamline” initiatives.";
       }
-
-      function nowISO() {
-        const d = new Date();
-        return d.toISOString();
+      if (status === "HIGH"){
+        return "Who’s exposed: teams with unclear ownership, overlapping scope, or changing reporting lines.";
       }
+      return "Who’s exposed: unclear — no specific risk language. Treat as FYI unless new signals appear.";
+    })();
 
-      function shortTime(iso) {
-        try {
-          const d = new Date(iso);
-          return d.toLocaleString();
-        } catch { return iso; }
+    const doNow = (() => {
+      if (status === "CRITICAL") return "What to do: ask 3 specifics today — (1) scope, (2) reporting line, (3) timeline. Document dates/messages.";
+      if (status === "HIGH") return "What to do: request scope + reporting clarity, confirm if roles/budgets are impacted, and capture the stated timeline.";
+      return "What to do: save for context, and re-run if a follow-up mentions cost, role impact, or reorg timing.";
+    })();
+
+    return [
+      `Headline: “${headline}” is a ${status} change signal.`,
+      `Why now: ${whyNow.replace(/^Why now:\s*/,"")}`,
+      `What’s next: ${whatsNext.replace(/^What’s next:\s*/,"")}`,
+      `Who’s exposed: ${exposed.replace(/^Who’s exposed:\s*/,"")}`,
+      `What to do: ${doNow.replace(/^What to do:\s*/,"")}`,
+    ];
+  }
+
+  function renderResult(res){
+    lastResult = res;
+
+    statusVal.textContent = res.status;
+    confVal.textContent = res.confidence;
+    signalsVal.textContent = `${res.signalsCount} (score ${res.score})`;
+
+    alertText.textContent = buildAlert(res.status, res.confidence, res.signalsCount, res.score);
+    statusTag.textContent = `Status: ${res.status}`;
+
+    const c = lightColor(res.status);
+    light.style.background = c.bg;
+    light.style.boxShadow = `0 0 0 4px ${c.ring}`;
+
+    bulletsEl.innerHTML = res.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join("");
+  }
+
+  function runApex(input){
+    const cleaned = normalizeText(input);
+    const { hits, score } = computeSignals(cleaned);
+    const status = statusFrom(score, hits);
+    const confidence = confidenceFrom(cleaned, hits);
+    const bullets = buildFiveBullets(cleaned, status, confidence, hits, score);
+
+    return {
+      input: cleaned,
+      status,
+      confidence,
+      signalsCount: hits.length,
+      score,
+      bullets,
+      ts: new Date().toISOString()
+    };
+  }
+
+  // ---------- PDF extraction ----------
+  async function extractTextFromPDF(file){
+    // pdf.js config
+    if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
+      // Use same CDN version worker
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.js";
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const maxPages = Math.min(pdf.numPages, 12); // safety cap
+    let out = "";
+
+    for (let p = 1; p <= maxPages; p++){
+      const page = await pdf.getPage(p);
+      const content = await page.getTextContent();
+      const strings = content.items.map(it => it.str).filter(Boolean);
+      const pageText = strings.join(" ").replace(/\s{2,}/g," ").trim();
+      if (pageText) out += pageText + "\n\n";
+    }
+
+    out = normalizeText(out);
+    // Hard cap to avoid absurd size share links / memory
+    if (out.length > 20000) out = out.slice(0, 20000) + "\n\n[Truncated]";
+    return out;
+  }
+
+  // ---------- PDF export of verdict ----------
+  async function downloadVerdictPDF(res){
+    if (!res) return showToast("Run APEX first.");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:"pt", format:"a4" });
+
+    const margin = 40;
+    const w = doc.internal.pageSize.getWidth() - margin*2;
+    let y = 56;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("APEX Corporate Translator — Verdict", margin, y);
+    y += 18;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.text(`Status: ${res.status}  |  Confidence: ${res.confidence}  |  Signals: ${res.signalsCount} (score ${res.score})`, margin, y);
+    y += 18;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("APEX ALERT", margin, y);
+    y += 14;
+
+    doc.setFont("helvetica", "normal");
+    const alert = buildAlert(res.status, res.confidence, res.signalsCount, res.score);
+    const alertLines = doc.splitTextToSize(alert, w);
+    doc.text(alertLines, margin, y);
+    y += alertLines.length * 14 + 10;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Verdict (exactly 5 bullets)", margin, y);
+    y += 14;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+
+    const bullets = res.bullets.map((b,i)=>`${i+1}. ${b}`);
+    for (const b of bullets){
+      const lines = doc.splitTextToSize(b, w);
+      if (y + lines.length*14 > doc.internal.pageSize.getHeight() - 70){
+        doc.addPage();
+        y = 56;
       }
+      doc.text(lines, margin, y);
+      y += lines.length * 14 + 6;
+    }
 
-      function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
+    y += 10;
+    doc.setFontSize(9);
+    doc.setTextColor(120);
+    doc.text("Generated locally in your browser. No text is uploaded by this page.", margin, doc.internal.pageSize.getHeight() - 40);
 
-      // URL-safe base64 (no + /)
-      function b64UrlEncode(str) {
-        const bytes = new TextEncoder().encode(str);
-        let bin = "";
-        bytes.forEach(b => bin += String.fromCharCode(b));
-        const b64 = btoa(bin);
-        return b64.replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", ".");
+    doc.save("apex-verdict.pdf");
+    showToast("PDF downloaded.");
+  }
+
+  // ---------- Share links ----------
+  function toB64(str){
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+  function fromB64(b64){
+    return decodeURIComponent(escape(atob(b64)));
+  }
+
+  function makeShareLink(res){
+    const payload = JSON.stringify({ v:1, t: res.input });
+    const b64 = toB64(payload);
+    // Keep URL from exploding: warn if too large
+    if (b64.length > 7000){
+      return { ok:false, reason:"Too long to share. Use shorter text or paste only the key paragraphs." };
+    }
+    const url = `${location.origin}${location.pathname}#msg=${encodeURIComponent(b64)}`;
+    return { ok:true, url };
+  }
+
+  function loadFromHash(){
+    const h = location.hash || "";
+    const m = h.match(/#msg=([^&]+)/);
+    if (!m) return;
+    try{
+      const b64 = decodeURIComponent(m[1]);
+      const payload = JSON.parse(fromB64(b64));
+      if (payload && payload.t){
+        inputEl.value = payload.t;
+        updateCharCount();
+        const res = runApex(payload.t);
+        renderResult(res);
+        showToast("Loaded shared message.");
       }
-      function b64UrlDecode(b64u) {
-        const b64 = b64u.replaceAll("-", "+").replaceAll("_", "/").replaceAll(".", "=");
-        const bin = atob(b64);
-        const bytes = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-        return new TextDecoder().decode(bytes);
-      }
+    }catch(e){
+      // Ignore silently
+    }
+  }
 
-      // Simple compression: remove extra whitespace to keep URLs short
-      function compressText(s) {
-        return safeText(s).replace(/\r/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
-      }
+  // ---------- History ----------
+  const HISTORY_KEY = "apex_history_v1";
+  function getHistory(){
+    try{
+      return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    }catch(e){
+      return [];
+    }
+  }
+  function setHistory(arr){
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(arr));
+  }
+  function saveHistoryItem(res){
+    const h = getHistory();
+    h.unshift({
+      ts: res.ts,
+      status: res.status,
+      confidence: res.confidence,
+      score: res.score,
+      signals: res.signalsCount,
+      input: res.input,
+      bullets: res.bullets
+    });
+    // cap
+    if (h.length > 50) h.length = 50;
+    setHistory(h);
+  }
 
-      // ---------- APEX Engine ----------
-      const SIGNALS = [
-        { key: "layoff", w: 6, re: /\b(layoff|redundan(cy|cies)|workforce reduction|headcount reduction|position(s)? eliminated|role(s)? eliminated|severance)\b/i },
-        { key: "reorg",  w: 4, re: /\b(reorg|re-?organization|operating model|org(ani[sz])?ational (adjustment|change|evolution)|new structure|reporting line|role mapping)\b/i },
-        { key: "streamline", w: 4, re: /\b(streamline|simplif(y|ication)|efficien(cy|cies)|optimi[sz]e|right-?size|lean(er)?|reduce costs)\b/i },
-        { key: "align", w: 3, re: /\b(align resources|resource alignment|focus resources|strategic priorit(ies|y)|core priorities|focus on core|portfolio review)\b/i },
-        { key: "timelineSoon", w: 2, re: /\b(over the coming weeks|in the coming weeks|effective immediately|near term|short[- ]term|this week|next few weeks)\b/i },
-        { key: "managerDetails", w: 2, re: /\b(additional details will be shared|as they become available|your manager(s)? will|leaders? will meet|1:1|town hall|all-hands)\b/i },
-        { key: "uncertainty", w: 2, re: /\b(transition|ambigu(ity|ous)|changes in scope|changes in ownership|changes in responsibilities)\b/i },
-        { key: "thanksAdapt", w: 1, re: /\b(thank you for your continued (commitment|support)|adaptability|flexibility)\b/i },
-      ];
+  function openHistoryModal(){
+    const h = getHistory();
+    if (!h.length){
+      showToast("History is empty.");
+      return;
+    }
+    examplesGrid.innerHTML = h.map((it, idx) => {
+      const name = `${it.status} · ${it.confidence} · ${it.signals} signals (score ${it.score})`;
+      const ts = new Date(it.ts).toLocaleString();
+      const preview = it.input.length > 900 ? it.input.slice(0,900) + "\n\n[Truncated]" : it.input;
+      return `
+        <div class="exCard">
+          <div class="name">${escapeHtml(name)} <span style="opacity:.7; font-weight:600; letter-spacing:0; text-transform:none">— ${escapeHtml(ts)}</span></div>
+          <pre>${escapeHtml(preview)}</pre>
+          <div class="use">
+            <button class="primary" data-load="${idx}">Load</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+    modalBack.style.display = "flex";
+    // attach handlers
+    [...examplesGrid.querySelectorAll("button[data-load]")].forEach(btn=>{
+      btn.addEventListener("click", () => {
+        const idx = Number(btn.getAttribute("data-load"));
+        const it = h[idx];
+        if (!it) return;
+        inputEl.value = it.input;
+        updateCharCount();
+        const res = runApex(it.input);
+        renderResult(res);
+        modalBack.style.display = "none";
+        showToast("Loaded from history.");
+      });
+    });
+  }
 
-      function scoreText(text) {
-        const hits = [];
-        let score = 0;
-        for (const s of SIGNALS) {
-          if (s.re.test(text)) {
-            score += s.w;
-            hits.push({ key: s.key, w: s.w });
-          }
-        }
-        return { score, hits };
-      }
-
-      function statusFromScore(score, explicitLayoff) {
-        if (explicitLayoff) return "CRITICAL";
-        if (score >= 10) return "CRITICAL";
-        if (score >= 6) return "HIGH";
-        return "WATCH";
-      }
-
-      function confidenceFromSignals(count, explicitLayoff) {
-        if (explicitLayoff) return "High";
-        if (count >= 6) return "High";
-        if (count >= 3) return "Medium";
-        return "Low";
-      }
-
-      function buildBullets(text, status, score, sigCount, explicitLayoff) {
-        // Always exactly 5 bullets
-        const firstLine = (compressText(text).split("\n").find(Boolean) || "").slice(0, 120);
-        const headline = firstLine ? `"${firstLine}${firstLine.length >= 120 ? "…" : ""}"` : "This message";
-        const why = explicitLayoff
-          ? "Explicit reduction language detected — treat as real layoffs/redundancy now."
-          : (status === "CRITICAL"
-              ? "Multiple restructure signals stacking — language indicates role impact risk."
-              : (status === "HIGH"
-                  ? "Change language elevated — likely reorg / scope / reporting-line shift."
-                  : "Low structural signal — likely informational or routine ops change."));
-
-        const next = (status === "WATCH")
-          ? "Next: manager clarification or follow-up note if anything changes."
-          : "Next: manager-led meetings + role mapping; decisions lock fast (1–6 weeks).";
-
-        const exposed = (status === "WATCH")
-          ? "Exposure: none implied by text alone."
-          : "Exposure: duplicated functions, non-core teams, and roles tied to ‘efficiency/streamline’ initiatives.";
-
-        const doNow = (status === "WATCH")
-          ? "Do now: save for context; escalate only if later messages introduce reorg/cost language."
-          : "Do now: ask 3 specifics today — (1) scope, (2) reporting line, (3) timeline. Document dates/messages.";
-
-        return [
-          `Headline: ${headline} is a ${status} change signal.`,
-          `Core meaning: ${why}`,
-          next,
-          exposed,
-          doNow
-        ];
-      }
-
-      function renderVerdict(model) {
-        const { status, confidence, signalsCount, score, bullets } = model;
-
-        // status card
-        const statusDot = status === "CRITICAL" ? "bad" : (status === "HIGH" ? "warn" : "warn");
-        $("statusVal").innerHTML = `<span class="pillDot ${statusDot}"></span> ${status}`;
-        $("confVal").innerHTML   = `<span class="pillDot ${confidence === "High" ? "good" : (confidence === "Medium" ? "warn" : "warn")}"></span> ${confidence}`;
-        $("sigVal").innerHTML    = `<span class="pillDot ${signalsCount >= 6 ? "bad" : (signalsCount >= 3 ? "warn" : "warn")}"></span> ${signalsCount} (score ${score})`;
-
-        $("statusBadge").textContent = `Status: ${status}`;
-
-        // alert text
-        const alertDot = $("alertDot");
-        alertDot.className = "pillDot " + (status === "CRITICAL" ? "bad" : (status === "HIGH" ? "warn" : "warn"));
-
-        $("alertMeta").textContent = `Status: ${status} • Confidence: ${confidence} • Signals: ${signalsCount} (score ${score})`;
-
-        const alertText =
-          status === "CRITICAL"
-            ? "Major change risk. Reorg and/or role impact possible. Act now."
-            : status === "HIGH"
-              ? "Change risk elevated. Clarify scope + reporting line."
-              : "Low risk / likely informational.";
-
-        $("alertText").textContent = alertText;
-
-        // bullets
-        const ul = $("bulletsList");
-        ul.innerHTML = "";
-        bullets.forEach(b => {
-          const li = document.createElement("li");
-          li.textContent = b;
-          ul.appendChild(li);
-        });
-
-        // save last
-        window.__APEX_LAST__ = model;
-      }
-
-      function emptyState() {
-        $("statusVal").innerHTML = `<span class="pillDot"></span> —`;
-        $("confVal").innerHTML   = `<span class="pillDot"></span> —`;
-        $("sigVal").innerHTML    = `<span class="pillDot"></span> —`;
-        $("statusBadge").textContent = "Status: —";
-        $("alertMeta").textContent = "Paste a message and run APEX to get a verdict.";
-        $("alertText").textContent = "—";
-        $("alertDot").className = "pillDot warn";
-        $("bulletsList").innerHTML = "<li>No verdict yet.</li>";
-        window.__APEX_LAST__ = null;
-      }
-
-      function computeAndRender(text) {
-        const t = compressText(text);
-        if (!t) {
-          toast("Paste a message or upload a PDF first.");
-          return;
-        }
-
-        const explicitLayoff = /\b(role(s)? will be eliminated|positions? eliminated|layoff|redundancy|workforce reduction|headcount reduction)\b/i.test(t);
-        const scored = scoreText(t);
-        const status = statusFromScore(scored.score, explicitLayoff);
-        const confidence = confidenceFromSignals(scored.hits.length, explicitLayoff);
-
-        const bullets = buildBullets(t, status, scored.score, scored.hits.length, explicitLayoff);
-
-        renderVerdict({
-          createdAt: nowISO(),
-          input: t,
-          status,
-          confidence,
-          signalsCount: scored.hits.length,
-          score: scored.score,
-          bullets
-        });
-
-        toast("Verdict generated.");
-      }
-
-      // ---------- PDF extract ----------
-      async function extractTextFromPDF(file) {
-        // Configure worker
-        try {
-          if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
-            window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-              "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.9.155/pdf.worker.min.js";
-          }
-        } catch (e) { /* ignore */ }
-
-        const buf = await file.arrayBuffer();
-        const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
-
-        const maxPages = clamp(pdf.numPages, 1, 20); // safe cap
-        let out = [];
-        for (let p = 1; p <= maxPages; p++) {
-          const page = await pdf.getPage(p);
-          const content = await page.getTextContent();
-          const strings = content.items.map(it => it.str).filter(Boolean);
-          out.push(strings.join(" "));
-        }
-        return compressText(out.join("\n\n"));
-      }
-
-      // ---------- PDF export ----------
-      function exportPDF(model) {
-        if (!model) { toast("Run APEX first."); return; }
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: "pt", format: "a4" });
-
-        const margin = 46;
-        const pageW = doc.internal.pageSize.getWidth();
-        const usableW = pageW - margin*2;
-        let y = 56;
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(16);
-        doc.text("APEX Corporate Translator — Verdict", margin, y);
-        y += 22;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(11);
-        doc.text(`Status: ${model.status}   |   Confidence: ${model.confidence}   |   Signals: ${model.signalsCount} (score ${model.score})`, margin, y);
-        y += 20;
-
-        doc.setFont("helvetica", "bold");
-        doc.text("APEX ALERT", margin, y);
-        y += 14;
-        doc.setFont("helvetica", "normal");
-        const alertLine = (model.status === "CRITICAL")
-          ? "Major change risk. Reorg and/or role impact possible. Act now."
-          : (model.status === "HIGH")
-            ? "Change risk elevated. Clarify scope + reporting line."
-            : "Low risk / likely informational.";
-        const alertLines = doc.splitTextToSize(alertLine, usableW);
-        doc.text(alertLines, margin, y);
-        y += alertLines.length * 14 + 14;
-
-        doc.setFont("helvetica", "bold");
-        doc.text("Verdict (exactly 5 bullets)", margin, y);
-        y += 16;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(11);
-
-        model.bullets.forEach((b, i) => {
-          const line = `${i+1}. ${b}`;
-          const lines = doc.splitTextToSize(line, usableW);
-          if (y + lines.length * 14 > doc.internal.pageSize.getHeight() - 60) {
-            doc.addPage();
-            y = 56;
-          }
-          doc.text(lines, margin, y);
-          y += lines.length * 14 + 8;
-        });
-
-        doc.setFontSize(9);
-        doc.setTextColor(100);
-        const foot = "Generated locally in your browser. No text is uploaded by this page.";
-        doc.text(doc.splitTextToSize(foot, usableW), margin, doc.internal.pageSize.getHeight() - 40);
-
-        doc.save("apex-verdict.pdf");
-      }
-
-      // ---------- Share link ----------
-      function shareLink(model) {
-        if (!model) { toast("Run APEX first."); return; }
-        const payload = JSON.stringify({
-          i: model.input,
-          t: model.createdAt
-        });
-        const compressed = compressText(payload);
-        const token = b64UrlEncode(compressed);
-        const url = `${location.origin}${location.pathname}#v=${token}`;
-
-        navigator.clipboard?.writeText(url).then(() => {
-          toast("Share link copied.");
-        }).catch(() => {
-          toast("Copy failed — long press the URL in the address bar.");
-          console.log(url);
-        });
-      }
-
-      function tryLoadFromHash() {
-        const h = location.hash || "";
-        const m = h.match(/v=([A-Za-z0-9\-\_\.]+)/);
-        if (!m) return;
-        try {
-          const decoded = b64UrlDecode(m[1]);
-          const obj = JSON.parse(decoded);
-          if (obj && obj.i) {
-            $("input").value = obj.i;
-            $("charCount").textContent = String(obj.i.length);
-            computeAndRender(obj.i);
-            toast("Loaded from share link.");
-          }
-        } catch (e) {
-          console.error(e);
-          toast("Invalid share link.");
-        }
-      }
-
-      // ---------- History ----------
-      const HIST_KEY = "apex_history_v1";
-
-      function loadHist() {
-        try {
-          return JSON.parse(localStorage.getItem(HIST_KEY) || "[]") || [];
-        } catch { return []; }
-      }
-      function saveHist(items) {
-        localStorage.setItem(HIST_KEY, JSON.stringify(items.slice(0, 100)));
-      }
-
-      function saveCurrent(model) {
-        if (!model) { toast("Run APEX first."); return; }
-        const items = loadHist();
-        items.unshift(model);
-        saveHist(items);
-        toast("Saved to history.");
-      }
-
-      function renderHistory() {
-        const list = $("historyList");
-        const items = loadHist();
-        list.innerHTML = "";
-        if (!items.length) {
-          list.innerHTML = `<div style="color:var(--muted);font-size:13px;">No history yet.</div>`;
-          return;
-        }
-        items.forEach((it, idx) => {
-          const div = document.createElement("div");
-          div.className = "histItem";
-          div.innerHTML = `
-            <div class="top">
-              <div>${shortTime(it.createdAt || "")}</div>
-              <div>${it.status} • ${it.confidence} • ${it.signalsCount} (score ${it.score})</div>
-            </div>
-            <div class="mid">${it.bullets.map((b,i)=>`${i+1}. ${b}`).join("\n")}</div>
-            <div class="btnRow">
-              <button class="btn ghost" data-act="load" data-idx="${idx}">Load</button>
-              <button class="btn ghost" data-act="copy" data-idx="${idx}">Copy</button>
-              <button class="btn ghost" data-act="pdf" data-idx="${idx}">PDF</button>
-              <button class="btn ghost" data-act="del" data-idx="${idx}">Delete</button>
-            </div>
-          `;
-          list.appendChild(div);
-        });
-
-        list.querySelectorAll("button[data-act]").forEach(btn => {
-          btn.addEventListener("click", () => {
-            const act = btn.getAttribute("data-act");
-            const idx = Number(btn.getAttribute("data-idx"));
-            const items2 = loadHist();
-            const model = items2[idx];
-            if (!model) return;
-
-            if (act === "load") {
-              $("input").value = model.input || "";
-              $("charCount").textContent = String(($("input").value || "").length);
-              renderVerdict(model);
-              toast("Loaded from history.");
-              $("modalBack").style.display = "none";
-            } else if (act === "copy") {
-              copyModel(model);
-            } else if (act === "pdf") {
-              exportPDF(model);
-            } else if (act === "del") {
-              items2.splice(idx, 1);
-              saveHist(items2);
-              renderHistory();
-              toast("Deleted.");
-            }
-          });
-        });
-      }
-
-      // ---------- Copy ----------
-      function copyModel(model) {
-        if (!model) { toast("Run APEX first."); return; }
-        const text =
-`APEX Corporate Translator — Verdict
-Status: ${model.status} | Confidence: ${model.confidence} | Signals: ${model.signalsCount} (score ${model.score})
-
-APEX ALERT
-${model.status === "CRITICAL"
-  ? "Major change risk. Reorg and/or role impact possible. Act now."
-  : model.status === "HIGH"
-    ? "Change risk elevated. Clarify scope + reporting line."
-    : "Low risk / likely informational."}
-
-Verdict (exactly 5 bullets)
-${model.bullets.map((b,i)=>`${i+1}. ${b}`).join("\n")}
-`;
-        navigator.clipboard?.writeText(text).then(() => {
-          toast("Verdict copied.");
-        }).catch(() => {
-          toast("Copy failed. Try again.");
-        });
-      }
-
-      // ---------- examples ----------
-      const EXAMPLES = [
-        {
-          title: "Hidden restructure (high)",
-          text:
+  // ---------- Examples ----------
+  const EXAMPLES = [
+    {
+      title: "Operating Model Update (High risk)",
+      text:
 `Subject: Operating Model Update
-Over the coming weeks we will implement organizational adjustments to streamline execution and align resources to strategic priorities. Some roles may be impacted. Additional details will be shared by your managers as they become available. Thank you for your continued adaptability.`
-        },
-        {
-          title: "Explicit cuts (critical)",
-          text:
-`Subject: Organizational Changes
+Over the coming weeks we will implement organizational adjustments to streamline execution and align resources to strategic priorities. Some roles may be impacted.
+Additional details will be shared by your managers as they become available.`
+    },
+    {
+      title: "Cost Reduction (Critical)",
+      text:
+`Subject: Business Update
 Due to current market conditions, we are reducing costs and restructuring teams. Some roles will be eliminated. Impacted employees will be contacted this week.`
-        },
-        {
-          title: "Routine ops (watch)",
-          text:
+    },
+    {
+      title: "Office Closed Friday (Low risk)",
+      text:
 `Subject: FYI — Office Closed Friday
 Team, reminder that the office will be closed this Friday for scheduled maintenance. Please work from home if needed. Thanks.`
-        }
-      ];
+    },
+    {
+      title: "Realignment Language (Medium/High)",
+      text:
+`Subject: Org Alignment
+We are realigning priorities across groups to focus resources on our core initiatives. Managers will share scope updates soon.`
+    },
+  ];
 
-      // ---------- boot ----------
-      document.addEventListener("DOMContentLoaded", () => {
-        // Bind UI
-        const input = $("input");
-        const pdfFile = $("pdfFile");
-
-        input.addEventListener("input", () => {
-          $("charCount").textContent = String((input.value || "").length);
-        });
-
-        $("translateBtn").addEventListener("click", () => {
-          try {
-            computeAndRender(input.value);
-          } catch (e) {
-            console.error(e);
-            toast("Translate failed — check console.");
-          }
-        });
-
-        $("clearBtn").addEventListener("click", () => {
-          input.value = "";
-          $("charCount").textContent = "0";
-          pdfFile.value = "";
-          $("pdfStatus").textContent = "No PDF loaded";
-          emptyState();
-          toast("Cleared.");
-        });
-
-        $("examplesBtn").addEventListener("click", () => {
-          // simple cycle example into textarea
-          const idx = Math.floor(Math.random() * EXAMPLES.length);
-          input.value = EXAMPLES[idx].text;
-          $("charCount").textContent = String(input.value.length);
-          toast(`Loaded: ${EXAMPLES[idx].title}`);
-        });
-
-        $("copyBtn").addEventListener("click", () => copyModel(window.__APEX_LAST__));
-
-        $("pdfBtn").addEventListener("click", () => exportPDF(window.__APEX_LAST__));
-
-        $("shareBtn").addEventListener("click", () => shareLink(window.__APEX_LAST__));
-
-        $("saveBtn").addEventListener("click", () => saveCurrent(window.__APEX_LAST__));
-
-        $("viewBtn").addEventListener("click", () => {
-          renderHistory();
-          $("modalBack").style.display = "flex";
-        });
-
-        $("closeModal").addEventListener("click", () => $("modalBack").style.display = "none");
-        $("modalBack").addEventListener("click", (e) => {
-          if (e.target === $("modalBack")) $("modalBack").style.display = "none";
-        });
-
-        $("clearHistory").addEventListener("click", () => {
-          localStorage.removeItem(HIST_KEY);
-          renderHistory();
-          toast("History cleared.");
-        });
-
-        // PDF upload
-        pdfFile.addEventListener("change", async () => {
-          const f = pdfFile.files && pdfFile.files[0];
-          if (!f) return;
-
-          $("pdfStatus").textContent = "Extracting…";
-          try {
-            const text = await extractTextFromPDF(f);
-
-            if (!text) {
-              $("pdfStatus").textContent = "No text found (scanned PDF?)";
-              toast("PDF has no extractable text (likely scanned).");
-              return;
-            }
-
-            input.value = text;
-            $("charCount").textContent = String(text.length);
-            $("pdfStatus").textContent = "PDF text loaded";
-            toast("PDF extracted. Now press Translate.");
-          } catch (e) {
-            console.error(e);
-            $("pdfStatus").textContent = "Failed";
-            toast("PDF extraction failed. Try a different PDF.");
-          }
-        });
-
-        // load share link if present
-        emptyState();
-        tryLoadFromHash();
-
-        // sanity check
-        toast("Ready.");
+  function openExamples(){
+    examplesGrid.innerHTML = EXAMPLES.map((ex, idx) => `
+      <div class="exCard">
+        <div class="name">${escapeHtml(ex.title)}</div>
+        <pre>${escapeHtml(ex.text)}</pre>
+        <div class="use">
+          <button class="primary" data-ex="${idx}">Use</button>
+        </div>
+      </div>
+    `).join("");
+    modalBack.style.display = "flex";
+    [...examplesGrid.querySelectorAll("button[data-ex]")].forEach(btn=>{
+      btn.addEventListener("click", () => {
+        const i = Number(btn.getAttribute("data-ex"));
+        inputEl.value = EXAMPLES[i].text;
+        updateCharCount();
+        const res = runApex(inputEl.value);
+        renderResult(res);
+        modalBack.style.display = "none";
+        showToast("Example loaded.");
       });
-    })();
-  </script>
+    });
+  }
+
+  // ---------- UI ----------
+  function updateCharCount(){
+    charCountEl.textContent = `${(inputEl.value || "").length} chars`;
+  }
+
+  inputEl.addEventListener("input", updateCharCount);
+
+  clearBtn.addEventListener("click", () => {
+    inputEl.value = "";
+    pdfFileEl.value = "";
+    pdfLoadedText = "";
+    pdfStatusEl.textContent = "No PDF loaded";
+    updateCharCount();
+    lastResult = null;
+
+    statusVal.textContent = "—";
+    confVal.textContent = "—";
+    signalsVal.textContent = "—";
+    alertText.textContent = "Paste a message and run APEX to get a verdict.";
+    statusTag.textContent = "Status: —";
+    bulletsEl.innerHTML = `<li style="color:rgba(234,240,255,.65)">No verdict yet.</li>`;
+    showToast("Cleared.");
+  });
+
+  examplesBtn.addEventListener("click", openExamples);
+  closeModal.addEventListener("click", () => modalBack.style.display = "none");
+  modalBack.addEventListener("click", (e) => { if (e.target === modalBack) modalBack.style.display = "none"; });
+
+  runBtn.addEventListener("click", () => {
+    // Prefer typed text; if empty and pdf extracted, use pdf text.
+    const raw = normalizeText(inputEl.value) || normalizeText(pdfLoadedText);
+    if (!raw){
+      showToast("Paste text or upload a PDF first.");
+      return;
+    }
+    inputEl.value = raw; // ensure the textarea shows the final input used
+    updateCharCount();
+
+    try{
+      const res = runApex(raw);
+      renderResult(res);
+      lastInput = raw;
+      showToast("Verdict generated.");
+    }catch(err){
+      console.error(err);
+      showToast("Error generating verdict.");
+    }
+  });
+
+  copyBtn.addEventListener("click", async () => {
+    if (!lastResult) return showToast("Run APEX first.");
+    const text =
+`APEX Verdict
+Status: ${lastResult.status}
+Confidence: ${lastResult.confidence}
+Signals: ${lastResult.signalsCount} (score ${lastResult.score})
+
+${lastResult.bullets.map(b => "• " + b).join("\n")}`;
+    try{
+      await navigator.clipboard.writeText(text);
+      showToast("Copied.");
+    }catch(e){
+      // fallback
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+      showToast("Copied.");
+    }
+  });
+
+  downloadBtn.addEventListener("click", () => downloadVerdictPDF(lastResult));
+
+  shareBtn.addEventListener("click", async () => {
+    if (!lastResult) return showToast("Run APEX first.");
+    const out = makeShareLink(lastResult);
+    if (!out.ok) return showToast(out.reason);
+
+    try{
+      await navigator.clipboard.writeText(out.url);
+      showToast("Share link copied.");
+    }catch(e){
+      showToast("Could not copy link.");
+    }
+  });
+
+  saveBtn.addEventListener("click", () => {
+    if (!lastResult) return showToast("Run APEX first.");
+    saveHistoryItem(lastResult);
+    showToast("Saved to history.");
+  });
+
+  viewBtn.addEventListener("click", openHistoryModal);
+
+  // PDF upload -> extract text -> fill textarea -> auto-run (optional)
+  pdfFileEl.addEventListener("change", async () => {
+    const f = pdfFileEl.files && pdfFileEl.files[0];
+    if (!f) return;
+
+    if (f.type !== "application/pdf"){
+      pdfStatusEl.textContent = "Not a PDF.";
+      showToast("Please choose a PDF file.");
+      return;
+    }
+
+    pdfStatusEl.textContent = "Extracting…";
+    try{
+      const text = await extractTextFromPDF(f);
+      pdfLoadedText = text;
+      pdfStatusEl.textContent = `Loaded: ${f.name} (${Math.max(1, Math.round(f.size/1024))} KB)`;
+      // Put extracted text in textarea (so the user sees it)
+      inputEl.value = text;
+      updateCharCount();
+      showToast("PDF text extracted.");
+    }catch(err){
+      console.error(err);
+      pdfStatusEl.textContent = "Failed to read PDF.";
+      showToast("Failed to extract PDF text.");
+    }
+  });
+
+  // Load shared message if present
+  window.addEventListener("hashchange", loadFromHash);
+
+  // init
+  updateCharCount();
+  loadFromHash();
+
+})();
+</script>
+
 </body>
 </html>
