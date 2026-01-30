@@ -2,655 +2,858 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>APEX Corporate Translator</title>
-  <meta name="description" content="Paste any corporate email / Slack / HR update. Get an APEX verdict in exactly 5 bullets with status + confidence.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="APEX Corporate Translator — translate corporate emails into plain consequences. Fast verdict: WATCH / HIGH / CRITICAL."/>
   <style>
     :root{
-      --bg0:#070A10;
-      --bg1:#0B1020;
-      --card:#0E1426;
-      --card2:#0C1222;
-      --stroke:rgba(255,255,255,.09);
-      --stroke2:rgba(255,255,255,.12);
-      --text:#E9EEF9;
-      --muted:rgba(233,238,249,.68);
-      --muted2:rgba(233,238,249,.52);
-      --blue:#2F7DFF;
-      --blue2:#1F60FF;
-      --good:#24D18F;
-      --warn:#FFB020;
-      --crit:#FF4D4D;
-      --watch:#9CA6B7;
-      --shadow: 0 24px 70px rgba(0,0,0,.55);
-      --radius: 22px;
-      --radius2: 18px;
+      --bg:#0b0f14;
+      --panel:#121826;
+      --panel2:#0f1522;
+      --text:#eaeaea;
+      --muted:rgba(234,234,234,.72);
+      --muted2:rgba(234,234,234,.55);
+      --border:rgba(255,255,255,.08);
+      --accent:#4f8cff;
+      --accent2:#65d6ff;
+      --warn:#ffcc66;
+      --high:#ff8a66;
+      --crit:#ff4d4d;
+      --ok:#8cff9a;
+      --shadow: 0 20px 70px rgba(0,0,0,.45);
+      --radius: 16px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
       font-family:var(--sans);
+      background: radial-gradient(1200px 800px at 50% -10%, rgba(79,140,255,.18), transparent 55%),
+                  radial-gradient(900px 600px at 15% 110%, rgba(101,214,255,.10), transparent 55%),
+                  var(--bg);
       color:var(--text);
-      background:
-        radial-gradient(1200px 600px at 22% 8%, rgba(47,125,255,.22), transparent 60%),
-        radial-gradient(900px 500px at 80% 18%, rgba(255,77,77,.14), transparent 58%),
-        radial-gradient(700px 420px at 50% 92%, rgba(36,209,143,.10), transparent 60%),
-        linear-gradient(180deg, var(--bg1), var(--bg0));
       min-height:100vh;
-      padding:28px 14px 40px;
-    }
-    .wrap{max-width:980px;margin:0 auto;}
-    .hero{
-      background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid var(--stroke);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .heroTop{
-      padding:28px 24px 18px;
       display:flex;
-      align-items:flex-start;
-      gap:16px;
+      justify-content:center;
+      padding:28px 14px;
+    }
+    .wrap{
+      width:100%;
+      max-width:980px;
+    }
+    .topbar{
+      display:flex;
       justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      margin-bottom:18px;
     }
-    .title{
-      line-height:1.02;
-      font-size: clamp(34px, 5vw, 54px);
-      letter-spacing:-.02em;
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      letter-spacing:-.2px;
+    }
+    .logo{
+      width:34px;height:34px;border-radius:10px;
+      background: linear-gradient(135deg, rgba(79,140,255,1), rgba(101,214,255,1));
+      box-shadow: 0 10px 30px rgba(79,140,255,.25);
+      position:relative;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:10px;
+      border-radius:7px;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.18);
+    }
+    .brand h1{
       margin:0;
+      font-size:18px;
+      font-weight:800;
     }
-    .subtitle{
-      margin:10px 0 0;
-      color:var(--muted);
-      font-size: 15.5px;
-      line-height:1.55;
-      max-width: 580px;
+    .brand .sub{
+      margin:0;
+      font-size:12px;
+      color:var(--muted2);
     }
     .pill{
-      flex:0 0 auto;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.03);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
       padding:8px 12px;
       border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
       color:var(--muted);
-      font-size:12.5px;
-      letter-spacing:.03em;
-      text-transform: none;
-      margin-top: 6px;
-      white-space:nowrap;
-    }
-
-    .panel{
-      border-top:1px solid var(--stroke);
-      padding:18px 24px 24px;
-      background: linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.14));
-    }
-
-    .inputBox{
-      background: rgba(0,0,0,.22);
-      border:1px solid var(--stroke2);
-      border-radius: var(--radius2);
-      padding:14px;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
-    }
-    textarea{
-      width:100%;
-      min-height: 150px;
-      border:0;
-      resize: vertical;
-      outline:none;
-      background: transparent;
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 13.5px;
-      line-height: 1.5;
-      padding: 4px 2px;
-    }
-    textarea::placeholder{color: rgba(233,238,249,.35);}
-
-    .btnRow{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      gap:10px;
-      margin-top: 14px;
-    }
-    .btn{
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
-      color: var(--text);
-      padding:12px 14px;
-      border-radius: 14px;
-      font-weight: 650;
-      letter-spacing:.01em;
-      cursor:pointer;
-      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+      font-size:12px;
       user-select:none;
-    }
-    .btn:active{transform: translateY(1px);}
-    .btn:hover{border-color: rgba(255,255,255,.16); background: rgba(255,255,255,.06);}
-    .btnPrimary{
-      background: linear-gradient(180deg, var(--blue), var(--blue2));
-      border-color: rgba(47,125,255,.55);
-      box-shadow: 0 12px 32px rgba(47,125,255,.20);
-    }
-    .btnPrimary:hover{background: linear-gradient(180deg, #3A88FF, #2367FF);}
-
-    .out{
-      margin-top:16px;
-      background: rgba(0,0,0,.20);
-      border:1px solid var(--stroke);
-      border-radius: var(--radius2);
-      overflow:hidden;
-    }
-    .outHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--stroke);
-      background: rgba(255,255,255,.03);
-    }
-    .outTitle{
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      font-weight: 800;
-    }
-    .mini{
-      color: var(--muted2);
-      font-size: 12px;
-      font-family: var(--mono);
-      user-select:none;
-    }
-
-    .cards{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap:10px;
-      padding: 14px;
-    }
-    .card{
-      background: rgba(255,255,255,.03);
-      border: 1px solid var(--stroke);
-      border-radius: 16px;
-      padding: 12px;
-      min-height: 84px;
-    }
-    .k{
-      color: var(--muted2);
-      font-size: 11px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      font-weight: 850;
-      margin-bottom: 8px;
-    }
-    .v{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing:.01em;
     }
     .dot{
-      width:10px;height:10px;border-radius:999px;
-      background: var(--watch);
-      box-shadow: 0 0 0 6px rgba(255,255,255,.02);
-      flex: 0 0 auto;
+      width:8px;height:8px;border-radius:999px;background:var(--ok);
+      box-shadow:0 0 0 4px rgba(140,255,154,.14);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:16px;
+    }
+    @media (max-width: 940px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .cardhead{
+      padding:16px 16px 12px;
+      border-bottom:1px solid var(--border);
+      background: rgba(0,0,0,.14);
+    }
+    .cardhead h2{
+      margin:0 0 6px;
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:-.2px;
+    }
+    .cardhead p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .content{
+      padding:16px;
+    }
+
+    textarea{
+      width:100%;
+      min-height:220px;
+      resize:vertical;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.20);
+      color:var(--text);
+      padding:14px 14px 44px;
+      font-size:14px;
+      line-height:1.5;
+      outline:none;
+    }
+    textarea:focus{border-color: rgba(79,140,255,.55); box-shadow: 0 0 0 4px rgba(79,140,255,.12);}
+    .helper{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:10px;
+      color:var(--muted2);
+      font-size:12px;
+    }
+    .hint{max-width:72%}
+    .count{
+      font-family:var(--mono);
+      opacity:.85;
+    }
+
+    .btnrow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    button{
+      border:none;
+      cursor:pointer;
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:800;
+      font-size:13px;
+      color:#0b0f14;
+      background: linear-gradient(135deg, rgba(79,140,255,1), rgba(101,214,255,1));
+      box-shadow: 0 12px 30px rgba(79,140,255,.20);
+      transition: transform .06s ease, filter .2s ease;
+    }
+    button:active{transform:scale(.99)}
+    button.secondary{
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      border:1px solid var(--border);
+      box-shadow:none;
+    }
+    button.secondary:hover{filter:brightness(1.08)}
+    button.ghost{
+      background: transparent;
+      color:var(--text);
+      border:1px dashed rgba(255,255,255,.18);
+      box-shadow:none;
+    }
+    button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      filter:saturate(.4);
+    }
+
+    .out{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
     }
 
     .alert{
-      margin:0 14px 14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.22);
+      padding:14px;
+    }
+    .alerttop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .apex{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .badge{
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+    }
+    .badge.crit{color:var(--crit); border-color: rgba(255,77,77,.35); background: rgba(255,77,77,.08)}
+    .badge.high{color:var(--high); border-color: rgba(255,138,102,.35); background: rgba(255,138,102,.08)}
+    .badge.watch{color:var(--warn); border-color: rgba(255,204,102,.35); background: rgba(255,204,102,.08)}
+    .kv{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .kv b{color:var(--text)}
+    .riskline{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .bullets{
+      margin:12px 0 0;
+      padding-left:18px;
+      color:var(--text);
+      line-height:1.45;
+      font-size:14px;
+    }
+    .bullets li{
+      margin:8px 0;
+    }
+    .meta{
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color:var(--muted2);
+      font-size:12px;
+    }
+    .meta .stamp{
+      font-family:var(--mono);
+      opacity:.95;
+    }
+
+    .probar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .probtn{
+      flex:1;
+      min-width:180px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
       background: rgba(255,255,255,.03);
-      border:1px solid var(--stroke);
-      border-radius: 16px;
-      padding: 12px;
-      color: var(--muted);
-      line-height: 1.45;
-      font-size: 13px;
+      color:var(--muted);
+      font-weight:800;
+      font-size:13px;
+      cursor:pointer;
+      user-select:none;
     }
-    .alert strong{color:var(--text)}
+    .probtn.locked{
+      opacity:.78;
+    }
+    .lock{
+      width:16px;height:16px; display:inline-block;
+      border-radius:6px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.16);
+      position:relative;
+    }
+    .lock:before{
+      content:"";
+      position:absolute;
+      width:8px;height:8px;
+      border:2px solid rgba(255,255,255,.55);
+      border-bottom:0;
+      border-radius:8px 8px 0 0;
+      left:50%;
+      transform:translateX(-50%);
+      top:2px;
+    }
+    .lock:after{
+      content:"";
+      position:absolute;
+      width:8px;height:6px;
+      background: rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:3px;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:2px;
+    }
 
-    .verdict{
-      margin: 0 14px 16px;
-      background: rgba(255,255,255,.03);
-      border:1px solid var(--stroke);
-      border-radius: 16px;
-      padding: 12px 12px 10px;
+    .mini{
+      margin-top:12px;
+      color:var(--muted2);
+      font-size:12px;
+      line-height:1.35;
     }
-    .verdictHead{
-      color: var(--muted2);
-      font-size: 11px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      font-weight: 900;
-      margin-bottom: 8px;
-    }
-    ul{
-      margin: 0;
-      padding-left: 18px;
-      color: var(--text);
-      line-height:1.55;
-      font-size: 13.5px;
-    }
-    li{margin: 8px 0;}
-    li span{color: var(--muted);}
+    .mini a{color:rgba(101,214,255,.92); text-decoration:none}
+    .mini a:hover{text-decoration:underline}
 
-    .tip{
-      margin: 0 14px 16px;
-      color: rgba(233,238,249,.40);
-      font-size: 12px;
-      line-height:1.4;
+    /* Modal */
+    .modalback{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.6);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:9999;
     }
-    .tip a{
-      color: rgba(47,125,255,.85);
-      text-decoration:none;
-      font-weight: 700;
+    .modal{
+      width:100%;
+      max-width:480px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(18,24,38,.98), rgba(12,16,22,.98));
+      box-shadow: 0 30px 110px rgba(0,0,0,.6);
+      overflow:hidden;
     }
-    .tip a:hover{text-decoration:underline;}
+    .modal .mh{
+      padding:14px 16px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .modal .mh b{font-size:13px; letter-spacing:.2px}
+    .xbtn{
+      background:transparent;
+      border:1px solid var(--border);
+      color:var(--text);
+      border-radius:10px;
+      padding:8px 10px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .modal .mb{
+      padding:14px 16px 16px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+    .modal .mb ul{margin:10px 0 0; padding-left:18px;}
+    .modal .mb li{margin:6px 0}
+    .modal .mf{
+      padding:14px 16px;
+      border-top:1px solid var(--border);
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+    }
 
-    @media (max-width: 760px){
-      .heroTop{padding:22px 18px 14px;}
-      .panel{padding:16px 18px 18px;}
-      .btnRow{grid-template-columns: 1fr 1fr; }
-      .cards{grid-template-columns: 1fr; }
-    }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="hero">
-      <div class="heroTop">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1 class="title">APEX<br/>Corporate Translator</h1>
-          <p class="subtitle">
-            Paste any corporate email / Slack / HR update. Get an <strong>APEX verdict</strong> in <strong>exactly 5 bullets</strong> with status + confidence.
-          </p>
+          <h1>APEX Corporate Translator</h1>
+          <p class="sub">Translate corporate language into consequences — fast verdict, no spin.</p>
         </div>
-        <div class="pill">APEX · Verdict Engine</div>
+      </div>
+      <div class="pill" title="Live on GitHub Pages">
+        <span class="dot"></span>
+        Live • Free to use
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT: INPUT -->
+      <div class="card">
+        <div class="cardhead">
+          <h2>Paste the message</h2>
+          <p>Paste an internal email, Slack message, or leadership announcement. For best results, include the subject + opening paragraphs.</p>
+        </div>
+        <div class="content">
+          <textarea id="input" placeholder="Paste corporate email / announcement here..."></textarea>
+
+          <div class="helper">
+            <div class="hint">Tip: include words like “operating model”, “over the coming weeks”, “align resources”, “streamline”, “organizational adjustments”.</div>
+            <div class="count"><span id="chars">0</span> chars</div>
+          </div>
+
+          <div class="btnrow">
+            <button id="run">Translate with APEX</button>
+            <button id="example" class="secondary">See Real Examples</button>
+            <button id="clear" class="ghost">Clear</button>
+          </div>
+
+          <div class="mini">
+            Built to decode language patterns that commonly appear before restructures, layoffs, and role changes.
+          </div>
+        </div>
       </div>
 
-      <div class="panel">
-        <div class="inputBox">
-          <textarea id="apexInput" placeholder="Paste corporate message here… (email / Slack / HR update)"></textarea>
+      <!-- RIGHT: OUTPUT -->
+      <div class="card">
+        <div class="cardhead">
+          <h2>Verdict</h2>
+          <p>APEX outputs exactly five bullets: what’s happening, why now, what’s next, who’s exposed, what to do.</p>
         </div>
-
-        <div class="btnRow">
-          <button class="btn btnPrimary" id="apexTranslateBtn">APEX Translate</button>
-          <button class="btn" id="apexExampleBtn">Load APEX Example</button>
-          <button class="btn" id="apexCopyBtn">Copy Verdict</button>
-          <button class="btn" id="apexResetBtn">Reset</button>
-        </div>
-
-        <div class="out" id="apexOut">
-          <div class="outHead">
-            <div class="outTitle">APEX Output</div>
-            <div class="mini" id="apexMini">—</div>
-          </div>
-
-          <div class="cards">
-            <div class="card">
-              <div class="k">APEX Status</div>
-              <div class="v"><span class="dot" id="apexDot"></span><span id="apexStatus">—</span></div>
+        <div class="content">
+          <div class="out" id="out">
+            <div class="alert">
+              <div class="alerttop">
+                <div class="apex">🚨 APEX ALERT</div>
+                <div class="badge watch">Status: WATCH</div>
+              </div>
+              <div class="kv">
+                <span><b>Confidence:</b> Low</span>
+              </div>
+              <div class="riskline">
+                Paste a message and run APEX to get a verdict.
+              </div>
+              <ol class="bullets">
+                <li><span style="color:var(--muted)">No verdict yet.</span></li>
+              </ol>
+              <div class="meta">
+                <span class="stamp" id="stamp">—</span>
+                <button id="copy" class="secondary" style="padding:10px 12px; font-weight:900;">Copy Verdict</button>
+              </div>
             </div>
-            <div class="card">
-              <div class="k">APEX Confidence</div>
-              <div class="v" id="apexConfidence">—</div>
+
+            <div class="probar">
+              <div class="probtn locked" data-pro="pdf"><span class="lock"></span> Download PDF (Pro)</div>
+              <div class="probtn locked" data-pro="share"><span class="lock"></span> Share Link (Pro)</div>
+              <div class="probtn locked" data-pro="history"><span class="lock"></span> Save History (Pro)</div>
             </div>
-            <div class="card">
-              <div class="k">APEX Signals</div>
-              <div class="v" id="apexSignals">—</div>
+
+            <div class="mini">
+              Free now. Pro unlocks PDF export, shareable links, and history (week 2+).
             </div>
-          </div>
-
-          <div class="alert" id="apexAlert">
-            Paste a message and run <strong>APEX Translate</strong>.
-          </div>
-
-          <div class="verdict">
-            <div class="verdictHead">APEX Verdict (exactly 5 bullets)</div>
-            <ul id="apexBullets">
-              <li><span>—</span></li>
-            </ul>
-          </div>
-
-          <div class="tip">
-            Tip: corporate emails often hide the real move behind “alignment”, “streamline”, “flexibility”.
-            <br/><a href="#" id="apexUseExampleLink">Use example</a>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-<script>
-/* ================================
-   APEX Corporate Translator Engine
-   (Client-side, deterministic)
-================================== */
+  <!-- Modal -->
+  <div class="modalback" id="modalBack">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="mh">
+        <b id="modalTitle">APEX Pro — Coming Soon</b>
+        <button class="xbtn" id="modalClose">Close</button>
+      </div>
+      <div class="mb" id="modalBody">
+        Pro features are locked for now.
+        <ul>
+          <li><b>PDF export</b> (documentation-ready)</li>
+          <li><b>Shareable verdict links</b> (send to colleagues)</li>
+          <li><b>Verdict history</b> (track patterns over time)</li>
+        </ul>
+      </div>
+      <div class="mf">
+        <button class="secondary" id="modalOk" style="padding:10px 12px; font-weight:900;">Got it</button>
+      </div>
+    </div>
+  </div>
 
-const APEX_HARD_CRITICAL_PHRASES = [
-  "roles will be eliminated",
-  "role will be eliminated",
-  "position eliminated",
-  "positions eliminated",
-  "headcount reduction",
-  "reduce headcount",
-  "reducing headcount",
-  "layoff",
-  "layoffs",
-  "reducing workforce",
-  "reduce workforce",
-  "workforce reduction",
-  "redundancy",
-  "redundancies",
-  "impacted employees will be contacted",
-  "impacted employees",
-  "severance",
-  "separation package",
-  "termination",
-  "terminated",
-  "let go",
-  "job cuts",
-  "eliminate roles"
-];
+  <script>
+    // -----------------------------
+    // APEX Corporate Translator MVP
+    // - Single file, GitHub Pages friendly
+    // - No external dependencies
+    // - Keeps mechanics hidden; outputs clean verdict only
+    // -----------------------------
 
-// Weighted signal library (phrase -> weight)
-const APEX_SIGNALS = [
-  { phrase: "operating model", weight: 4 },
-  { phrase: "organizational adjustments", weight: 4 },
-  { phrase: "organizational changes", weight: 4 },
-  { phrase: "restructure", weight: 4 },
-  { phrase: "restructuring", weight: 4 },
-  { phrase: "streamline", weight: 4 },
-  { phrase: "realign", weight: 4 },
-  { phrase: "realignment", weight: 4 },
-  { phrase: "rightsizing", weight: 4 },
-  { phrase: "cost reduction", weight: 4 },
-  { phrase: "reduce costs", weight: 4 },
-  { phrase: "optimize costs", weight: 3 },
-  { phrase: "efficiency", weight: 3 },
-  { phrase: "strategic priorities", weight: 2 },
-  { phrase: "align our resources", weight: 3 },
-  { phrase: "dynamic market", weight: 2 },
-  { phrase: "business needs", weight: 2 },
-  { phrase: "difficult decisions", weight: 3 },
-  { phrase: "short-term flexibility", weight: 3 },
-  { phrase: "changes may require", weight: 2 },
-  { phrase: "over the coming weeks", weight: 2 },
-  { phrase: "in the coming weeks", weight: 2 },
-  { phrase: "as they become available", weight: 2 },
-  { phrase: "additional details will be shared", weight: 3 },
-  { phrase: "manager will share", weight: 2 },
-  { phrase: "role impact", weight: 4 },
-  { phrase: "role impacts", weight: 4 },
-  { phrase: "impacted roles", weight: 4 },
-  { phrase: "impacted employees", weight: 4 },
-  { phrase: "hiring freeze", weight: 4 },
-  { phrase: "pause hiring", weight: 3 },
-  { phrase: "budget constraints", weight: 3 },
-  { phrase: "team consolidation", weight: 4 },
-  { phrase: "org consolidation", weight: 4 },
-  { phrase: "reporting line", weight: 3 },
-  { phrase: "reporting lines", weight: 3 }
-];
+    const $ = (id) => document.getElementById(id);
 
-// Thresholds
-const APEX_THRESHOLDS = {
-  criticalScore: 18,
-  highScore: 10,
-  watchScore: 4
-};
+    const inputEl = $("input");
+    const outEl = $("out");
+    const charsEl = $("chars");
+    const stampEl = $("stamp");
+    const modalBack = $("modalBack");
+    const modalClose = $("modalClose");
+    const modalOk = $("modalOk");
 
-// DOM
-const apexInput = document.getElementById("apexInput");
-const apexTranslateBtn = document.getElementById("apexTranslateBtn");
-const apexExampleBtn = document.getElementById("apexExampleBtn");
-const apexCopyBtn = document.getElementById("apexCopyBtn");
-const apexResetBtn = document.getElementById("apexResetBtn");
-const apexUseExampleLink = document.getElementById("apexUseExampleLink");
+    inputEl.addEventListener("input", () => {
+      charsEl.textContent = String(inputEl.value.length);
+    });
 
-const apexMini = document.getElementById("apexMini");
-const apexDot = document.getElementById("apexDot");
-const apexStatus = document.getElementById("apexStatus");
-const apexConfidence = document.getElementById("apexConfidence");
-const apexSignals = document.getElementById("apexSignals");
-const apexAlert = document.getElementById("apexAlert");
-const apexBullets = document.getElementById("apexBullets");
+    // ---- Examples (realistic patterns, anonymized) ----
+    const EXAMPLES = [
+      {
+        title: "Example — CRITICAL (Operating Model)",
+        text:
+`Subject: Update on Our Operating Model
 
-const APEX_EXAMPLE = `Subject: Important Update on Our Operating Model
+As we continue to navigate a dynamic market environment, we are reviewing our current operating model to ensure we are best positioned for long-term success.
 
-Team,
-As we navigate a dynamic market environment, we've been evaluating opportunities to better align our resources with long-term strategic priorities.
-Over the coming weeks, we will be implementing organizational adjustments designed to streamline workflows and improve cross-functional collaboration.
-While these changes may require some short-term flexibility, we are confident they will position us strongly for sustainable growth.
-Additional details will be shared by your managers as they become available.
+Over the coming weeks, leadership will be evaluating opportunities to streamline workflows, align resources with strategic priorities, and improve cross-functional efficiency.
 
-Thank you for your continued commitment and adaptability.
-Best regards,
-Senior Leadership Team`;
+Some teams may see changes in scope, ownership, or reporting structures as part of this process. Managers will be sharing additional details as plans are finalized.
 
-function apexNormalize(text){
-  return (text || "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-}
+We appreciate your flexibility and continued commitment as we work through this transition together.
 
-function apexExtractSubject(raw){
-  const m = raw.match(/^\s*subject\s*:\s*(.+)$/im);
-  if (!m) return null;
-  return m[1].trim().slice(0, 120);
-}
+Senior Leadership Team`
+      },
+      {
+        title: "Example — WATCH (Harmless FYI)",
+        text:
+`Subject: FYI — Office Closed Friday
 
-function apexHardCriticalHit(norm){
-  return APEX_HARD_CRITICAL_PHRASES.find(p => norm.includes(p));
-}
+Team, reminder that the office will be closed this Friday for scheduled maintenance.
+Please work from home if needed. Thanks.`
+      },
+      {
+        title: "Example — CRITICAL (Explicit Impact)",
+        text:
+`Subject: Organizational Changes
 
-function apexScanSignals(norm){
-  const hits = [];
-  let score = 0;
+Due to current market conditions, some roles will be eliminated.
+Impacted employees will be contacted this week.
+More details will be provided shortly.`
+      }
+    ];
 
-  for (const s of APEX_SIGNALS){
-    if (norm.includes(s.phrase)){
-      hits.push(s);
-      score += s.weight;
+    // ---- Internal signal library (keep hidden from UI) ----
+    // Designed to detect common corporate euphemisms that precede restructures / scope cuts.
+    // The user sees only status/confidence + five bullets.
+    const SIGNALS = [
+      // High signal phrases
+      { r: /\boperating model\b/i, w: 5, tag: "structure" },
+      { r: /\borganizational (adjustments|changes|evolution)\b/i, w: 5, tag: "structure" },
+      { r: /\brestructur(ing|e)\b/i, w: 6, tag: "structure" },
+      { r: /\brealignment\b/i, w: 5, tag: "structure" },
+      { r: /\bstreamlin(e|ing)\b/i, w: 4, tag: "cuts" },
+      { r: /\balign (resources|investment|spend)\b/i, w: 4, tag: "cuts" },
+      { r: /\boptimi(z|s)ation\b/i, w: 3, tag: "cuts" },
+      { r: /\befficien(cy|cies)\b/i, w: 3, tag: "cuts" },
+      { r: /\bcost (reduction|discipline|savings)\b/i, w: 6, tag: "cuts" },
+      { r: /\bheadcount\b/i, w: 7, tag: "cuts" },
+      { r: /\brole(s)? will be eliminated\b/i, w: 9, tag: "impact" },
+      { r: /\bimpacted employees\b/i, w: 9, tag: "impact" },
+      { r: /\bredundan(cy|cies)\b/i, w: 9, tag: "impact" },
+      { r: /\blayoff(s)?\b/i, w: 10, tag: "impact" },
+
+      // Time + ambiguity
+      { r: /\bover the coming weeks\b/i, w: 4, tag: "timeline" },
+      { r: /\bin the coming weeks\b/i, w: 4, tag: "timeline" },
+      { r: /\bdetails will be shared\b/i, w: 3, tag: "ambiguity" },
+      { r: /\bas plans are finalized\b/i, w: 3, tag: "ambiguity" },
+      { r: /\bmanagers will share\b/i, w: 2, tag: "ambiguity" },
+      { r: /\bscope\b/i, w: 2, tag: "structure" },
+      { r: /\bownership\b/i, w: 2, tag: "structure" },
+      { r: /\breporting (structures|lines)\b/i, w: 4, tag: "structure" },
+      { r: /\btransition\b/i, w: 2, tag: "structure" },
+      { r: /\bdynamic market\b/i, w: 2, tag: "context" },
+      { r: /\bstrategic priorities\b/i, w: 2, tag: "context" },
+    ];
+
+    function normalize(text){
+      return (text || "").replace(/\s+/g, " ").trim();
     }
-  }
 
-  return { hits, score };
-}
+    function scoreSignals(text){
+      const hits = [];
+      let score = 0;
+      let unique = 0;
 
-function apexDecideStatus({hardHit, score, hitsCount}){
-  // Hard override
-  if (hardHit){
-    return { status: "CRITICAL", confidence: "High" };
-  }
+      for (const s of SIGNALS){
+        if (s.r.test(text)){
+          unique++;
+          score += s.w;
+          hits.push(s.tag);
+        }
+      }
 
-  // Score-based
-  if (score >= APEX_THRESHOLDS.criticalScore) return { status: "CRITICAL", confidence: "High" };
-  if (score >= APEX_THRESHOLDS.highScore)     return { status: "HIGH", confidence: "Medium" };
-  if (score >= APEX_THRESHOLDS.watchScore)    return { status: "WATCH", confidence: "Low" };
+      // Tag diversity increases risk quality (structure + timeline + ambiguity is a known pattern)
+      const tags = new Set(hits);
+      const diversityBonus = Math.max(0, tags.size - 1); // 0..n
+      score += diversityBonus;
 
-  // Also treat many weak hints as WATCH
-  if (hitsCount >= 2) return { status: "WATCH", confidence: "Low" };
+      // If explicit impact tags appear, hard boost
+      if (hits.includes("impact")) score += 3;
 
-  return { status: "WATCH", confidence: "Low" };
-}
+      return { score, unique, tags: Array.from(tags) };
+    }
 
-function apexDotColor(status){
-  if (status === "CRITICAL") return getComputedStyle(document.documentElement).getPropertyValue('--crit').trim();
-  if (status === "HIGH") return getComputedStyle(document.documentElement).getPropertyValue('--warn').trim();
-  return getComputedStyle(document.documentElement).getPropertyValue('--watch').trim();
-}
+    function classify(score, tags){
+      // Hard rules
+      if (tags.includes("impact")) return { status: "CRITICAL", confidence: "High" };
 
-/* ====== Bullet templates ====== */
+      // Thresholds
+      if (score >= 18) return { status: "CRITICAL", confidence: score >= 24 ? "High" : "Medium" };
+      if (score >= 10) return { status: "HIGH", confidence: score >= 14 ? "Medium" : "Low" };
+      return { status: "WATCH", confidence: "Low" };
+    }
 
-// EXACTLY 5 bullets always, but content changes by status.
-function apexBulletsWATCH(subjectLine){
-  const head = subjectLine ? `Headline: “${subjectLine}” is informational; no structural change implied.` :
-                             `Headline: This is informational; no structural change implied.`;
-  return [
-    head,
-    "Core meaning: Routine operational notice; nothing points to reorg, layoffs, or scope shifts.",
-    "Impact: No ownership/workflow changes expected based on this text alone.",
-    "Risk: Low — treat as FYI unless new messages introduce change language.",
-    "APEX move: Save it for context; escalate only if later emails mention reorg/cost cuts/role impact."
-  ];
-}
+    function guessWindow(tags, score){
+      // Tight window when timeline + structure present
+      if (tags.includes("timeline") && tags.includes("structure")) return "2–6 weeks";
+      if (score >= 18) return "1–6 weeks";
+      if (score >= 10) return "4–10 weeks";
+      return "No immediate risk window";
+    }
 
-function apexBulletsHIGH(subjectLine){
-  const head = subjectLine ? `Headline: “${subjectLine}” signals a likely change event.` :
-                             `Headline: This message signals a likely change event.`;
-  return [
-    head,
-    "Core move: Resource alignment / process reshaping (possible reporting-line or priority shifts).",
-    "Next step: Manager-led meetings, scope clarification, and role mapping.",
-    "Impact: Short-term ambiguity first; clarity later after decisions lock.",
-    "APEX move: Ask 3 specifics: scope change, reporting line, and timeline for any role impact."
-  ];
-}
+    function buildBullets(status, confidence, tags, score, text){
+      const window = guessWindow(tags, score);
+      const lower = text.toLowerCase();
 
-function apexBulletsCRITICAL(subjectLine, hardHit){
-  const head = subjectLine ? `Headline: “${subjectLine}” is a CRITICAL change signal.` :
-                             `Headline: This is a CRITICAL change signal.`;
-  const core = hardHit
-    ? `Core move: Explicit risk detected (“${hardHit}”) — treat as layoffs/reorg now.`
-    : "Core move: Reorg / reporting-line changes likely; role impact is plausible.";
-  return [
-    head,
-    core,
-    "Next step: Decisions lock fast (1–6 weeks). Expect manager meetings and role mapping.",
-    "Impact: Workflow disruption + uncertainty first; individual outcomes communicated later.",
-    "APEX move: Ask today: (1) your scope, (2) your reporting line, (3) your role risk + timing. Document dates."
-  ];
-}
+      // 1) What’s happening
+      let b1 = "Likely organizational change signal (reorg / scope shift) rather than a routine update.";
+      if (status === "WATCH") b1 = "This reads as a routine update with no strong restructuring signals.";
+      if (tags.includes("impact")) b1 = "This contains explicit impact language (role eliminations / impacted employees).";
 
-function apexAlertText(status, confidence, hitsCount, score){
-  if (status === "CRITICAL"){
-    return `APEX ALERT — Status: ${status} · Confidence: ${confidence} · Signals: ${hitsCount} (score ${score}) — Major change risk. Reorg and/or role impact possible. Act now.`;
-  }
-  if (status === "HIGH"){
-    return `APEX ALERT — Status: ${status} · Confidence: ${confidence} · Signals: ${hitsCount} (score ${score}) — Change risk elevated. Clarify scope + reporting line.`;
-  }
-  // WATCH
-  if (hitsCount === 0){
-    return `APEX ALERT — Status: ${status} · Confidence: ${confidence} · Signals: None detected — Likely informational.`;
-  }
-  return `APEX ALERT — Status: ${status} · Confidence: ${confidence} · Signals: ${hitsCount} (score ${score}) — Low risk / monitor for escalation language.`;
-}
+      // 2) Why now
+      let b2 = "Leadership is preparing alignment: budgets, responsibilities, and team shape.";
+      if (lower.includes("dynamic market")) b2 = "“Market conditions” is being used as the justification for internal change.";
+      if (status === "WATCH") b2 = "There’s no obvious trigger language suggesting restructuring intent.";
 
-function apexRender({status, confidence, hitsCount, score, subjectLine, hardHit}){
-  apexStatus.textContent = status;
-  apexConfidence.textContent = confidence;
+      // 3) What comes next
+      let b3 = `Next likely step: manager briefings + org mapping. Action window: ${window}.`;
+      if (tags.includes("ambiguity")) b3 = `“Details later” language often means decisions are being finalized now. Window: ${window}.`;
+      if (status === "WATCH") b3 = "Next likely step: normal operational follow-up. No escalation implied.";
 
-  if (hitsCount === 0) apexSignals.textContent = `None`;
-  else apexSignals.textContent = `${hitsCount} (score ${score})`;
+      // 4) Who’s exposed
+      let b4 = "Teams labeled “non-core”, “efficiency”, or “streamline” are typically first to be reshaped.";
+      if (tags.includes("structure")) b4 = "People affected first are those with shifting scope/ownership/reporting lines.";
+      if (tags.includes("impact")) b4 = "If you are in the referenced teams/roles, expect direct contact imminently.";
+      if (status === "WATCH") b4 = "No specific group exposure is implied by this message.";
 
-  apexDot.style.background = apexDotColor(status);
-  apexMini.textContent = `${status} · ${confidence} · signals ${hitsCount}`;
+      // 5) What to do now
+      let b5 = "Ask your manager 3 specifics: scope changes, reporting changes, and the decision timeline. Document answers.";
+      if (status === "CRITICAL") b5 = "Protect yourself: clarify impact + timeline, update options, and document everything now.";
+      if (status === "WATCH") b5 = "No urgent action required. Save the message; re-check future updates for pattern shifts.";
 
-  apexAlert.textContent = apexAlertText(status, confidence, hitsCount, score);
+      return [b1, b2, b3, b4, b5];
+    }
 
-  // Build EXACTLY 5 bullets depending on severity
-  let bullets;
-  if (status === "CRITICAL") bullets = apexBulletsCRITICAL(subjectLine, hardHit);
-  else if (status === "HIGH") bullets = apexBulletsHIGH(subjectLine);
-  else bullets = apexBulletsWATCH(subjectLine);
+    function riskSummary(status, confidence, tags, score){
+      if (status === "WATCH") return "No material restructuring signals detected. Low immediate risk.";
+      const window = guessWindow(tags, score);
+      if (status === "HIGH") return `Multiple restructuring indicators detected. Action window likely ${window}.`;
+      return `Strong restructuring / impact indicators detected. Action window likely ${window}.`;
+    }
 
-  // Render list
-  apexBullets.innerHTML = "";
-  bullets.slice(0,5).forEach(b => {
-    const li = document.createElement("li");
-    li.textContent = b;
-    apexBullets.appendChild(li);
-  });
-}
+    function badgeClass(status){
+      if (status === "CRITICAL") return "crit";
+      if (status === "HIGH") return "high";
+      return "watch";
+    }
 
-function apexTranslate(){
-  const raw = apexInput.value || "";
-  const norm = apexNormalize(raw);
+    function renderVerdict(text){
+      const t = normalize(text);
+      if (!t){
+        renderEmpty();
+        return;
+      }
 
-  if (!norm){
-    apexAlert.innerHTML = `Paste a message and run <strong>APEX Translate</strong>.`;
-    apexStatus.textContent = "—";
-    apexConfidence.textContent = "—";
-    apexSignals.textContent = "—";
-    apexDot.style.background = apexDotColor("WATCH");
-    apexMini.textContent = "—";
-    apexBullets.innerHTML = `<li><span>—</span></li>`;
-    return;
-  }
+      const { score, unique, tags } = scoreSignals(t);
+      const { status, confidence } = classify(score, tags);
+      const bullets = buildBullets(status, confidence, tags, score, t);
+      const summary = riskSummary(status, confidence, tags, score);
 
-  const subjectLine = apexExtractSubject(raw);
-  const hardHit = apexHardCriticalHit(norm);
+      const now = new Date();
+      stampEl.textContent = `APEX-ID ${hashShort(t)} • ${now.toISOString()}`;
 
-  const scan = apexScanSignals(norm);
-  const hitsCount = scan.hits.length;
-  const score = scan.score;
+      outEl.querySelector(".badge").className = `badge ${badgeClass(status)}`;
+      outEl.querySelector(".badge").textContent = `Status: ${status}`;
 
-  const decision = apexDecideStatus({ hardHit, score, hitsCount });
+      outEl.querySelector(".kv").innerHTML = `
+        <span><b>Confidence:</b> ${confidence}</span>
+      `;
 
-  apexRender({
-    status: decision.status,
-    confidence: decision.confidence,
-    hitsCount,
-    score,
-    subjectLine,
-    hardHit
-  });
-}
+      outEl.querySelector(".riskline").textContent = summary;
 
-function apexCopyVerdict(){
-  const status = apexStatus.textContent;
-  const conf = apexConfidence.textContent;
-  const sig = apexSignals.textContent;
+      const ol = outEl.querySelector(".bullets");
+      ol.innerHTML = bullets.map(b => `<li>${escapeHtml(b)}</li>`).join("");
+    }
 
-  const bullets = Array.from(apexBullets.querySelectorAll("li")).map(li => `- ${li.textContent}`);
-  const text =
-`APEX Corporate Translator — Verdict
+    function renderEmpty(){
+      stampEl.textContent = "—";
+      outEl.querySelector(".badge").className = "badge watch";
+      outEl.querySelector(".badge").textContent = "Status: WATCH";
+      outEl.querySelector(".kv").innerHTML = `<span><b>Confidence:</b> Low</span>`;
+      outEl.querySelector(".riskline").textContent = "Paste a message and run APEX to get a verdict.";
+      outEl.querySelector(".bullets").innerHTML = `<li><span style="color:var(--muted)">No verdict yet.</span></li>`;
+    }
 
-Status: ${status}
-Confidence: ${conf}
-Signals: ${sig}
+    // ---- Copy verdict (clean, shareable) ----
+    function getVerdictText(){
+      const status = outEl.querySelector(".badge").textContent.replace("Status: ","").trim();
+      const conf = outEl.querySelector(".kv").textContent.replace(/\s+/g," ").trim();
+      const summary = outEl.querySelector(".riskline").textContent.trim();
+      const bullets = Array.from(outEl.querySelectorAll(".bullets li")).map(li => li.textContent.trim()).filter(Boolean);
+      const stamp = stampEl.textContent.trim();
 
-${bullets.join("\n")}
-`;
+      return [
+        "🚨 APEX ALERT",
+        `Status: ${status}`,
+        conf,
+        "",
+        `Risk Summary: ${summary}`,
+        "",
+        "Translation:",
+        ...bullets.map((b,i)=>`${i+1}. ${b}`),
+        "",
+        stamp
+      ].join("\n");
+    }
 
-  navigator.clipboard.writeText(text).then(() => {
-    apexCopyBtn.textContent = "Copied";
-    setTimeout(() => apexCopyBtn.textContent = "Copy Verdict", 900);
-  }).catch(() => {
-    apexCopyBtn.textContent = "Copy failed";
-    setTimeout(() => apexCopyBtn.textContent = "Copy Verdict", 900);
-  });
-}
+    async function copyToClipboard(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        toast("Copied.");
+      }catch(e){
+        // fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        toast("Copied.");
+      }
+    }
 
-function apexReset(){
-  apexInput.value = "";
-  apexStatus.textContent = "—";
-  apexConfidence.textContent = "—";
-  apexSignals.textContent = "—";
-  apexDot.style.background = apexDotColor("WATCH");
-  apexMini.textContent = "—";
-  apexAlert.innerHTML = `Paste a message and run <strong>APEX Translate</strong>.`;
-  apexBullets.innerHTML = `<li><span>—</span></li>`;
-}
+    // ---- Tiny toast ----
+    let toastTimer;
+    function toast(msg){
+      clearTimeout(toastTimer);
+      let t = document.getElementById("toast");
+      if(!t){
+        t = document.createElement("div");
+        t.id = "toast";
+        t.style.position="fixed";
+        t.style.bottom="18px";
+        t.style.left="50%";
+        t.style.transform="translateX(-50%)";
+        t.style.padding="10px 12px";
+        t.style.borderRadius="12px";
+        t.style.border="1px solid rgba(255,255,255,.12)";
+        t.style.background="rgba(0,0,0,.55)";
+        t.style.color="rgba(234,234,234,.92)";
+        t.style.fontWeight="900";
+        t.style.fontSize="12px";
+        t.style.zIndex="99999";
+        t.style.boxShadow="0 18px 60px rgba(0,0,0,.45)";
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.style.display="block";
+      toastTimer = setTimeout(()=>{ t.style.display="none"; }, 1200);
+    }
 
-// Wire
-apexTranslateBtn.addEventListener("click", apexTranslate);
-apexExampleBtn.addEventListener("click", () => { apexInput.value = APEX_EXAMPLE; apexTranslate(); });
-apexUseExampleLink.addEventListener("click", (e) => { e.preventDefault(); apexInput.value = APEX_EXAMPLE; apexTranslate(); });
-apexCopyBtn.addEventListener("click", apexCopyVerdict);
-apexResetBtn.addEventListener("click", apexReset);
+    // ---- Modal ----
+    function openModal(){
+      modalBack.style.display = "flex";
+    }
+    function closeModal(){
+      modalBack.style.display = "none";
+    }
+    modalClose.addEventListener("click", closeModal);
+    modalOk.addEventListener("click", closeModal);
+    modalBack.addEventListener("click", (e)=>{ if(e.target === modalBack) closeModal(); });
 
-// First paint
-apexReset();
-</script>
+    document.querySelectorAll(".probtn.locked").forEach(btn=>{
+      btn.addEventListener("click", openModal);
+    });
+
+    // ---- Buttons ----
+    $("run").addEventListener("click", ()=> renderVerdict(inputEl.value));
+    $("clear").addEventListener("click", ()=>{
+      inputEl.value = "";
+      charsEl.textContent = "0";
+      renderEmpty();
+    });
+
+    $("example").addEventListener("click", ()=>{
+      // cycle examples
+      const current = normalize(inputEl.value);
+      const idx = EXAMPLES.findIndex(e => normalize(e.text) === current);
+      const next = EXAMPLES[(idx + 1 + EXAMPLES.length) % EXAMPLES.length];
+      inputEl.value = next.text;
+      charsEl.textContent = String(inputEl.value.length);
+      renderVerdict(inputEl.value);
+      toast(next.title);
+    });
+
+    $("copy").addEventListener("click", ()=> copyToClipboard(getVerdictText()));
+
+    // ---- Helpers ----
+    function escapeHtml(str){
+      return (str || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // Short, non-identifying APEX-ID hash (client-side only)
+    async function sha256Hex(text){
+      const enc = new TextEncoder().encode(text);
+      const buf = await crypto.subtle.digest("SHA-256", enc);
+      return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+    }
+    function hashShort(text){
+      // Fast-ish: use built-in crypto where available, but keep sync fallback
+      // We'll do a simple deterministic short hash to avoid async stamping complexity.
+      let h = 2166136261;
+      for (let i=0;i<text.length;i++){
+        h ^= text.charCodeAt(i);
+        h += (h<<1) + (h<<4) + (h<<7) + (h<<8) + (h<<24);
+      }
+      // unsigned to hex
+      return (h >>> 0).toString(16).padStart(8,"0").toUpperCase();
+    }
+
+    // initial
+    renderEmpty();
+  </script>
 </body>
 </html>
