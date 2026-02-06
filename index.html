@@ -5,900 +5,1040 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>APEX Corporate Translator</title>
   <meta name="description" content="Translate corporate language into consequences — fast verdict, no spin." />
+
+  <!-- Cinematic font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg:#070a12;
+      --bg0:#06080d;
+      --bg1:#070a12;
       --panel:rgba(255,255,255,.06);
       --panel2:rgba(255,255,255,.045);
       --stroke:rgba(255,255,255,.10);
-      --text:rgba(255,255,255,.88);
+      --stroke2:rgba(255,255,255,.08);
+      --text:rgba(255,255,255,.90);
       --muted:rgba(255,255,255,.62);
-      --muted2:rgba(255,255,255,.45);
-      --good:#36d399;
-      --warn:#fbbf24;
-      --bad:#ef4444;
-      --blue:#3b82f6;
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
-      --radius:20px;
+      --muted2:rgba(255,255,255,.42);
+
+      --gold:#D6B35A;
+      --gold2:#B99233;
+      --blue:#6AA8FF;
+      --good:#34D399;
+      --warn:#FBBF24;
+      --bad:#FB7185;
+
+      --shadow: 0 22px 70px rgba(0,0,0,.48);
+      --radius:22px;
       --radius2:16px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
 
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
       font-family:var(--sans);
-      background:
-        radial-gradient(1200px 800px at 15% 20%, rgba(59,130,246,.20), transparent 60%),
-        radial-gradient(1200px 900px at 80% 70%, rgba(34,197,94,.14), transparent 60%),
-        radial-gradient(900px 600px at 50% 110%, rgba(249,115,22,.10), transparent 60%),
-        var(--bg);
       color:var(--text);
-      min-height:100vh;
+      background:
+        radial-gradient(1200px 720px at 8% -8%, rgba(106,168,255,.16), transparent 55%),
+        radial-gradient(900px 560px at 92% 0%, rgba(214,179,90,.14), transparent 55%),
+        radial-gradient(900px 700px at 50% 120%, rgba(106,168,255,.08), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
     }
 
-    .topbar{
-      position:sticky;
-      top:0;
-      z-index:10;
-      backdrop-filter: blur(12px);
-      background: linear-gradient(to bottom, rgba(7,10,18,.78), rgba(7,10,18,.40));
-      border-bottom:1px solid var(--stroke);
+    /* Starfield canvas sits behind everything */
+    #stars{
+      position:fixed; inset:0;
+      z-index:-2;
+      width:100vw; height:100vh;
+      display:block;
+      filter: contrast(1.05) brightness(.95);
     }
-    .topbar-inner{
-      max-width:1200px;
-      margin:0 auto;
-      padding:12px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
+
+    /* Soft cinematic haze */
+    .haze{
+      position:fixed; inset:-20%;
+      z-index:-1;
+      background:
+        radial-gradient(900px 480px at 10% 20%, rgba(214,179,90,.10), transparent 60%),
+        radial-gradient(820px 520px at 80% 18%, rgba(106,168,255,.10), transparent 62%),
+        radial-gradient(720px 520px at 50% 78%, rgba(214,179,90,.08), transparent 62%);
+      opacity:.8;
+      pointer-events:none;
+      transform: translateZ(0);
+    }
+
+    a{color:inherit}
+    .wrap{max-width:1120px; margin:0 auto; padding:22px 16px 70px;}
+
+    /* Topbar */
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px; flex-wrap:wrap;
+      margin-bottom:14px;
     }
     .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
+      display:flex; align-items:center; gap:12px; min-width:240px;
     }
-    .dot{
-      width:10px;height:10px;border-radius:999px;
-      background: var(--blue);
-      box-shadow: 0 0 16px rgba(59,130,246,.6);
-      flex:0 0 auto;
+    .sigil{
+      width:40px; height:40px; border-radius:14px;
+      background:
+        linear-gradient(135deg, rgba(214,179,90,.22), rgba(106,168,255,.14)),
+        radial-gradient(circle at 35% 30%, rgba(214,179,90,.34), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(106,168,255,.30), transparent 55%);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: 0 10px 36px rgba(0,0,0,.38);
+      position:relative; overflow:hidden;
     }
+    .sigil:after{
+      content:"";
+      position:absolute; inset:-45%;
+      background: conic-gradient(from 180deg,
+        rgba(214,179,90,0),
+        rgba(214,179,90,.30),
+        rgba(106,168,255,.28),
+        rgba(214,179,90,0));
+      animation:spin 13s linear infinite;
+      opacity:.9;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
     .brand h1{
-      font-size:14px;
       margin:0;
-      font-weight:700;
-      letter-spacing:.2px;
+      font-size:13px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
       white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
     }
     .brand p{
-      margin:0;
+      margin:3px 0 0;
       font-size:12px;
       color:var(--muted);
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-    }
-    .pill{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 12px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.05);
-      border-radius:999px;
-      font-size:12px;
-      color:var(--muted);
-    }
-    .pill .live{
-      width:9px;height:9px;border-radius:999px;
-      background: var(--good);
-      box-shadow: 0 0 16px rgba(54,211,153,.55);
+      max-width:min(560px, 92vw);
     }
 
-    .wrap{
-      max-width:1200px;
-      margin:0 auto;
-      padding:18px 16px 28px;
+    .pillrow{
+      display:flex; gap:10px; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(10,14,22,.40);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 26px rgba(0,0,0,.26);
+      font-size:12px;
+      user-select:none;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:50%;
+      background:var(--good);
+      box-shadow: 0 0 0 4px rgba(52,211,153,.10);
+    }
+    .dot.warn{background:var(--warn); box-shadow:0 0 0 4px rgba(251,191,36,.10);}
+    .dot.bad{background:var(--bad); box-shadow:0 0 0 4px rgba(251,113,133,.10);}
+    .mono{font-family:var(--mono)}
+
+    /* Cards + 3D feel */
+    .card{
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(900px 280px at 20% 10%, rgba(214,179,90,.12), transparent 55%),
+        radial-gradient(900px 320px at 85% 20%, rgba(106,168,255,.10), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+      transform-style:preserve-3d;
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(90deg, rgba(214,179,90,0), rgba(214,179,90,.06), rgba(106,168,255,.06), rgba(214,179,90,0));
+      opacity:.6;
+      transform: translateX(-45%);
+      animation: sweep 8.5s ease-in-out infinite;
+      pointer-events:none;
+    }
+    @keyframes sweep{
+      0%,100%{transform:translateX(-48%)}
+      50%{transform:translateX(48%)}
+    }
+
+    .hero{ padding:22px 18px 16px; margin-top:8px;}
+    .heroTitle{
+      display:flex; align-items:flex-end; justify-content:space-between;
+      gap:12px; flex-wrap:wrap;
+    }
+    .heroTitle h2{
+      margin:0;
+      font-size:28px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      line-height:1.1;
+    }
+    .heroTitle h2 span{
+      background: linear-gradient(90deg, var(--gold), rgba(255,255,255,.92), var(--blue));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .heroMeta{
+      margin:10px 0 0;
+      color:rgba(255,255,255,.78);
+      font-size:13px;
+      line-height:1.5;
+      max-width:860px;
     }
 
     .grid{
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:16px;
-      align-items:start;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+      margin-top:14px;
     }
     @media (max-width: 980px){
-      .grid{grid-template-columns:1fr;}
+      .grid{grid-template-columns:1fr}
     }
 
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.065), rgba(255,255,255,.035));
-      border:1px solid var(--stroke);
-      border-radius:var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
+    .sectionHead{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; flex-wrap:wrap;
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.10);
+      backdrop-filter: blur(10px);
     }
-    .card-inner{padding:16px 16px 14px;}
-    .card h2{
-      margin:0 0 6px 0;
-      font-size:34px;
-      line-height:1.05;
-      letter-spacing:-.6px;
-    }
-    .card .sub{
-      margin:0 0 14px 0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.4;
-    }
-
-    .label{
-      font-size:12px;
+    .sectionHead .kicker{
+      font-size:11px;
       letter-spacing:.14em;
-      color:var(--muted2);
       text-transform:uppercase;
-      margin:12px 0 8px;
+      color:rgba(255,255,255,.70);
     }
+    .sectionHead .rightNote{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      color:rgba(255,255,255,.62);
+      font-size:12px;
+    }
+    .sectionBody{ padding:14px; }
 
     textarea{
       width:100%;
-      min-height:160px;
-      max-height:340px;
+      min-height:170px;
       resize:vertical;
       padding:14px 14px;
-      border-radius:var(--radius2);
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.28);
-      color:var(--text);
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
       outline:none;
-      font-family: var(--mono);
+      background: rgba(0,0,0,.18);
+      color:rgba(255,255,255,.90);
+      font-family: var(--sans);
       font-size:13px;
-      line-height:1.45;
+      line-height:1.5;
+      box-shadow: 0 10px 24px rgba(0,0,0,.22);
     }
-    textarea::placeholder{color:rgba(255,255,255,.28)}
+    textarea::placeholder{color:rgba(255,255,255,.40)}
 
     .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
       margin-top:10px;
     }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      border-radius: 14px;
+      padding:11px 14px;
+      font-weight:800;
+      letter-spacing:.02em;
+      font-size:13px;
+      color:rgba(7,10,15,.95);
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      box-shadow: 0 16px 34px rgba(214,179,90,.18);
+      transition: transform .08s ease, filter .08s ease;
+    }
+    .btn:hover{transform:translateY(-1px); filter:brightness(1.02);}
+    .btn:active{transform:translateY(0px); filter:brightness(.98);}
+
+    .btn2{
+      border:1px solid rgba(255,255,255,.16);
+      cursor:pointer;
+      border-radius: 14px;
+      padding:11px 14px;
+      font-weight:800;
+      font-size:13px;
+      color:rgba(255,255,255,.90);
+      background: rgba(0,0,0,.16);
+      backdrop-filter: blur(10px);
+      transition: transform .08s ease, border-color .08s ease;
+    }
+    .btn2:hover{transform: translateY(-1px); border-color: rgba(214,179,90,.35);}
+    .btn2:active{transform: translateY(0px);}
+
+    .btn3{
+      border:1px solid rgba(255,255,255,.12);
+      cursor:pointer;
+      border-radius:999px;
+      padding:10px 12px;
+      font-weight:800;
+      font-size:12px;
+      color:rgba(255,255,255,.88);
+      background: rgba(255,255,255,.04);
+    }
+    .btn3:hover{border-color: rgba(106,168,255,.35);}
 
     .file{
       width:100%;
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.22);
-      border-radius: var(--radius2);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      border-radius:18px;
       padding:10px 12px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
-    }
-    .file-left{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width:0;
-    }
-    .file-title{font-size:12px;color:var(--muted)}
-    .file-note{font-size:12px;color:rgba(255,255,255,.32)}
-    .file-right{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex:0 0 auto;
-    }
-    input[type="file"]{font-size:12px;color:var(--muted); max-width:220px;}
-    .small{
-      font-size:12px;
-      color:rgba(255,255,255,.32);
-    }
-
-    .btns{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
-    button{
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.06);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius: 999px;
-      cursor:pointer;
-      font-weight:650;
-      letter-spacing:.1px;
-      font-size:13px;
-    }
-    button:hover{background: rgba(255,255,255,.09)}
-    button.primary{
-      border-color: rgba(59,130,246,.45);
-      background: linear-gradient(180deg, rgba(59,130,246,.33), rgba(59,130,246,.14));
-    }
-    button.primary:hover{background: linear-gradient(180deg, rgba(59,130,246,.42), rgba(59,130,246,.16));}
-    button.ghost{background: rgba(0,0,0,.18)}
-    button:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-    }
-
-    .stats{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
       gap:10px;
       margin-top:10px;
     }
-    .stat{
-      background: rgba(0,0,0,.20);
-      border:1px solid var(--stroke);
-      border-radius: var(--radius2);
-      padding:10px 12px;
-      min-height:70px;
-    }
-    .stat .k{
+    .file-left{display:flex; flex-direction:column; gap:4px; min-width:0;}
+    .file-title{font-size:12px; color:rgba(255,255,255,.86); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .file-note{font-size:12px; color:rgba(255,255,255,.50); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    input[type="file"]{font-size:12px; color:rgba(255,255,255,.60); max-width:50%}
+
+    .mini{
       font-size:12px;
+      color:rgba(255,255,255,.55);
+      margin-top:8px;
+      line-height:1.5;
+    }
+
+    /* Verdict side */
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 520px){
+      .kpis{grid-template-columns:1fr}
+    }
+    .kpi{
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      padding:10px 12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.20);
+    }
+    .kpi .label{
+      font-size:11px;
       letter-spacing:.14em;
-      color:rgba(255,255,255,.38);
       text-transform:uppercase;
+      color:rgba(255,255,255,.55);
     }
-    .stat .v{
-      margin-top:6px;
-      font-size:18px;
-      font-weight:750;
-      letter-spacing:.2px;
-    }
-
-    .alert{
-      margin-top:12px;
-      padding:12px 12px;
-      border-radius: var(--radius2);
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.22);
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:flex-start;
-    }
-    .alert-left{
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      min-width:0;
-    }
-    .lamp{
-      width:10px;height:10px;border-radius:999px;margin-top:5px;flex:0 0 auto;
-      background: var(--warn);
-      box-shadow: 0 0 16px rgba(251,191,36,.45);
-    }
-    .alert h3{
-      margin:0;
-      font-size:14px;
-      letter-spacing:.2px;
-    }
-    .alert p{
-      margin:4px 0 0 0;
-      font-size:13px;
-      color:var(--muted);
-      line-height:1.35;
-      word-break:break-word;
-    }
-    .badge{
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.05);
-      font-size:12px;
-      color:var(--muted);
-      white-space:nowrap;
-      flex:0 0 auto;
-    }
-
-    .verdict-box{
-      margin-top:12px;
-      background: rgba(0,0,0,.18);
-      border:1px solid var(--stroke);
-      border-radius: var(--radius);
-      overflow:hidden;
-    }
-    .verdict-head{
-      padding:12px 12px 10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      border-bottom:1px solid var(--stroke);
-      background: rgba(255,255,255,.03);
-    }
-    .verdict-head .title{
-      font-size:12px;
-      letter-spacing:.16em;
-      color:rgba(255,255,255,.40);
-      text-transform:uppercase;
-    }
-
-    ul{
-      margin:0;
-      padding:14px 18px 16px 30px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      color:rgba(255,255,255,.88);
-      line-height:1.35;
-    }
-    li{word-break:break-word}
-
-    .footer-actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      padding:12px;
-      border-top:1px solid var(--stroke);
-      background: rgba(255,255,255,.03);
-    }
-    .hint{
-      padding:10px 0 0;
-      font-size:12px;
-      color:rgba(255,255,255,.34);
-    }
-
-    .toast{
-      position:fixed;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:18px;
-      background: rgba(0,0,0,.75);
-      border:1px solid rgba(255,255,255,.16);
+    .kpi .value{
+      margin-top:8px;
+      font-weight:900;
+      letter-spacing:.02em;
       color:rgba(255,255,255,.92);
-      padding:10px 12px;
-      border-radius:999px;
+      display:flex; align-items:center; gap:8px;
+    }
+    .badgeDot{width:8px;height:8px;border-radius:50%; background:var(--blue); box-shadow:0 0 16px rgba(106,168,255,.35);}
+    .badgeDot.good{background:var(--good); box-shadow:0 0 16px rgba(52,211,153,.25);}
+    .badgeDot.warn{background:var(--warn); box-shadow:0 0 16px rgba(251,191,36,.20);}
+    .badgeDot.bad{background:var(--bad); box-shadow:0 0 16px rgba(251,113,133,.20);}
+
+    .verdictBox{
+      margin-top:12px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      overflow:hidden;
+      box-shadow: 0 10px 24px rgba(0,0,0,.20);
+    }
+    .verdictHead{
+      padding:12px 12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; flex-wrap:wrap;
+    }
+    .verdictHead .title{
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.62);
+    }
+    .verdictBody{ padding:12px 12px; }
+    .bullets{
+      margin:0;
+      padding-left:16px;
+      color:rgba(255,255,255,.88);
+      font-size:13px;
+      line-height:1.55;
+    }
+    .bullets li{margin:8px 0}
+    .muted{color:var(--muted)}
+    .footer{
+      margin-top:14px;
       font-size:12px;
-      display:none;
-      backdrop-filter: blur(10px);
-      z-index:50;
+      color:rgba(255,255,255,.50);
+      line-height:1.5;
+      padding:0 4px;
+    }
+    .footer a{
+      color:rgba(214,179,90,.95);
+      text-decoration:none;
+      border-bottom:1px dashed rgba(214,179,90,.35);
     }
 
-    /* Print PDF export */
-    @media print{
-      body{background:#fff;color:#000}
-      .topbar,.leftCol,.btns,.file,.footer-actions,.pill{display:none!important}
-      .card{box-shadow:none;border:1px solid #ddd}
-      .wrap{max-width:900px}
-      .verdict-box{border:1px solid #ddd}
-      ul{color:#000}
+    /* Micro “3D tilt” on pointer */
+    .tilt{
+      will-change: transform;
+      transition: transform .12s ease;
     }
   </style>
+
+  <!-- PDF.js for local PDF text extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+  <!-- jsPDF for local PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
+
 <body>
-  <div class="topbar">
-    <div class="topbar-inner">
+  <canvas id="stars"></canvas>
+  <div class="haze" aria-hidden="true"></div>
+
+  <div class="wrap">
+
+    <div class="topbar">
       <div class="brand">
-        <div class="dot"></div>
-        <div style="min-width:0">
+        <div class="sigil" aria-hidden="true"></div>
+        <div>
           <h1>APEX Corporate Translator</h1>
           <p>Translate corporate language into consequences — fast verdict, no spin.</p>
         </div>
       </div>
-      <div class="pill"><span class="live"></span> Local • No upload</div>
+
+      <div class="pillrow">
+        <div class="pill"><span class="dot" id="liveDot"></span><span id="liveText">Local • No upload</span></div>
+        <div class="pill"><span class="mono" id="lastUpdated">Ready: —</span></div>
+        <a class="pill" href="https://kawal393.github.io/ndis-signal-board/" style="text-decoration:none;"><span class="mono">APEX Portal</span></a>
+      </div>
     </div>
-  </div>
 
-  <div class="wrap">
+    <section class="card hero tilt" id="hero">
+      <div class="heroTitle">
+        <h2><span>Verdict</span> Engine</h2>
+        <div class="muted" style="font-size:12px;">Mode: <span class="mono">Public Surface</span></div>
+      </div>
+      <p class="heroMeta">
+        Paste an internal email, Slack message, press release, earnings call excerpt, or leadership announcement.
+        Or load a PDF — extraction occurs locally in your browser.
+      </p>
+    </section>
+
     <div class="grid">
-      <!-- LEFT -->
-      <div class="card leftCol">
-        <div class="card-inner">
-          <h2>Paste the message</h2>
-          <p class="sub">Paste an internal email, Slack message, press release, or leadership announcement. For best results, include the headline/subject + opening paragraphs.</p>
 
-          <div class="label">Message</div>
-          <textarea id="input" placeholder="Paste corporate email / announcement here..."></textarea>
+      <!-- LEFT: INPUT -->
+      <section class="card tilt" id="inputCard">
+        <div class="sectionHead">
+          <div>
+            <div class="kicker">Input</div>
+            <div class="muted" style="font-size:12px; margin-top:6px;">Paste the message</div>
+          </div>
+          <div class="rightNote">
+            <span class="mono" id="charCount">0 chars</span>
+          </div>
+        </div>
 
-          <div class="file" style="margin-top:10px;">
+        <div class="sectionBody">
+          <textarea id="msg" placeholder="Paste corporate email / announcement here…"></textarea>
+
+          <div class="file">
             <div class="file-left">
-              <div class="file-title"><b>PDF Upload</b></div>
-              <div class="file-note">Upload a PDF → we extract text → APEX verdict</div>
+              <div class="file-title">PDF Upload</div>
+              <div class="file-note" id="pdfNote">Upload a PDF — we extract text locally → APEX verdict</div>
             </div>
-            <div class="file-right">
-              <input id="pdf" type="file" accept="application/pdf" />
-              <div id="pdfStatus" class="small">No PDF loaded</div>
-            </div>
+            <input id="pdf" type="file" accept="application/pdf" />
           </div>
 
           <div class="row">
-            <div class="hint">
-              Tip: ruthless triggers include <span style="font-family:var(--mono)">exit</span>, <span style="font-family:var(--mono)">wind down</span>, <span style="font-family:var(--mono)">sunset</span>, <span style="font-family:var(--mono)">portfolio transformation</span>, <span style="font-family:var(--mono)">strategic customers</span>.
-            </div>
-            <div id="charCount" class="small">0 chars</div>
+            <button class="btn" id="run">Translate with APEX</button>
+            <button class="btn2" id="examples">See Real Examples</button>
+            <button class="btn2" id="clear">Clear</button>
           </div>
 
-          <div class="btns">
-            <button class="primary" id="run">Translate with APEX</button>
-            <button class="ghost" id="example">See Real Examples</button>
-            <button class="ghost" id="clear">Clear</button>
+          <div class="mini">
+            Tip: ruthless triggers include <span class="mono">exit</span>, <span class="mono">wind down</span>, <span class="mono">sunset</span>, <span class="mono">portfolio</span>, <span class="mono">strategic review</span>, <span class="mono">transformation</span>, <span class="mono">restructure</span>, <span class="mono">compliance</span>.
           </div>
-
-          <div class="hint">Runs locally in your browser. Nothing is uploaded.</div>
         </div>
-      </div>
+      </section>
 
-      <!-- RIGHT -->
-      <div class="card">
-        <div class="card-inner">
-          <h2 style="font-size:32px">Verdict</h2>
-          <p class="sub">APEX outputs exactly five bullets: what’s happening, why now, what’s next, who’s exposed, what to do.</p>
+      <!-- RIGHT: VERDICT -->
+      <section class="card tilt" id="verdictCard">
+        <div class="sectionHead">
+          <div>
+            <div class="kicker">Verdict</div>
+            <div class="muted" style="font-size:12px; margin-top:6px;">APEX outputs exactly five bullets: what’s happening, why now, what’s next, who’s exposed, what to do.</div>
+          </div>
+          <div class="rightNote">
+            <span class="mono" id="statusPill">Status: —</span>
+          </div>
+        </div>
 
-          <div class="stats">
-            <div class="stat">
-              <div class="k">Status</div>
-              <div class="v" id="statusV">—</div>
+        <div class="sectionBody">
+          <div class="kpis">
+            <div class="kpi">
+              <div class="label">Status</div>
+              <div class="value"><span class="badgeDot" id="dotStatus"></span><span id="kStatus">—</span></div>
             </div>
-            <div class="stat">
-              <div class="k">Confidence</div>
-              <div class="v" id="confV">—</div>
+            <div class="kpi">
+              <div class="label">Confidence</div>
+              <div class="value"><span class="badgeDot" id="dotConf"></span><span id="kConf">—</span></div>
             </div>
-            <div class="stat">
-              <div class="k">Signals</div>
-              <div class="v" id="sigV">—</div>
+            <div class="kpi">
+              <div class="label">Signals</div>
+              <div class="value"><span class="badgeDot" id="dotSig"></span><span id="kSig">—</span></div>
             </div>
           </div>
 
-          <div class="alert" id="alertBox">
-            <div class="alert-left">
-              <div class="lamp" id="lamp"></div>
-              <div style="min-width:0">
-                <h3>APEX ALERT</h3>
-                <p id="alertText">Paste a message and run APEX to get a verdict.</p>
+          <div class="verdictBox">
+            <div class="verdictHead">
+              <div class="title">APEX Verdict (exactly 5 bullets)</div>
+              <button class="btn3" id="copy">Copy Verdict</button>
+            </div>
+            <div class="verdictBody" id="verdictBody">
+              <div class="muted" style="font-size:13px;">
+                • No verdict yet. Paste a message and run APEX.
               </div>
             </div>
-            <div class="badge" id="badge">Status: —</div>
           </div>
 
-          <div class="verdict-box">
-            <div class="verdict-head">
-              <div class="title">APEX Verdict (exactly 5 bullets)</div>
-              <button id="copy">Copy Verdict</button>
-            </div>
-            <ul id="bullets">
-              <li>No verdict yet.</li>
-            </ul>
-
-            <div class="footer-actions">
-              <button id="pdfOut">Download PDF</button>
-              <button id="share">Share Link</button>
-              <button id="save">Save History</button>
-              <button id="view" class="ghost">View History</button>
-            </div>
-            <div class="hint" style="padding:0 12px 12px">Generated locally in your browser.</div>
+          <div class="row" style="margin-top:12px;">
+            <button class="btn2" id="downloadPdf">Download PDF</button>
+            <button class="btn2" id="share">Share Link</button>
+            <button class="btn2" id="save">Save History</button>
+            <button class="btn2" id="view">View History</button>
           </div>
+
+          <div class="mini" id="shareNote" style="display:none;"></div>
         </div>
-      </div>
+      </section>
 
     </div>
+
+    <div class="footer">
+      Runs locally in your browser • Nothing is uploaded.
+      <br/>
+      APEX Surface Nodes: <a href="https://kawal393.github.io/-APEX-GHOST-PROTOCOL/">Ghost Protocol</a> • <a href="https://kawal393.github.io/ndis-signal-board/">NDIS Watchtower</a>
+    </div>
+
   </div>
 
-  <div class="toast" id="toast">Copied.</div>
+<script>
+/* =========================
+   CINEMATIC STARFIELD
+========================= */
+(function starfield(){
+  const c = document.getElementById("stars");
+  const ctx = c.getContext("2d");
+  let w=0,h=0, dpr=1;
+  let stars=[];
+  function resize(){
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    w = Math.floor(window.innerWidth);
+    h = Math.floor(window.innerHeight);
+    c.width = Math.floor(w*dpr);
+    c.height = Math.floor(h*dpr);
+    c.style.width = w+"px";
+    c.style.height = h+"px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const n = Math.floor((w*h)/18000); // density
+    stars = new Array(n).fill(0).map(()=>({
+      x: Math.random()*w,
+      y: Math.random()*h,
+      z: Math.random()*1,
+      r: Math.random()*1.4 + 0.2,
+      a: Math.random()*0.55 + 0.10,
+      s: Math.random()*0.35 + 0.05
+    }));
+  }
+  function draw(t){
+    ctx.clearRect(0,0,w,h);
+    // faint fog
+    const g = ctx.createRadialGradient(w*0.18,h*0.12,0,w*0.18,h*0.12,Math.max(w,h)*0.85);
+    g.addColorStop(0,"rgba(214,179,90,0.06)");
+    g.addColorStop(1,"rgba(0,0,0,0)");
+    ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
 
-  <!-- PDF.js (client-side, no server) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.js"></script>
-  <script>
-    // ========= Utilities =========
-    const $ = (id) => document.getElementById(id);
-    const toast = (msg) => {
-      const t = $("toast");
-      t.textContent = msg;
-      t.style.display = "block";
-      clearTimeout(window.__t);
-      window.__t = setTimeout(() => t.style.display = "none", 1200);
+    for(const s of stars){
+      s.y += s.s; // drift
+      s.x += Math.sin((t/9000)+(s.z*6))*0.05;
+      if(s.y > h+20){ s.y=-20; s.x=Math.random()*w; }
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(255,255,255,${s.a})`;
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener("resize", resize);
+  resize();
+  requestAnimationFrame(draw);
+})();
+
+/* =========================
+   MICRO 3D TILT ON POINTER
+========================= */
+(function tilt(){
+  function bind(el){
+    if(!el) return;
+    el.addEventListener("mousemove", (e)=>{
+      const r = el.getBoundingClientRect();
+      const px = (e.clientX - r.left)/r.width;
+      const py = (e.clientY - r.top)/r.height;
+      const rx = (py - 0.5) * -4;
+      const ry = (px - 0.5) * 5;
+      el.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-1px)`;
+    });
+    el.addEventListener("mouseleave", ()=>{
+      el.style.transform = `perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
+    });
+  }
+  ["hero","inputCard","verdictCard"].forEach(id=>bind(document.getElementById(id)));
+})();
+
+/* =========================
+   APEX TRANSLATOR ENGINE
+   (Local + deterministic)
+========================= */
+(() => {
+  const el = (id)=>document.getElementById(id);
+
+  const msg = el("msg");
+  const run = el("run");
+  const clear = el("clear");
+  const examples = el("examples");
+  const copy = el("copy");
+  const pdf = el("pdf");
+  const pdfNote = el("pdfNote");
+
+  const charCount = el("charCount");
+  const statusPill = el("statusPill");
+
+  const kStatus = el("kStatus");
+  const kConf = el("kConf");
+  const kSig = el("kSig");
+
+  const dotStatus = el("dotStatus");
+  const dotConf = el("dotConf");
+  const dotSig = el("dotSig");
+
+  const verdictBody = el("verdictBody");
+  const downloadPdf = el("downloadPdf");
+  const share = el("share");
+  const save = el("save");
+  const view = el("view");
+  const shareNote = el("shareNote");
+
+  const liveDot = el("liveDot");
+  const liveText = el("liveText");
+  const lastUpdated = el("lastUpdated");
+
+  const KEY = "apex_translator_history_v1";
+
+  function setDot(dot, mode){
+    dot.className = "badgeDot" + (mode ? (" " + mode) : "");
+  }
+  function setTop(mode, text){
+    liveDot.className = "dot" + (mode ? (" " + mode) : "");
+    liveText.textContent = text;
+  }
+
+  function nowStamp(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    const hh = String(d.getHours()).padStart(2,"0");
+    const mm = String(d.getMinutes()).padStart(2,"0");
+    return `${y}-${m}-${day} ${hh}:${mm}`;
+  }
+
+  function updateCounts(){
+    charCount.textContent = `${msg.value.length} chars`;
+  }
+
+  msg.addEventListener("input", updateCounts);
+  updateCounts();
+  lastUpdated.textContent = `Ready: ${nowStamp()}`;
+
+  // Detect signals and compute a clean verdict (5 bullets)
+  const SIGNALS = [
+    {k:"strategic review", w:3, tag:"portfolio review"},
+    {k:"restructure", w:3, tag:"cost reset"},
+    {k:"transformation", w:2, tag:"org change"},
+    {k:"wind down", w:4, tag:"shutdown"},
+    {k:"sunset", w:4, tag:"shutdown"},
+    {k:"exit", w:4, tag:"exit"},
+    {k:"divest", w:4, tag:"asset sale"},
+    {k:"redundanc", w:4, tag:"layoffs"},
+    {k:"headcount", w:3, tag:"layoffs"},
+    {k:"rightsizing", w:3, tag:"layoffs"},
+    {k:"non-core", w:2, tag:"cut list"},
+    {k:"priorit", w:2, tag:"cut list"},
+    {k:"depriorit", w:3, tag:"cut list"},
+    {k:"guidance", w:2, tag:"market reset"},
+    {k:"outlook", w:2, tag:"market reset"},
+    {k:"compliance", w:3, tag:"risk"},
+    {k:"investigation", w:4, tag:"risk"},
+    {k:"incident", w:3, tag:"risk"},
+    {k:"breach", w:4, tag:"risk"},
+    {k:"material", w:2, tag:"risk"},
+    {k:"liquidity", w:4, tag:"cash"},
+    {k:"covenant", w:4, tag:"cash"},
+    {k:"capital raise", w:4, tag:"cash"},
+    {k:"funding", w:3, tag:"cash"},
+    {k:"delay", w:2, tag:"slippage"},
+    {k:"postpone", w:2, tag:"slippage"},
+    {k:"pause", w:3, tag:"slippage"},
+    {k:"supplier", w:2, tag:"ops"},
+    {k:"disruption", w:3, tag:"ops"},
+    {k:"union", w:2, tag:"labor"},
+    {k:"industrial action", w:3, tag:"labor"}
+  ];
+
+  function analyze(text){
+    const t = (text || "").toLowerCase();
+    let score = 0;
+    const hits = [];
+    for(const s of SIGNALS){
+      if(t.includes(s.k)){
+        score += s.w;
+        hits.push(s.tag);
+      }
+    }
+    // Unique tags
+    const uniq = Array.from(new Set(hits));
+    const signalCount = uniq.length;
+
+    // Status
+    let status="HOLD";
+    let statusMode="warn";
+    if(score >= 10){ status="ALERT"; statusMode="bad"; }
+    else if(score >= 5){ status="WATCH"; statusMode="warn"; }
+    else { status="CALM"; statusMode="good"; }
+
+    // Confidence
+    let conf="Low";
+    let confMode="warn";
+    if(text.length > 900 || signalCount >= 6){ conf="High"; confMode="good"; }
+    else if(text.length > 350 || signalCount >= 3){ conf="Medium"; confMode="warn"; }
+    else { conf="Low"; confMode="warn"; }
+
+    // Signal label
+    const sigLabel = signalCount ? `${signalCount} active` : "none";
+
+    // Build the 5 bullets (always exactly 5)
+    const top = uniq.slice(0, 4).join(", ") || "no explicit triggers detected";
+    const happening = score >= 10
+      ? "This is a decision communiqué disguised as reassurance."
+      : score >= 5
+        ? "This is a positioning message; the knife is near the table."
+        : "This is mostly narrative, not action.";
+
+    const whyNow = score >= 10
+      ? "Pressure (cash/risk/portfolio) has reached a forcing function."
+      : score >= 5
+        ? "They’re preparing stakeholders before moving."
+        : "They’re maintaining confidence and optionality.";
+
+    const next = score >= 10
+      ? "Expect hard actions: role cuts, scope reduction, asset sale, or compliance disclosure cadence."
+      : score >= 5
+        ? "Expect follow-up: ‘review outcomes’, ‘next steps’, timeline shifts."
+        : "Expect continued messaging, light changes at most.";
+
+    const exposed = score >= 10
+      ? "Teams tied to non-core work, weak margin lines, and any area under compliance scrutiny."
+      : score >= 5
+        ? "Projects without clear ROI, cost centers, and anyone owning timelines."
+        : "Low immediate exposure; monitor for sudden tone shift.";
+
+    const doNow = score >= 10
+      ? "Treat this as live. Strip fluff. Identify owners, deadlines, cash/risk, and the quiet cut-list. Decide your move before the next memo."
+      : score >= 5
+        ? "Extract the hidden plan: what gets cut, by when, and who must sign. Create a one-page counter-brief for your side."
+        : "Use it for context only. Ask for specifics: dates, owners, and measurable commitments.";
+
+    const bullets = [
+      `What’s happening: ${happening}`,
+      `Why now: ${whyNow}`,
+      `Signals detected: ${top}.`,
+      `Who’s exposed: ${exposed}`,
+      `What to do: ${doNow}`
+    ];
+
+    // “Signals” chip text
+    const signalsText = uniq.length ? uniq.slice(0,3).join(" • ") : "—";
+
+    return {score, uniq, status, statusMode, conf, confMode, sigLabel, signalsText, bullets};
+  }
+
+  function renderVerdict(v){
+    // KPI
+    kStatus.textContent = v.status;
+    kConf.textContent = v.conf;
+    kSig.textContent = v.signalsText;
+
+    statusPill.textContent = `Status: ${v.status}`;
+    setDot(dotStatus, v.statusMode);
+    setDot(dotConf, v.confMode);
+
+    // Signals dot intensity
+    const sigMode = v.statusMode === "bad" ? "bad" : (v.uniq.length ? "warn" : "good");
+    setDot(dotSig, sigMode);
+
+    // Top bar
+    if(v.statusMode === "bad") setTop("bad", "Local • Critical");
+    else if(v.statusMode === "warn") setTop("warn", "Local • Active");
+    else setTop("", "Local • Calm");
+
+    lastUpdated.textContent = `Ready: ${nowStamp()}`;
+
+    // Bullets
+    verdictBody.innerHTML = `<ol class="bullets">${v.bullets.map(b=>`<li>${escapeHtml(b)}</li>`).join("")}</ol>`;
+  }
+
+  function escapeHtml(s){
+    return String(s)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function getHistory(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    }catch(e){ return []; }
+  }
+  function setHistory(arr){
+    localStorage.setItem(KEY, JSON.stringify(arr.slice(0,50)));
+  }
+
+  function currentVerdictText(){
+    const ol = verdictBody.querySelectorAll("li");
+    if(!ol.length) return "";
+    return Array.from(ol).map(li => "• " + li.textContent).join("\n");
+  }
+
+  // Main run
+  run.addEventListener("click", ()=>{
+    const text = msg.value.trim();
+    if(!text){
+      setTop("warn","Local • Awaiting input");
+      return;
+    }
+    const v = analyze(text);
+    renderVerdict(v);
+  });
+
+  clear.addEventListener("click", ()=>{
+    msg.value = "";
+    updateCounts();
+    verdictBody.innerHTML = `<div class="muted" style="font-size:13px;">• No verdict yet. Paste a message and run APEX.</div>`;
+    kStatus.textContent = "—"; kConf.textContent="—"; kSig.textContent="—";
+    statusPill.textContent = "Status: —";
+    setDot(dotStatus,""); setDot(dotConf,""); setDot(dotSig,"");
+    setTop("", "Local • No upload");
+    shareNote.style.display="none";
+  });
+
+  examples.addEventListener("click", ()=>{
+    const sample =
+`Subject: Operating Model Update — Q2
+
+Team,
+
+Following a strategic review of our portfolio and operating model, we are initiating a transformation program to prioritize core initiatives. Some non-core projects will be paused or sunset, and we will take actions to improve liquidity and reduce our cost base. We remain committed to compliance and will provide further guidance as workstreams progress.
+
+More detail will follow in the coming weeks.
+
+— Leadership`;
+    msg.value = sample;
+    updateCounts();
+    run.click();
+  });
+
+  copy.addEventListener("click", async ()=>{
+    const out = currentVerdictText();
+    if(!out) return;
+    try{
+      await navigator.clipboard.writeText(out);
+      copy.textContent = "Copied";
+      setTimeout(()=>copy.textContent="Copy Verdict", 900);
+    }catch(e){
+      copy.textContent = "Copy failed";
+      setTimeout(()=>copy.textContent="Copy Verdict", 900);
+    }
+  });
+
+  // Share link (encodes message into URL)
+  share.addEventListener("click", ()=>{
+    const text = msg.value.trim();
+    if(!text) return;
+    const enc = encodeURIComponent(btoa(unescape(encodeURIComponent(text))).slice(0, 8000));
+    const url = `${location.origin}${location.pathname}?m=${enc}`;
+    shareNote.style.display="block";
+    shareNote.innerHTML = `Share link created:<br><span class="mono">${escapeHtml(url)}</span>`;
+  });
+
+  // Load shared message if present
+  (function loadShared(){
+    const params = new URLSearchParams(location.search);
+    const m = params.get("m");
+    if(!m) return;
+    try{
+      const decoded = decodeURIComponent(m);
+      const text = decodeURIComponent(escape(atob(decoded)));
+      msg.value = text;
+      updateCounts();
+      run.click();
+    }catch(e){}
+  })();
+
+  // Save history
+  save.addEventListener("click", ()=>{
+    const text = msg.value.trim();
+    const verdict = currentVerdictText();
+    if(!text || !verdict) return;
+
+    const v = {
+      at: nowStamp(),
+      input: text.slice(0, 4000),
+      verdict: verdict.slice(0, 4000)
     };
+    const h = getHistory();
+    h.unshift(v);
+    setHistory(h);
+    save.textContent = "Saved";
+    setTimeout(()=>save.textContent="Save History", 900);
+  });
 
-    // ========= Ruthless patterns =========
-    // Terminal decisions are NOT "watch". They are structural.
-    const TERMINAL_PATTERNS = [
-      /\bexit\b/i,
-      /\bwind\s*down\b/i,
-      /\bsunset\b/i,
-      /\bdiscontinue(d)?\b/i,
-      /\bcease\b/i,
-      /\bretire\b/i,
-      /\bdelist(ed)?\b/i,
-      /\bend\s+of\s+(life|support)\b/i,
-      /\bshut\s*down\b/i,
-      /\bclosure\b/i,
-      /\bphase\s*out\b/i
-    ];
-
-    const REALLOCATION_PATTERNS = [
-      /\bai[-\s]?driven\b/i,
-      /\bdata\s*center\b/i,
-      /\bfaster[-\s]?growing\s+segments\b/i,
-      /\bstrategic\s+customers?\b/i,
-      /\bportfolio\s+transformation\b/i,
-      /\balignment\b/i,
-      /\bredeploy(ment|ed|ing)?\b/i,
-      /\bprofitab(le|ility)\b/i,
-      /\bsecular\b/i,
-      /\bgrowth\s+vectors?\b/i
-    ];
-
-    // Common corporate fog (adds weight, but not decisive alone)
-    const FOG_PATTERNS = [
-      /\bstrategic\s+realign(ment|ing)\b/i,
-      /\boperating\s+model\b/i,
-      /\bstreamlin(e|ing)\b/i,
-      /\boptimi(z|s)(e|ing)\b/i,
-      /\bsynerg(y|ies)\b/i,
-      /\bright[-\s]?siz(e|ing)\b/i,
-      /\btransform(ation|ing)\b/i,
-      /\bpriorit(y|ies)\b/i,
-      /\brestructure\b/i,
-      /\breorg(aniz(e|ation)|)\b/i,
-      /\bcost\s+discipline\b/i,
-      /\befficien(cy|cies)\b/i
-    ];
-
-    const LAYOFF_PATTERNS = [
-      /\bredundan(cy|cies)\b/i,
-      /\brole\s+impact\b/i,
-      /\bposition(s)?\s+eliminated\b/i,
-      /\bheadcount\b/i,
-      /\bworkforce\b/i,
-      /\btransition\b/i,
-      /\bseverance\b/i
-    ];
-
-    const LEGAL_PATTERNS = [
-      /\bforward[-\s]?looking\s+statements?\b/i,
-      /\bno\s+duty\s+to\s+update\b/i,
-      /\bmaterially\b/i,
-      /\brisks?\s+and\s+uncertaint(y|ies)\b/i,
-      /\bsec\b/i,
-      /\b10-?k\b/i,
-      /\b10-?q\b/i
-    ];
-
-    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
-
-    function headlineFromText(text){
-      const t = (text||"").trim();
-      if (!t) return "No input";
-      // Prefer first quoted / first line / "Subject:" / "Press Release" headline
-      const lines = t.split(/\n+/).map(s=>s.trim()).filter(Boolean);
-      const subject = lines.find(l => /^subject:/i.test(l));
-      if (subject) return subject.replace(/^subject:\s*/i,"").slice(0,120);
-      // Common press release heading
-      const pr = lines.find(l => /announces|press release|release|exit|wind down|sunset/i.test(l));
-      return (pr || lines[0]).slice(0,120);
+  // View history (simple modal prompt)
+  view.addEventListener("click", ()=>{
+    const h = getHistory();
+    if(!h.length){
+      alert("No history yet.");
+      return;
     }
+    const list = h.slice(0,10).map((x,i)=>`${i+1}) ${x.at} — ${x.input.slice(0,48).replace(/\s+/g," ")}…`).join("\n");
+    const pick = prompt(`History (top 10)\n\n${list}\n\nType a number to load:`);
+    const n = Number(pick);
+    if(!Number.isFinite(n) || n<1 || n>Math.min(10,h.length)) return;
+    msg.value = h[n-1].input;
+    updateCounts();
+    run.click();
+  });
 
-    function countHits(text, patterns){
-      let hits = 0;
-      for (const re of patterns) if (re.test(text)) hits++;
-      return hits;
-    }
+  // PDF export
+  downloadPdf.addEventListener("click", async ()=>{
+    const input = msg.value.trim();
+    const verdict = currentVerdictText();
+    if(!verdict){ return; }
 
-    function analyze(text){
-      const t = (text || "").toString();
-      const clean = t.replace(/\s+/g, " ").trim();
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({unit:"pt", format:"a4"});
+    const margin = 42;
+    let y = 56;
 
-      const terminalHit = TERMINAL_PATTERNS.some(re => re.test(clean));
-      const reallocHit  = REALLOCATION_PATTERNS.some(re => re.test(clean));
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(14);
+    doc.text("APEX Corporate Translator — Verdict", margin, y);
 
-      const fogHits    = countHits(clean, FOG_PATTERNS);
-      const layoffHits = countHits(clean, LAYOFF_PATTERNS);
-      const legalHits  = countHits(clean, LEGAL_PATTERNS);
+    y += 18;
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(10);
+    doc.text(`Generated: ${nowStamp()} (local)`, margin, y);
 
-      // Score model (simple, deterministic)
-      // NOTE: Ruthless override is the key: terminal decisions force HIGH/CRITICAL.
-      let score = 0;
-      let signals = 0;
+    y += 20;
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(11);
+    doc.text("Input (excerpt):", margin, y);
 
-      if (fogHits){ score += fogHits * 2; signals += Math.min(3, fogHits); }
-      if (layoffHits){ score += layoffHits * 3; signals += Math.min(3, layoffHits); }
-      if (legalHits){ score += legalHits * 1; signals += Math.min(2, legalHits); }
+    y += 14;
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(10);
+    const inputLines = doc.splitTextToSize(input ? input : "(none)", 510);
+    doc.text(inputLines.slice(0, 28), margin, y);
+    y += Math.min(28, inputLines.length) * 12 + 10;
 
-      if (terminalHit){ score += 9; signals += 3; }      // heavy
-      if (reallocHit){ score += 4; signals += 1; }       // support
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(11);
+    doc.text("Verdict:", margin, y);
+    y += 14;
 
-      // Base status
-      let status = "WATCH";
-      if (score >= 6) status = "HIGH";
-      if (score >= 12) status = "CRITICAL";
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(10);
+    const verLines = doc.splitTextToSize(verdict, 510);
+    doc.text(verLines, margin, y);
 
-      // RUTHLESS OVERRIDE:
-      // Terminal decisions are minimum HIGH.
-      // Terminal + reallocation = CRITICAL.
-      if (terminalHit && status === "WATCH") status = "HIGH";
-      if (terminalHit && reallocHit) status = "CRITICAL";
+    doc.save("apex-verdict.pdf");
+  });
 
-      // Confidence
-      // If explicit terminal verbs exist, confidence floor rises.
-      let confidence = "Low";
-      if (score >= 8) confidence = "Medium";
-      if (score >= 14) confidence = "High";
-      if (terminalHit && confidence === "Low") confidence = "Medium";
+  // PDF upload -> extract text locally via PDF.js, append into textarea
+  pdf.addEventListener("change", async (e)=>{
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
 
-      // Build the 5 bullets (always exactly 5)
-      const head = headlineFromText(t);
-      let happening = "Informational update; limited direct impact indicated.";
-      let whyNow = "Standard comms cycle or routine notice.";
-      let whatsNext = "Monitor follow-ups and any scope/timeline changes.";
-      let exposed = "Low direct exposure from this text alone.";
-      let todo = "Save and document; ask for specifics (scope, timeline, owner).";
-
-      if (status === "HIGH"){
-        happening = terminalHit
-          ? "A structural move is underway (a line/business is being cut or materially changed)."
-          : "Multiple change markers detected; reorg/efficiency action likely.";
-        whyNow = terminalHit
-          ? "The org is reallocating focus and is closing non-core surface area."
-          : "Language suggests pre-execution alignment (efficiency/operating model).";
-        whatsNext = terminalHit
-          ? "Expect downstream impacts: channel changes, support/warranty shifts, partner updates, internal redeployments."
-          : "Expect manager meetings, role mapping, and decisions within 1–6 weeks.";
-        exposed = terminalHit
-          ? "Teams/products tied to the affected line; channel partners; support operations; adjacent roles."
-          : "Duplicated functions, non-core teams, and roles tied to efficiency/streamline initiatives.";
-        todo = terminalHit
-          ? "Capture the exact decision, dates, and commitments; identify what stops, what continues, and who owns the transition."
-          : "Ask 3 specifics today — (1) scope, (2) reporting line, (3) timeline. Document dates/messages.";
+    pdfNote.textContent = `Loading: ${file.name} (${Math.round(file.size/1024)} KB)`;
+    setTop("warn","Local • Extracting PDF");
+    try{
+      // PDF.js worker
+      if(window.pdfjsLib){
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js";
       }
 
-      if (status === "CRITICAL"){
-        happening = terminalHit
-          ? "This is a terminal decision (exit/sunset/wind-down). Not a tweak — an asset is being terminated."
-          : "Critical change signal — high probability of restructure with direct role/product impact.";
-        whyNow = reallocHit
-          ? "Capital is being reallocated to higher-margin/strategic demand (AI/data center language is the tell)."
-          : "Leadership is locking a major move and controlling narrative exposure.";
-        whatsNext = terminalHit
-          ? "Execution phase: supply/support transitions, contractual notices, partner comms, redeployments, and external knock-on effects."
-          : "Decisions lock fast (days–weeks). Expect individual notices, reorganizations, and scope cuts.";
-        exposed = terminalHit
-          ? "Anyone whose revenue, roadmap, or operations depend on the exited line; channel partners; customers relying on continuity."
-          : "Duplicated functions, non-core initiatives, and roles tied to ‘efficiency/operating model’ language.";
-        todo = terminalHit
-          ? "Treat as final: extract commitments in writing, confirm timelines, map dependencies, and build contingencies immediately."
-          : "Get scope/timeline in writing; document; prepare contingency; escalate internally if your role is in the blast radius.";
-      }
+      const arr = await file.arrayBuffer();
+      const pdfDoc = await pdfjsLib.getDocument({data: arr}).promise;
+      let fullText = "";
+      const maxPages = Math.min(pdfDoc.numPages, 18); // keep it light on mobile
 
-      // Human readable alert line
-      const alert = `Status: ${status} · Confidence: ${confidence} · Signals: ${signals} (score ${score}) — `
-        + (status === "WATCH"
-          ? "Likely informational. Monitor for escalation language."
-          : status === "HIGH"
-            ? "Change markers detected. Prepare for impact."
-            : "Terminal/critical decision language. Act now.");
-
-      return {
-        status,
-        confidence,
-        signals,
-        score,
-        bullets: [
-          `Headline: “${head}” is a ${status} change signal.`,
-          `Why now: ${whyNow}`,
-          `What’s next: ${whatsNext}`,
-          `Who’s exposed: ${exposed}`,
-          `What to do: ${todo}`
-        ],
-        alert
-      };
-    }
-
-    function setLamp(status){
-      const lamp = $("lamp");
-      const badge = $("badge");
-      if (status === "CRITICAL"){
-        lamp.style.background = "var(--bad)";
-        lamp.style.boxShadow = "0 0 16px rgba(239,68,68,.55)";
-        badge.textContent = "Status: CRITICAL";
-      } else if (status === "HIGH"){
-        lamp.style.background = "var(--warn)";
-        lamp.style.boxShadow = "0 0 16px rgba(251,191,36,.45)";
-        badge.textContent = "Status: HIGH";
-      } else {
-        lamp.style.background = "var(--good)";
-        lamp.style.boxShadow = "0 0 16px rgba(54,211,153,.45)";
-        badge.textContent = "Status: WATCH";
-      }
-    }
-
-    function render(result){
-      $("statusV").textContent = result.status;
-      $("confV").textContent = result.confidence;
-      $("sigV").textContent = `${result.signals} (score ${result.score})`;
-      $("alertText").textContent = result.alert;
-      setLamp(result.status);
-
-      const ul = $("bullets");
-      ul.innerHTML = "";
-      result.bullets.slice(0,5).forEach(b => {
-        const li = document.createElement("li");
-        li.textContent = b;
-        ul.appendChild(li);
-      });
-
-      window.__lastVerdict = result;
-    }
-
-    function currentText(){
-      return $("input").value || "";
-    }
-
-    // ========= History (localStorage) =========
-    const KEY = "apex_history_v1";
-    function loadHistory(){
-      try{ return JSON.parse(localStorage.getItem(KEY) || "[]"); }
-      catch{ return []; }
-    }
-    function saveHistory(item){
-      const h = loadHistory();
-      h.unshift(item);
-      localStorage.setItem(KEY, JSON.stringify(h.slice(0,50)));
-    }
-
-    // ========= Share link (compress to URL hash) =========
-    function encodeShare(text){
-      // lightweight encoding (not cryptographic) to allow sharing text snippet if user chooses
-      // If you want "no share of text", comment this out and just share base URL.
-      const raw = encodeURIComponent(text);
-      return "#t=" + raw;
-    }
-    function decodeShare(){
-      const h = location.hash || "";
-      if (h.startsWith("#t=")){
-        try{ return decodeURIComponent(h.slice(3)); } catch { return ""; }
-      }
-      return "";
-    }
-
-    // ========= PDF extraction =========
-    async function extractPdfText(file){
-      const buffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({data: buffer}).promise;
-      let out = "";
-      const maxPages = Math.min(pdf.numPages, 25); // keep it fast
-      for (let p = 1; p <= maxPages; p++){
-        const page = await pdf.getPage(p);
+      for(let p=1; p<=maxPages; p++){
+        const page = await pdfDoc.getPage(p);
         const content = await page.getTextContent();
         const strings = content.items.map(it => it.str).filter(Boolean);
-        out += strings.join(" ") + "\n";
+        fullText += strings.join(" ") + "\n\n";
       }
-      return out.trim();
+
+      // Put into textarea (append)
+      msg.value = (msg.value.trim() ? (msg.value.trim() + "\n\n") : "") + fullText.trim();
+      updateCounts();
+      pdfNote.textContent = `Loaded: ${file.name} • Extracted ${maxPages}/${pdfDoc.numPages} pages`;
+      setTop("good","Local • PDF loaded");
+      lastUpdated.textContent = `Ready: ${nowStamp()}`;
+    }catch(err){
+      pdfNote.textContent = `PDF loaded, extraction failed on this device.`;
+      setTop("bad","Local • PDF error");
     }
+  });
 
-    // ========= Wire up =========
-    $("input").addEventListener("input", () => {
-      $("charCount").textContent = `${currentText().length} chars`;
-    });
-
-    $("run").addEventListener("click", () => {
-      const t = currentText().trim();
-      if (!t){ toast("Paste text first."); return; }
-      const r = analyze(t);
-      render(r);
-    });
-
-    $("clear").addEventListener("click", () => {
-      $("input").value = "";
-      $("charCount").textContent = "0 chars";
-      $("pdf").value = "";
-      $("pdfStatus").textContent = "No PDF loaded";
-      $("statusV").textContent = "—";
-      $("confV").textContent = "—";
-      $("sigV").textContent = "—";
-      $("alertText").textContent = "Paste a message and run APEX to get a verdict.";
-      $("badge").textContent = "Status: —";
-      $("bullets").innerHTML = "<li>No verdict yet.</li>";
-    });
-
-    $("example").addEventListener("click", () => {
-      const ex =
-`Subject: Operating Model Update
-Over the coming weeks we will implement organizational adjustments to streamline execution and align resources to strategic priorities. Some roles may be impacted. Additional details will be shared by your managers as they become available.`;
-      $("input").value = ex;
-      $("charCount").textContent = `${ex.length} chars`;
-      const r = analyze(ex);
-      render(r);
-      toast("Example loaded.");
-    });
-
-    $("copy").addEventListener("click", async () => {
-      const r = window.__lastVerdict;
-      if (!r){ toast("Run APEX first."); return; }
-      const text = r.bullets.join("\n• ").replace(/^/,"• ");
-      await navigator.clipboard.writeText(text);
-      toast("Copied verdict.");
-    });
-
-    $("pdfOut").addEventListener("click", () => {
-      const r = window.__lastVerdict;
-      if (!r){ toast("Run APEX first."); return; }
-      window.print(); // simplest: uses browser print-to-PDF
-    });
-
-    $("save").addEventListener("click", () => {
-      const t = currentText().trim();
-      const r = window.__lastVerdict;
-      if (!t || !r){ toast("Run APEX first."); return; }
-      saveHistory({
-        ts: Date.now(),
-        status: r.status,
-        confidence: r.confidence,
-        signals: r.signals,
-        score: r.score,
-        headline: r.bullets[0],
-        text: t.slice(0, 4000),
-        bullets: r.bullets
-      });
-      toast("Saved to history.");
-    });
-
-    $("view").addEventListener("click", () => {
-      const h = loadHistory();
-      if (!h.length){ toast("No history yet."); return; }
-      const pick = h[0];
-      $("input").value = pick.text;
-      $("charCount").textContent = `${pick.text.length} chars`;
-      render({
-        status: pick.status,
-        confidence: pick.confidence,
-        signals: pick.signals,
-        score: pick.score,
-        bullets: pick.bullets,
-        alert: `Status: ${pick.status} · Confidence: ${pick.confidence} · Signals: ${pick.signals} (score ${pick.score}) — Loaded from history.`
-      });
-      toast("Loaded latest saved item.");
-    });
-
-    $("share").addEventListener("click", async () => {
-      const t = currentText().trim();
-      if (!t){ toast("Paste text first."); return; }
-      const url = location.origin + location.pathname + encodeShare(t);
-      await navigator.clipboard.writeText(url);
-      toast("Share link copied.");
-    });
-
-    $("pdf").addEventListener("change", async (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file){ return; }
-      $("pdfStatus").textContent = "Reading…";
-      try{
-        const txt = await extractPdfText(file);
-        if (!txt || txt.length < 20){
-          $("pdfStatus").textContent = "Failed to read PDF (likely scanned/image-only).";
-          toast("PDF text not extractable.");
-          return;
-        }
-        $("input").value = txt;
-        $("charCount").textContent = `${txt.length} chars`;
-        $("pdfStatus").textContent = "Text extracted.";
-        toast("PDF loaded.");
-      }catch(err){
-        console.error(err);
-        $("pdfStatus").textContent = "Failed to read PDF.";
-        toast("PDF read failed.");
-      }
-    });
-
-    // Load shared text if present
-    const shared = decodeShare();
-    if (shared){
-      $("input").value = shared;
-      $("charCount").textContent = `${shared.length} chars`;
-      const r = analyze(shared);
-      render(r);
-    }
-  </script>
+  // Default calm
+  setTop("", "Local • No upload");
+})();
+</script>
 </body>
 </html>
