@@ -38,6 +38,10 @@
       overflow-x:hidden;
     }
 
+    /* Content always above effects */
+    .wrap{max-width:1120px;margin:0 auto;padding:26px 16px 70px; position:relative; z-index:10;}
+
+    /* Logo veil (uses your uploaded apex-sigil.png if present) */
     body:before{
       content:"";
       position:fixed;
@@ -49,27 +53,36 @@
       background-repeat:no-repeat;
       background-size: 1100px auto;
       background-position: 50% 22%;
-      opacity:.22;
+      opacity:.20;
       pointer-events:none;
-      z-index:-2;
+      z-index:1;
       transform: translateZ(0);
+      filter: saturate(1.05) contrast(1.02);
     }
+
+    /* EXTRA: subtle “mist” gradient film */
     body:after{
       content:"";
-      position:fixed; inset:0;
+      position:fixed;
+      inset:0;
       background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,.08) 1px, transparent 1.2px),
-        radial-gradient(circle at 65% 55%, rgba(255,255,255,.06) 1px, transparent 1.2px),
-        radial-gradient(circle at 80% 25%, rgba(255,255,255,.05) 1px, transparent 1.2px);
-      background-size: 220px 220px, 260px 260px, 320px 320px;
-      opacity:.22;
+        radial-gradient(900px 420px at 50% 15%, rgba(214,179,90,.08), transparent 62%),
+        radial-gradient(900px 520px at 55% 65%, rgba(106,168,255,.06), transparent 62%),
+        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.38));
+      opacity:.55;
       pointer-events:none;
-      z-index:-1;
-      animation: drift 18s linear infinite;
+      z-index:2;
     }
-    @keyframes drift{ from{transform:translate3d(0,0,0)} to{transform:translate3d(-120px, 80px,0)} }
 
-    .wrap{max-width:1120px;margin:0 auto;padding:26px 16px 70px}
+    /* REAL PARTICLES CANVAS (always visible, always moving) */
+    #apexParticles{
+      position:fixed;
+      inset:0;
+      z-index:3;              /* ABOVE logo veil + mist */
+      pointer-events:none;
+      opacity:.42;
+      mix-blend-mode:screen;
+    }
 
     .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}
     .brand{display:flex;align-items:center;gap:12px;min-width:0}
@@ -146,6 +159,16 @@
       padding:14px;
       position:relative;
       overflow:hidden;
+      transform: translateZ(0);
+    }
+    /* subtle 3D edge */
+    .card:before{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(600px 200px at 20% 0%, rgba(214,179,90,.10), transparent 60%),
+                  radial-gradient(600px 220px at 80% 0%, rgba(106,168,255,.10), transparent 60%);
+      opacity:.55;
+      pointer-events:none;
     }
 
     label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.58)}
@@ -162,9 +185,11 @@
       font-size:13px;
       line-height:1.45;
       resize: vertical;
+      position:relative;
+      z-index:1;
     }
     textarea::placeholder{color: rgba(255,255,255,.40)}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:10px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:10px; position:relative; z-index:1;}
 
     .btn{
       border:none;cursor:pointer;border-radius:14px;padding:11px 14px;
@@ -173,6 +198,7 @@
       background: linear-gradient(135deg, var(--gold), var(--gold2));
       box-shadow: 0 16px 34px rgba(214,179,90,.18);
       transition: transform .10s ease, filter .10s ease;
+      position:relative; z-index:1;
     }
     .btn:hover{transform: translateY(-1px); filter: brightness(1.03)}
     .btn:active{transform: translateY(0px); filter: brightness(.98)}
@@ -183,6 +209,7 @@
       border:1px solid rgba(255,255,255,.14);
       backdrop-filter: blur(10px);
       transition: transform .10s ease, border-color .10s ease;
+      position:relative; z-index:1;
     }
     .btn2:hover{transform: translateY(-1px); border-color: rgba(214,179,90,.35)}
     .btn2:active{transform: translateY(0px)}
@@ -193,9 +220,10 @@
       border:1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.18);
       font-size:12px;color:var(--muted);
+      position:relative; z-index:1;
     }
 
-    .kv{display:grid;grid-template-columns: 1fr 1fr 1fr;gap:10px;margin-top:12px}
+    .kv{display:grid;grid-template-columns: 1fr 1fr 1fr;gap:10px;margin-top:12px; position:relative; z-index:1;}
     @media(max-width:720px){.kv{grid-template-columns:1fr}}
     .k{
       border-radius:14px;border:1px solid rgba(255,255,255,.12);
@@ -211,6 +239,7 @@
       border-radius:14px;border:1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.16);
       padding:12px;
+      position:relative; z-index:1;
     }
     .verdictBox pre{
       margin:0;
@@ -228,12 +257,17 @@
       font-size:12px;
       line-height:1.5;
       padding:0 4px;
+      position:relative; z-index:1;
     }
     .footer a{color:rgba(214,179,90,.95);text-decoration:none;border-bottom:1px dashed rgba(214,179,90,.35)}
   </style>
 </head>
 
 <body>
+
+  <!-- MOVING PARTICLES LAYER -->
+  <canvas id="apexParticles" aria-hidden="true"></canvas>
+
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
@@ -308,15 +342,16 @@
         </div>
 
         <div class="row" style="margin-top:10px">
-          <button class="btn2" id="download">Download PDF</button>
+          <button class="btn2" id="download">Download</button>
           <button class="btn2" id="share">Share Link</button>
           <button class="btn2" id="save">Save History</button>
           <button class="btn2" id="history">View History</button>
         </div>
 
         <div class="footer" style="padding:0;margin-top:10px">
-          Surface Nodes: <a href="https://kawal393.github.io/ghost-protocol/">Ghost Protocol</a> •
-          <a href="https://kawal393.github.io/ndis-signal-board/">NDIS Watchtower</a>
+          Surface Nodes:
+          <a href="https://kawal393.github.io/-APEX-GHOST-PROTOCOL/">APEX Ghost Protocol</a> •
+          <a href="https://kawal393.github.io/ndis-signal-board/">APEX NDIS Watchtower</a>
         </div>
       </section>
     </div>
@@ -377,21 +412,9 @@
       triggers[2] ? `• ${triggers[2]}` : `• Watch for downstream customer-impact artifacts.`,
     ].slice(0,3);
 
-    // “Next Cheapest Test” + “Kill Rule” are single gates
     const nextTest = `• Next Cheapest Test: Request the concrete timeline + owner + metric in one reply.`;
     const killRule = `• Kill Rule: If they refuse specifics twice, assume optics > reality and drop.`;
 
-    const bullets = [
-      `• Tier: ${tier}`,
-      `• Confidence: ${conf}`,
-      `• Why:`,
-      ...why,
-      nextTest,
-      killRule
-    ];
-
-    // Must output exactly 5 bullets total for the user’s desired format:
-    // We enforce: Tier, Confidence, Why (max 3 bullets compressed into 1 line), Next Cheapest Test, Kill Rule
     const whyLine = `• Why: ${why.map(x => x.replace("• ","")).join(" | ").slice(0, 220)}`;
     return [
       `• Tier: ${tier}`,
@@ -458,7 +481,7 @@ We are conducting a portfolio review and exploring strategic options to simplify
 
   $("copy").addEventListener("click", () => copyText($("out").textContent));
 
-  // Simple local history
+  // Local history
   const KEY = "apex_translator_history";
   $("save").addEventListener("click", () => {
     const entry = {ts: nowStamp(), msg: $("msg").value.slice(0,2000), out: $("out").textContent.slice(0,3000)};
@@ -494,8 +517,13 @@ We are conducting a portfolio review and exploring strategic options to simplify
   }catch(e){}
 
   $("download").addEventListener("click", () => {
-    // Minimal “pseudo-PDF”: download as .txt for now (works everywhere)
-    const blob = new Blob([$(`out`).textContent], {type:"text/plain;charset=utf-8"});
+    const text =
+`APEX Corporate Translator — Verdict Brief
+Generated: ${nowStamp()}
+
+${$("out").textContent}
+`;
+    const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "APEX_Verdict.txt";
@@ -504,21 +532,9 @@ We are conducting a portfolio review and exploring strategic options to simplify
   });
 })();
 </script>
-  <!-- APEX PARTICLES (real moving layer) -->
-<canvas id="apexParticles" aria-hidden="true"></canvas>
-
-<style>
-  #apexParticles{
-    position:fixed;
-    inset:0;
-    z-index:-1;              /* behind UI, above body::before */
-    pointer-events:none;
-    opacity:.40;
-    mix-blend-mode:screen;
-  }
-</style>
 
 <script>
+/* APEX PARTICLES — deterministic moving layer (won't "freeze") */
 (() => {
   const canvas = document.getElementById("apexParticles");
   if(!canvas) return;
@@ -528,18 +544,25 @@ We are conducting a portfolio review and exploring strategic options to simplify
   let particles=[];
   let raf=0;
 
-  // Pull accent colors from your CSS vars
   const css = getComputedStyle(document.documentElement);
-  const GOLD = css.getPropertyValue("--gold").trim() || "#D6B35A";
-  const BLUE = css.getPropertyValue("--blue").trim() || "#6AA8FF";
+  const GOLD = (css.getPropertyValue("--gold").trim() || "#D6B35A");
+  const BLUE = (css.getPropertyValue("--blue").trim() || "#6AA8FF");
 
   const settings = {
-    count: 72,         // more = heavier
-    speed: 0.22,       // drift speed
-    linkDist: 140,     // connection distance
-    starSize: 1.25,    // particle size
-    twinkle: 0.35,     // shimmer
+    count: 78,
+    speed: 0.22,
+    linkDist: 150,
+    starSize: 1.35,
+    twinkle: 0.33,
   };
+
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce){
+    canvas.style.opacity = ".16";
+    return;
+  }
+
+  function rand(min,max){ return min + Math.random()*(max-min); }
 
   function resize(){
     DPR = Math.min(2, window.devicePixelRatio || 1);
@@ -551,13 +574,10 @@ We are conducting a portfolio review and exploring strategic options to simplify
     canvas.style.height = H + "px";
     ctx.setTransform(DPR,0,0,DPR,0,0);
 
-    // Rebuild particles proportional to screen area
-    const target = Math.max(44, Math.min(120, Math.floor((W*H)/18000)));
+    const target = Math.max(48, Math.min(130, Math.floor((W*H)/17000)));
     settings.count = target;
     seed();
   }
-
-  function rand(min,max){ return min + Math.random()*(max-min); }
 
   function seed(){
     particles = [];
@@ -566,7 +586,7 @@ We are conducting a portfolio review and exploring strategic options to simplify
         x: rand(0,W), y: rand(0,H),
         vx: rand(-settings.speed, settings.speed),
         vy: rand(-settings.speed, settings.speed),
-        r: rand(0.6, settings.starSize),
+        r: rand(0.65, settings.starSize),
         a: rand(0.25, 0.95),
         hue: Math.random() < 0.62 ? "gold" : "blue",
         phase: rand(0, Math.PI*2)
@@ -577,15 +597,15 @@ We are conducting a portfolio review and exploring strategic options to simplify
   function draw(){
     ctx.clearRect(0,0,W,H);
 
-    // soft vignette
+    // Very soft glow wash
     const g = ctx.createRadialGradient(W*0.5,H*0.35, 0, W*0.5,H*0.35, Math.max(W,H)*0.9);
-    g.addColorStop(0,"rgba(215,179,106,.05)");
-    g.addColorStop(0.6,"rgba(59,130,246,.03)");
+    g.addColorStop(0,"rgba(214,179,90,.05)");
+    g.addColorStop(0.55,"rgba(106,168,255,.035)");
     g.addColorStop(1,"rgba(0,0,0,0)");
     ctx.fillStyle = g;
     ctx.fillRect(0,0,W,H);
 
-    // links
+    // Links
     for(let i=0;i<particles.length;i++){
       const p = particles[i];
       for(let j=i+1;j<particles.length;j++){
@@ -594,9 +614,11 @@ We are conducting a portfolio review and exploring strategic options to simplify
         const d = Math.hypot(dx,dy);
         if(d < settings.linkDist){
           const t = 1 - (d/settings.linkDist);
-          ctx.globalAlpha = t*0.18;
+          ctx.globalAlpha = t*0.20;
           ctx.lineWidth = 1;
-          ctx.strokeStyle = (p.hue==="gold" || q.hue==="gold") ? "rgba(214,179,90,.55)" : "rgba(106,168,255,.55)";
+          ctx.strokeStyle = (p.hue==="gold" || q.hue==="gold")
+            ? "rgba(214,179,90,.55)"
+            : "rgba(106,168,255,.55)";
           ctx.beginPath();
           ctx.moveTo(p.x,p.y);
           ctx.lineTo(q.x,q.y);
@@ -605,31 +627,31 @@ We are conducting a portfolio review and exploring strategic options to simplify
       }
     }
 
-    // particles
+    // Particles
     for(const p of particles){
       p.phase += 0.02;
       const tw = 1 + Math.sin(p.phase)*settings.twinkle;
 
-      ctx.globalAlpha = Math.max(0.05, Math.min(1, p.a*0.9));
       const color = p.hue === "gold" ? GOLD : BLUE;
 
-      // glow
-      ctx.beginPath();
-      ctx.fillStyle = color;
+      // Glow orb
+      ctx.globalAlpha = Math.max(0.06, Math.min(1, p.a*0.9));
       ctx.shadowBlur = 18;
       ctx.shadowColor = color;
+      ctx.fillStyle = color;
+      ctx.beginPath();
       ctx.arc(p.x, p.y, p.r*tw, 0, Math.PI*2);
       ctx.fill();
 
-      // crisp core
+      // Core
       ctx.shadowBlur = 0;
-      ctx.globalAlpha = Math.max(0.08, Math.min(1, p.a));
+      ctx.globalAlpha = Math.max(0.10, Math.min(1, p.a));
       ctx.fillStyle = "rgba(255,255,255,.85)";
       ctx.beginPath();
-      ctx.arc(p.x, p.y, Math.max(0.55, p.r*0.55), 0, Math.PI*2);
+      ctx.arc(p.x, p.y, Math.max(0.6, p.r*0.52), 0, Math.PI*2);
       ctx.fill();
 
-      // drift + wrap
+      // Drift
       p.x += p.vx;
       p.y += p.vy;
       if(p.x < -20) p.x = W+20;
@@ -642,18 +664,12 @@ We are conducting a portfolio review and exploring strategic options to simplify
     raf = requestAnimationFrame(draw);
   }
 
-  // Reduce motion respect (keeps it stable if user has it enabled)
-  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if(reduce){
-    canvas.style.opacity = ".18";
-    return;
-  }
-
   window.addEventListener("resize", resize, {passive:true});
   resize();
   cancelAnimationFrame(raf);
   raf = requestAnimationFrame(draw);
 })();
 </script>
+
 </body>
 </html>
