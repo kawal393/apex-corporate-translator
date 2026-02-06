@@ -504,5 +504,156 @@ We are conducting a portfolio review and exploring strategic options to simplify
   });
 })();
 </script>
+  <!-- APEX PARTICLES (real moving layer) -->
+<canvas id="apexParticles" aria-hidden="true"></canvas>
+
+<style>
+  #apexParticles{
+    position:fixed;
+    inset:0;
+    z-index:-1;              /* behind UI, above body::before */
+    pointer-events:none;
+    opacity:.40;
+    mix-blend-mode:screen;
+  }
+</style>
+
+<script>
+(() => {
+  const canvas = document.getElementById("apexParticles");
+  if(!canvas) return;
+
+  const ctx = canvas.getContext("2d", { alpha: true });
+  let W=0,H=0,DPR=1;
+  let particles=[];
+  let raf=0;
+
+  // Pull accent colors from your CSS vars
+  const css = getComputedStyle(document.documentElement);
+  const GOLD = css.getPropertyValue("--gold").trim() || "#D6B35A";
+  const BLUE = css.getPropertyValue("--blue").trim() || "#6AA8FF";
+
+  const settings = {
+    count: 72,         // more = heavier
+    speed: 0.22,       // drift speed
+    linkDist: 140,     // connection distance
+    starSize: 1.25,    // particle size
+    twinkle: 0.35,     // shimmer
+  };
+
+  function resize(){
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = Math.floor(innerWidth);
+    H = Math.floor(innerHeight);
+    canvas.width = Math.floor(W * DPR);
+    canvas.height = Math.floor(H * DPR);
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+
+    // Rebuild particles proportional to screen area
+    const target = Math.max(44, Math.min(120, Math.floor((W*H)/18000)));
+    settings.count = target;
+    seed();
+  }
+
+  function rand(min,max){ return min + Math.random()*(max-min); }
+
+  function seed(){
+    particles = [];
+    for(let i=0;i<settings.count;i++){
+      particles.push({
+        x: rand(0,W), y: rand(0,H),
+        vx: rand(-settings.speed, settings.speed),
+        vy: rand(-settings.speed, settings.speed),
+        r: rand(0.6, settings.starSize),
+        a: rand(0.25, 0.95),
+        hue: Math.random() < 0.62 ? "gold" : "blue",
+        phase: rand(0, Math.PI*2)
+      });
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // soft vignette
+    const g = ctx.createRadialGradient(W*0.5,H*0.35, 0, W*0.5,H*0.35, Math.max(W,H)*0.9);
+    g.addColorStop(0,"rgba(215,179,106,.05)");
+    g.addColorStop(0.6,"rgba(59,130,246,.03)");
+    g.addColorStop(1,"rgba(0,0,0,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,W,H);
+
+    // links
+    for(let i=0;i<particles.length;i++){
+      const p = particles[i];
+      for(let j=i+1;j<particles.length;j++){
+        const q = particles[j];
+        const dx = p.x-q.x, dy=p.y-q.y;
+        const d = Math.hypot(dx,dy);
+        if(d < settings.linkDist){
+          const t = 1 - (d/settings.linkDist);
+          ctx.globalAlpha = t*0.18;
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = (p.hue==="gold" || q.hue==="gold") ? "rgba(214,179,90,.55)" : "rgba(106,168,255,.55)";
+          ctx.beginPath();
+          ctx.moveTo(p.x,p.y);
+          ctx.lineTo(q.x,q.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // particles
+    for(const p of particles){
+      p.phase += 0.02;
+      const tw = 1 + Math.sin(p.phase)*settings.twinkle;
+
+      ctx.globalAlpha = Math.max(0.05, Math.min(1, p.a*0.9));
+      const color = p.hue === "gold" ? GOLD : BLUE;
+
+      // glow
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = color;
+      ctx.arc(p.x, p.y, p.r*tw, 0, Math.PI*2);
+      ctx.fill();
+
+      // crisp core
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = Math.max(0.08, Math.min(1, p.a));
+      ctx.fillStyle = "rgba(255,255,255,.85)";
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(0.55, p.r*0.55), 0, Math.PI*2);
+      ctx.fill();
+
+      // drift + wrap
+      p.x += p.vx;
+      p.y += p.vy;
+      if(p.x < -20) p.x = W+20;
+      if(p.x > W+20) p.x = -20;
+      if(p.y < -20) p.y = H+20;
+      if(p.y > H+20) p.y = -20;
+    }
+
+    ctx.globalAlpha = 1;
+    raf = requestAnimationFrame(draw);
+  }
+
+  // Reduce motion respect (keeps it stable if user has it enabled)
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce){
+    canvas.style.opacity = ".18";
+    return;
+  }
+
+  window.addEventListener("resize", resize, {passive:true});
+  resize();
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(draw);
+})();
+</script>
 </body>
 </html>
