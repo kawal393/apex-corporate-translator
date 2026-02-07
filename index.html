@@ -38,10 +38,8 @@
       overflow-x:hidden;
     }
 
-    /* Content always above effects */
     .wrap{max-width:1120px;margin:0 auto;padding:26px 16px 70px; position:relative; z-index:10;}
 
-    /* Logo veil (uses your uploaded apex-sigil.png if present) */
     body:before{
       content:"";
       position:fixed;
@@ -60,7 +58,6 @@
       filter: saturate(1.05) contrast(1.02);
     }
 
-    /* Mist film */
     body:after{
       content:"";
       position:fixed;
@@ -74,7 +71,6 @@
       z-index:2;
     }
 
-    /* MOVING PARTICLES CANVAS */
     #apexParticles{
       position:fixed;
       inset:0;
@@ -188,7 +184,6 @@
       z-index:1;
     }
     textarea::placeholder{color: rgba(255,255,255,.40)}
-
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:10px; position:relative; z-index:1;}
 
     .btn{
@@ -261,24 +256,43 @@
     }
     .footer a{color:rgba(214,179,90,.95);text-decoration:none;border-bottom:1px dashed rgba(214,179,90,.35)}
 
-    .hint{
+    /* ===== NEW: PAYWALL VISUALS (minimal) ===== */
+    .lockWrap{
       margin-top:10px;
-      padding:10px 12px;
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.14);
-      color: rgba(255,255,255,.78);
-      font-size:12px;
-      line-height:1.45;
-      position:relative; z-index:1;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+      padding:12px;
+      position:relative;
+      z-index:1;
+      overflow:hidden;
+      display:none;
     }
-    .hint .mono{color:rgba(255,255,255,.92)}
+    .lockBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.70);
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      margin-bottom:10px;
+    }
+    .lockText{
+      color:rgba(255,255,255,.78);
+      font-size:12.5px;
+      line-height:1.45;
+      margin:0 0 10px 0;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- MOVING PARTICLES LAYER -->
   <canvas id="apexParticles" aria-hidden="true"></canvas>
 
   <div class="wrap">
@@ -301,34 +315,31 @@
     <section class="panel hero">
       <div class="heroTop">
         <h2><span>Verdict</span> Engine</h2>
-        <div class="pillSmall">Mode: <span class="mono" style="color:rgba(255,255,255,.88)">Public Surface</span></div>
+        <div class="pillSmall">Mode: <span class="mono" id="modeText" style="color:rgba(255,255,255,.88)">Public Surface</span></div>
       </div>
-      <p>
-        Paste an internal email, memo, announcement, or institutional message.
-        This engine refuses greetings, vibes, and nonsense — it only processes signal.
+      <p id="heroDesc">
+        Paste an internal email, Slack message, press release, or leadership announcement.
+        The engine outputs a clean APEX-style brief — five bullets, consequence-first.
       </p>
     </section>
 
     <div class="grid">
       <section class="card">
         <label for="msg">Message</label>
-        <textarea id="msg" placeholder="Paste corporate email / memo / announcement here (not greetings)…"></textarea>
+        <textarea id="msg" placeholder="Paste corporate email / memo / announcement here…"></textarea>
 
         <div class="row">
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="btn" id="run">Generate Verdict</button>
-            <button class="btn2" id="examples">Example</button>
+            <button class="btn2" id="examples">See Real Examples</button>
             <button class="btn2" id="clear">Clear</button>
           </div>
           <div class="pillSmall">Local • No upload</div>
         </div>
 
-        <div class="hint">
-          <strong style="color:rgba(214,179,90,.95)">Signal filter:</strong>
-          If your text is short, social, or lacks institutional markers, APEX will return a plain classification instead of inventing intent.
-          <div style="margin-top:6px;color:rgba(255,255,255,.70)">
-            Triggers: <span class="mono">wind down</span>, <span class="mono">restructure</span>, <span class="mono">strategic review</span>, <span class="mono">compliance</span>, <span class="mono">headcount</span>, <span class="mono">pause</span>, <span class="mono">vendor</span>, <span class="mono">approval</span>.
-          </div>
+        <div class="footer" style="padding:0;margin-top:10px">
+          Signal filter: greetings / vibes / short text returns <span class="mono">NO SIGNAL</span>.
+          Triggers include <span class="mono">exit</span>, <span class="mono">wind down</span>, <span class="mono">restructure</span>, <span class="mono">compliance</span>, <span class="mono">portfolio review</span>.
         </div>
       </section>
 
@@ -352,10 +363,27 @@
 
         <div class="verdictBox">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
-            <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.58)">APEX Verdict (5 lines, concrete)</div>
+            <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.58)">
+              APEX Verdict (5 lines, concrete)
+            </div>
             <button class="btn2" id="copy">Copy</button>
           </div>
-          <pre id="out">• No verdict yet.</pre>
+          <pre id="out">• No verdict yet. Paste a message and run APEX.</pre>
+        </div>
+
+        <!-- NEW: Stripe lock/unlock panel -->
+        <div class="lockWrap" id="lockWrap">
+          <div class="lockBadge">🔒 LOCKED • Full verdict requires payment</div>
+          <p class="lockText">
+            Preview shown. Unlock reveals <span class="mono">Next Action</span> + <span class="mono">Kill Rule</span> and enables download.
+          </p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <button class="btn" id="unlock">Unlock Full Verdict</button>
+            <button class="btn2" id="iPaid">I Paid — Unlock Now</button>
+          </div>
+          <div class="footer" style="padding:0;margin-top:8px">
+            Tip: Set Stripe “After payment → Redirect” to: <span class="mono" id="successUrlText"></span>
+          </div>
         </div>
 
         <div class="row" style="margin-top:10px">
@@ -379,6 +407,9 @@
 (() => {
   const $ = (id) => document.getElementById(id);
 
+  /* ===== CONFIG ===== */
+  const STRIPE_LINK = "https://buy.stripe.com/5kQ5kvawp4eA5g4dAEb7y01";
+
   function nowStamp(){
     const d = new Date();
     const y = d.getFullYear();
@@ -388,167 +419,161 @@
     const mm = String(d.getMinutes()).padStart(2,"0");
     return `${y}-${m}-${day} ${hh}:${mm}`;
   }
-
   $("ready").textContent = `Ready: ${nowStamp()}`;
 
-  // ---------- HARD GATES (prevents hallucinations) ----------
+  /* ===== PAYMENT STATE ===== */
+  const params = new URL(location.href).searchParams;
+  let PAID = params.get("paid") === "1";
+
+  // Show Stripe success URL instruction
+  const successUrl = new URL(location.href);
+  successUrl.searchParams.set("paid","1");
+  $("successUrlText").textContent = successUrl.toString();
+
+  $("modeText").textContent = PAID ? "Paid • Full Verdict" : "Public Surface • Preview";
+
+  /* ===== SIGNAL FILTER (stops “how are you” nonsense) ===== */
   function normalize(s){ return (s||"").trim(); }
+  function lower(s){ return normalize(s).toLowerCase(); }
 
-  function wordCount(s){
-    const t = normalize(s);
-    if(!t) return 0;
-    return t.split(/\s+/).filter(Boolean).length;
-  }
-
-  function isLikelyGreetingOrSmalltalk(s){
-    const t = normalize(s).toLowerCase();
-    if(!t) return true;
-
-    // very short + conversational
-    if(wordCount(t) <= 4) return true;
-
-    // common greetings / check-ins
-    const patterns = [
-      /^hi\b/, /^hey\b/, /^hello\b/, /^yo\b/,
-      /\bhow are you\b/, /\bhow r u\b/, /\bhow's it going\b/, /\bwhats up\b/,
-      /\bgood morning\b/, /\bgood afternoon\b/, /\bgood evening\b/,
-      /\bthank you\b/, /\bthanks\b/, /\bpls\b/, /\bplease\b/
+  function looksLikeGreeting(text){
+    const t = lower(text);
+    const short = t.length < 40;
+    const greetingPatterns = [
+      /^hi\b/, /^hello\b/, /^hey\b/, /^how are you\b/,
+      /^thanks\b/, /^thank you\b/, /^good morning\b/, /^good afternoon\b/, /^good evening\b/,
+      /^what's up\b/, /^sup\b/
     ];
-    if(patterns.some(rx => rx.test(t))) return true;
-
-    // question-only small talk
-    if(t.endsWith("?") && wordCount(t) <= 8) return true;
-
+    if(short && greetingPatterns.some(r => r.test(t))) return true;
+    // Very short with question-mark and no institutional markers
+    if(t.length <= 20 && /[?]/.test(t)) return true;
     return false;
   }
 
-  function hasInstitutionalMarkers(s){
-    const t = normalize(s).toLowerCase();
-
-    // markers that indicate org context
+  function hasInstitutionalMarkers(text){
+    const t = lower(text);
     const markers = [
-      "subject:", "team", "all staff", "effective", "as of", "from:", "cc:", "re:",
-      "policy", "compliance", "audit", "risk", "governance", "approval", "regulatory",
-      "restructure", "wind down", "redund", "layoff", "headcount", "cost", "budget",
-      "portfolio review", "strategic review", "initiative", "program", "deliverable",
-      "timeline", "milestone", "kpi", "metric", "vendor", "contract", "renewal",
-      "customer", "client", "stakeholder", "board", "ceo", "cfo", "management",
-      "implementation", "rollout", "pause", "freeze", "re-org", "operating model"
+      "subject:", "team", "all staff", "effective", "as of", "we are", "please", "policy",
+      "compliance", "regulatory", "audit", "investigation", "breach", "incident",
+      "restructure", "wind down", "redund", "layoff", "headcount", "cost",
+      "strategic", "portfolio", "review", "initiative", "operating model",
+      "vendor", "contract", "approval", "governance", "board", "stakeholder",
+      "timeline", "milestone", "deliverable", "kpi", "metric"
     ];
-
-    let hits = 0;
-    for(const m of markers){
-      if(t.includes(m)) hits++;
-      if(hits >= 2) break;
-    }
-
-    // longer text can pass with fewer hits
-    const wc = wordCount(t);
-    if(wc >= 30 && hits >= 1) return true;
-    if(hits >= 2) return true;
-
-    return false;
+    return markers.some(m => t.includes(m));
   }
 
-  function pickTier(text){
-    const t = text.toLowerCase();
+  function isNoSignal(text){
+    const t = normalize(text);
+    if(!t) return {yes:true, reason:"Empty input."};
+    if(looksLikeGreeting(t)) return {yes:true, reason:"Social greeting / check-in."};
+    if(t.length < 45 && !hasInstitutionalMarkers(t)) return {yes:true, reason:"Too short / lacks institutional markers."};
+    return {yes:false, reason:""};
+  }
 
-    // Drop signals
-    if(t.includes("investigation") || t.includes("breach") || t.includes("misconduct") || t.includes("fraud") || t.includes("termination") || t.includes("cease") || t.includes("suspension")){
+  /* ===== DECISION ENGINE (deterministic, explainable) ===== */
+  function pickDecision(text){
+    const t = lower(text);
+
+    // Hard negative / danger
+    if(t.includes("investigation") || t.includes("breach") || t.includes("regulator") || t.includes("banning") || t.includes("suspension")){
       return ["DROP", "High"];
     }
 
-    // Hold signals (tightening / uncertainty)
-    if(t.includes("restructure") || t.includes("wind down") || t.includes("pause") || t.includes("freeze") || t.includes("cost") || t.includes("budget") || t.includes("redund") || t.includes("review") || t.includes("realign")){
+    // Contraction / pressure
+    if(t.includes("restructure") || t.includes("wind down") || t.includes("redund") || t.includes("layoff") || t.includes("cost") || t.includes("pause")){
       return ["HOLD", "Medium"];
     }
 
-    // Advance signals (clear commitment)
-    if(t.includes("approved") || t.includes("launch") || t.includes("rollout") || t.includes("expansion") || t.includes("hiring") || t.includes("acquire") || t.includes("partnership") || t.includes("investment")){
+    // Expansion / deal motion
+    if(t.includes("acquire") || t.includes("merger") || t.includes("partnership") || t.includes("expansion") || t.includes("growth") || t.includes("strategic investment")){
       return ["ADVANCE", "Medium"];
     }
 
+    // Default
     return ["HOLD", "Low"];
   }
 
-  function verdictFrom(text){
-    const raw = normalize(text);
-    if(!raw) return null;
-
-    // Gate 1: greeting/small talk => classify plainly
-    if(isLikelyGreetingOrSmalltalk(raw)){
-      return [
-        `Decision: N/A`,
-        `Meaning: This is a greeting / social check-in.`,
-        `Intent: Human rapport, not institutional signal.`,
-        `Next Action: If you want APEX, paste an internal email / memo / announcement.`,
-        `Kill Rule: If no institutional context appears, no verdict will be generated.`
-      ].join("\n");
-    }
-
-    // Gate 2: No institutional markers => refuse (no invention)
-    if(!hasInstitutionalMarkers(raw)){
-      return [
-        `Decision: N/A`,
-        `Meaning: Not enough corporate/institutional signal to translate.`,
-        `Intent: Unknown (insufficient evidence).`,
-        `Next Action: Paste the full message with subject + context + decision language.`,
-        `Kill Rule: If context is missing, APEX refuses to speculate.`
-      ].join("\n");
-    }
-
-    // Normal verdict path
-    const [tier, conf] = pickTier(raw);
-
-    const t = raw.toLowerCase();
+  function buildWhyBullets(text){
+    const t = lower(text);
     const hits = [];
     const map = [
-      ["portfolio review", "Portfolio review"],
-      ["strategic review", "Strategic review"],
-      ["restructure", "Restructure"],
-      ["wind down", "Wind-down"],
-      ["redund", "Headcount reduction"],
+      ["portfolio", "Portfolio/priority reshuffle"],
+      ["review", "Formal review language"],
+      ["strategic", "Strategy reframe"],
+      ["compliance", "Compliance gravity"],
+      ["vendor", "Vendor/contract dependency"],
+      ["approval", "Approval gate implied"],
+      ["timeline", "Timeline sensitivity"],
+      ["kpi", "Metric pressure"],
       ["cost", "Cost discipline"],
-      ["budget", "Budget constraint"],
-      ["compliance", "Compliance pressure"],
-      ["audit", "Audit / assurance"],
-      ["regulatory", "Regulatory gravity"],
-      ["pause", "Initiatives paused"],
-      ["freeze", "Freeze signal"],
-      ["vendor", "Vendor/contract signal"],
-      ["approval", "Approval gate"],
-      ["timeline", "Timeline mention"],
-      ["kpi", "Metric/KPI mention"],
-      ["metric", "Metric mention"],
+      ["pause", "Work pause / defer signal"],
+      ["restructure", "Operating model change"]
     ];
     for(const [k,label] of map){
       if(t.includes(k)) hits.push(label);
       if(hits.length >= 3) break;
     }
-    while(hits.length < 3) hits.push("General repositioning / narrative control");
+    if(hits.length === 0) hits.push("Institutional tone without hard commitments");
+    return hits;
+  }
+
+  function fullVerdict(text){
+    const ns = isNoSignal(text);
+    if(ns.yes){
+      return [
+        `Decision: NO SIGNAL`,
+        `Meaning: This is not corporate/institutional language (${ns.reason})`,
+        `Intent: Social check-in or non-decision text.`,
+        `Next Action: Paste an internal memo / announcement / decision update.`,
+        `Kill Rule: Do not generate a verdict from greetings, vibes, or short text.`
+      ].join("\n");
+    }
+
+    const [decision, conf] = pickDecision(text);
+    const why = buildWhyBullets(text).join(" | ");
 
     return [
-      `Decision: ${tier}`,
-      `Meaning: ${tier === "ADVANCE" ? "Commitment signal (they are moving)." : tier === "DROP" ? "Severe risk signal (avoid / exit)." : "Uncertainty or tightening (wait for specifics)."} `,
-      `Intent: ${hits.join(" | ")}`,
-      `Next Action: Ask for owner + deadline + single success metric (one reply).`,
-      `Kill Rule: If they refuse specifics twice, treat as optics and disengage.`
+      `Decision: ${decision}`,
+      `Meaning: Translate words → consequences. This message signals a ${decision === "ADVANCE" ? "move" : "constraint"} condition.`,
+      `Intent: ${why}.`,
+      `Next Action: Ask one question: “Who owns this, what’s the timeline, what’s the single success metric?”`,
+      `Kill Rule: If they refuse specifics twice (owner + timeline + metric), treat as optics and disengage.`
     ].join("\n");
   }
 
-  function setKV(tier, conf){
-    $("tier").textContent = tier || "—";
+  function previewVerdict(text){
+    const ns = isNoSignal(text);
+    if(ns.yes){
+      // In NO SIGNAL mode we can show full, because it's not the paid product.
+      return fullVerdict(text);
+    }
+
+    const [decision, conf] = pickDecision(text);
+    const why = buildWhyBullets(text).join(" | ");
+    // Preview: first 3 lines only
+    return [
+      `Decision: ${decision}`,
+      `Meaning: Institutional message detected. Preview only.`,
+      `Intent: ${why}.`
+    ].join("\n");
+  }
+
+  function setKV(decision, conf){
+    $("tier").textContent = decision || "—";
     $("conf").textContent = conf || "—";
 
-    const cls = (v) => v === "High" ? "bad" : (v === "Medium" ? "warn" : "dim");
-    $("conf").className = `v ${cls(conf)}`;
-    $("tier").className = `v ${tier === "ADVANCE" ? "ok" : (tier === "DROP" ? "bad" : "dim")}`;
+    const ccls = (v) => v === "High" ? "bad" : (v === "Medium" ? "warn" : "dim");
+    $("conf").className = `v ${ccls(conf)}`;
+
+    const d = (decision||"").toUpperCase();
+    $("tier").className = `v ${d === "ADVANCE" ? "ok" : (d === "DROP" ? "bad" : (d === "NO SIGNAL" ? "dim" : "dim"))}`;
   }
 
   function parseKV(out){
-    const tier = (out.match(/Decision:\s*(ADVANCE|HOLD|DROP)/i) || [])[1];
-    const conf = (out.match(/Confidence:\s*(Low|Medium|High)/i) || [])[1];
-    return {tier: (tier||"—").toUpperCase(), conf: conf || (tier ? (tier.toUpperCase()==="DROP" ? "High" : "Low") : "—")};
+    const dec = (out.match(/Decision:\s*(ADVANCE|HOLD|DROP|NO SIGNAL)/i) || [])[1];
+    const conf = (out.match(/Confidence:\s*(Low|Medium|High)/i) || [])[1]; // not used in current lines; safe fallback
+    return {decision: (dec || "HOLD").toUpperCase(), conf: conf || "Low"};
   }
 
   function copyText(text){
@@ -562,34 +587,45 @@
     });
   }
 
-  $("run").addEventListener("click", () => {
-    const v = verdictFrom($("msg").value);
-    if(!v){
-      $("out").textContent = "• No verdict yet.";
-      $("status").textContent = "READY";
-      setKV("—","—");
+  function updateButtonsForPaywall(nsYes){
+    // If NO SIGNAL, no lock (free classification).
+    if(nsYes){
+      $("lockWrap").style.display = "none";
       return;
     }
+    // If not paid, show lock panel.
+    $("lockWrap").style.display = PAID ? "none" : "block";
+  }
+
+  $("run").addEventListener("click", () => {
+    const raw = $("msg").value || "";
+    const ns = isNoSignal(raw);
+
+    let v;
+    if(PAID){
+      v = fullVerdict(raw);
+      $("status").textContent = "GENERATED";
+    }else{
+      v = previewVerdict(raw);
+      $("status").textContent = ns.yes ? "GENERATED" : "PREVIEW";
+    }
+
     $("out").textContent = v;
 
-    // Set Decision + Confidence only for actual verdicts
-    if(/Decision:\s*N\/A/i.test(v)){
-      setKV("—","—");
-      $("status").textContent = "REFUSED";
-    } else {
-      const kv = parseKV(v);
-      const tier = kv.tier === "ADVANCE" ? "ADVANCE" : (kv.tier === "DROP" ? "DROP" : "HOLD");
-      const conf = (tier === "DROP") ? "High" : (tier === "ADVANCE" ? "Medium" : "Low");
-      setKV(tier, conf);
-      $("status").textContent = "GENERATED";
-    }
+    // Decision + confidence display
+    const dec = (v.match(/Decision:\s*(ADVANCE|HOLD|DROP|NO SIGNAL)/i) || [])[1] || "HOLD";
+    const conf = ns.yes ? "High" : pickDecision(raw)[1]; // NO SIGNAL is "certain" classification
+    setKV(dec.toUpperCase(), conf);
+
+    updateButtonsForPaywall(ns.yes);
   });
 
   $("clear").addEventListener("click", () => {
     $("msg").value = "";
-    $("out").textContent = "• No verdict yet.";
+    $("out").textContent = "• No verdict yet. Paste a message and run APEX.";
     $("status").textContent = "READY";
     setKV("—","—");
+    $("lockWrap").style.display = "none";
   });
 
   $("examples").addEventListener("click", () => {
@@ -600,6 +636,19 @@ We are conducting a portfolio review and exploring strategic options to simplify
   });
 
   $("copy").addEventListener("click", () => copyText($("out").textContent));
+
+  // Stripe unlock
+  $("unlock").addEventListener("click", () => {
+    // Open Stripe Payment Link
+    window.location.href = STRIPE_LINK;
+  });
+
+  // Manual unlock (if Stripe doesn't redirect back)
+  $("iPaid").addEventListener("click", () => {
+    const u = new URL(location.href);
+    u.searchParams.set("paid","1");
+    location.href = u.toString();
+  });
 
   // Local history
   const KEY = "apex_translator_history";
@@ -622,6 +671,8 @@ We are conducting a portfolio review and exploring strategic options to simplify
     const msg = $("msg").value.trim();
     if(!msg){ alert("Paste a message first."); return; }
     const url = new URL(location.href);
+    // Do NOT share paid flag automatically
+    url.searchParams.delete("paid");
     url.searchParams.set("m", btoa(unescape(encodeURIComponent(msg))).slice(0,1800));
     copyText(url.toString());
     alert("Link copied.");
@@ -637,11 +688,16 @@ We are conducting a portfolio review and exploring strategic options to simplify
   }catch(e){}
 
   $("download").addEventListener("click", () => {
+    if(!PAID && !isNoSignal($("msg").value||"").yes){
+      alert("Payment required to download full verdict.");
+      return;
+    }
     const text =
 `APEX Corporate Translator — Verdict Brief
 Generated: ${nowStamp()}
+Mode: ${PAID ? "PAID • Full Verdict" : "Public Surface"}
 
-${$("out").textContent}
+${PAID ? fullVerdict($("msg").value||"") : $("out").textContent}
 `;
     const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
     const a = document.createElement("a");
@@ -650,6 +706,18 @@ ${$("out").textContent}
     a.click();
     URL.revokeObjectURL(a.href);
   });
+
+  // On load: reflect paid mode in hero copy
+  if(PAID){
+    $("heroDesc").textContent =
+      "Paid mode unlocked. Paste an institutional message. The engine returns a concrete 5-line verdict: Decision, Meaning, Intent, Next Action, Kill Rule.";
+    $("modeText").textContent = "Paid • Full Verdict";
+  }else{
+    $("heroDesc").textContent =
+      "Paste an internal email, Slack message, press release, or leadership announcement. Public surface shows preview. Unlock reveals Next Action + Kill Rule.";
+    $("modeText").textContent = "Public Surface • Preview";
+  }
+
 })();
 </script>
 
@@ -717,7 +785,6 @@ ${$("out").textContent}
   function draw(){
     ctx.clearRect(0,0,W,H);
 
-    // Soft glow wash
     const g = ctx.createRadialGradient(W*0.5,H*0.35, 0, W*0.5,H*0.35, Math.max(W,H)*0.9);
     g.addColorStop(0,"rgba(214,179,90,.05)");
     g.addColorStop(0.55,"rgba(106,168,255,.035)");
@@ -725,7 +792,6 @@ ${$("out").textContent}
     ctx.fillStyle = g;
     ctx.fillRect(0,0,W,H);
 
-    // Links
     for(let i=0;i<particles.length;i++){
       const p = particles[i];
       for(let j=i+1;j<particles.length;j++){
@@ -747,7 +813,6 @@ ${$("out").textContent}
       }
     }
 
-    // Particles
     for(const p of particles){
       p.phase += 0.02;
       const tw = 1 + Math.sin(p.phase)*settings.twinkle;
