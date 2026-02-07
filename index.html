@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>APEX Corporate Translator — Verdict Engine</title>
-  <meta name="description" content="Translate corporate language into consequences — fast verdict, no spin."/>
+  <meta name="description" content="Translate corporate language into consequences — clear decision, no spin."/>
 
   <style>
     :root{
@@ -38,10 +38,8 @@
       overflow-x:hidden;
     }
 
-    /* Content always above effects */
     .wrap{max-width:1120px;margin:0 auto;padding:26px 16px 70px; position:relative; z-index:10;}
 
-    /* Logo veil (uses your uploaded apex-sigil.png if present) */
     body:before{
       content:"";
       position:fixed;
@@ -60,7 +58,6 @@
       filter: saturate(1.05) contrast(1.02);
     }
 
-    /* EXTRA: subtle “mist” gradient film */
     body:after{
       content:"";
       position:fixed;
@@ -74,11 +71,10 @@
       z-index:2;
     }
 
-    /* REAL PARTICLES CANVAS (always visible, always moving) */
     #apexParticles{
       position:fixed;
       inset:0;
-      z-index:3;              /* ABOVE logo veil + mist */
+      z-index:3;
       pointer-events:none;
       opacity:.42;
       mix-blend-mode:screen;
@@ -161,7 +157,6 @@
       overflow:hidden;
       transform: translateZ(0);
     }
-    /* subtle 3D edge */
     .card:before{
       content:"";
       position:absolute; inset:0;
@@ -265,7 +260,6 @@
 
 <body>
 
-  <!-- MOVING PARTICLES LAYER -->
   <canvas id="apexParticles" aria-hidden="true"></canvas>
 
   <div class="wrap">
@@ -274,11 +268,17 @@
         <div class="sig" aria-hidden="true"></div>
         <div style="min-width:0">
           <h1>APEX Corporate Translator</h1>
-          <div class="sub">Translate corporate language into consequences — fast verdict, no spin.</div>
+          <div class="sub">Translate corporate language into consequences — clear decision, no spin.</div>
         </div>
       </div>
       <div class="pillrow">
         <div class="pill"><span class="dot"></span><span class="mono" id="ready">Ready: —</span></div>
+
+        <!-- PAID BUTTON (Stripe) -->
+        <a class="pill" id="paidBtn" href="#" target="_blank" rel="noopener" title="Paid Verdict Brief via Stripe">
+          <span class="muted">PAID</span>&nbsp;<span style="color:rgba(214,179,90,.95);font-weight:900">VERDICT</span>
+        </a>
+
         <a class="pill" href="https://kawal393.github.io/" style="text-decoration:none">
           <span class="muted">APEX</span>&nbsp;<span style="color:rgba(214,179,90,.95);font-weight:900">PORTAL</span>
         </a>
@@ -288,11 +288,11 @@
     <section class="panel hero">
       <div class="heroTop">
         <h2><span>Verdict</span> Engine</h2>
-        <div class="pillSmall">Mode: <span class="mono" style="color:rgba(255,255,255,.88)">Public Surface</span></div>
+        <div class="pillSmall">Output: <span class="mono" style="color:rgba(255,255,255,.88)">Decision → Action</span></div>
       </div>
       <p>
         Paste an internal email, Slack message, press release, or leadership announcement.
-        The engine outputs a clean APEX-style brief — five bullets, consequence-first.
+        The engine returns a simple decision and what to do next — not vibes.
       </p>
     </section>
 
@@ -303,15 +303,15 @@
 
         <div class="row">
           <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn" id="run">Translate with APEX</button>
-            <button class="btn2" id="examples">See Real Examples</button>
+            <button class="btn" id="run">Generate Verdict</button>
+            <button class="btn2" id="examples">Example</button>
             <button class="btn2" id="clear">Clear</button>
           </div>
           <div class="pillSmall">Local • No upload</div>
         </div>
 
         <div class="footer" style="padding:0;margin-top:10px">
-          Tip: triggers include <span class="mono">exit</span>, <span class="mono">wind down</span>, <span class="mono">restructure</span>, <span class="mono">compliance</span>, <span class="mono">portfolio review</span>.
+          Tip triggers: <span class="mono">wind down</span>, <span class="mono">restructure</span>, <span class="mono">strategic review</span>, <span class="mono">compliance</span>, <span class="mono">pause</span>.
         </div>
       </section>
 
@@ -320,7 +320,7 @@
 
         <div class="kv">
           <div class="k">
-            <div class="t">Tier</div>
+            <div class="t">Decision</div>
             <div class="v dim" id="tier">—</div>
           </div>
           <div class="k">
@@ -335,10 +335,12 @@
 
         <div class="verdictBox">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
-            <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.58)">APEX Verdict (exactly 5 bullets)</div>
-            <button class="btn2" id="copy">Copy Verdict</button>
+            <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.58)">
+              APEX Verdict (5 lines, concrete)
+            </div>
+            <button class="btn2" id="copy">Copy</button>
           </div>
-          <pre id="out">• No verdict yet. Paste a message and run APEX.</pre>
+          <pre id="out">Decision: —</pre>
         </div>
 
         <div class="row" style="margin-top:10px">
@@ -351,7 +353,8 @@
         <div class="footer" style="padding:0;margin-top:10px">
           Surface Nodes:
           <a href="https://kawal393.github.io/-APEX-GHOST-PROTOCOL/">APEX Ghost Protocol</a> •
-          <a href="https://kawal393.github.io/ndis-signal-board/">APEX NDIS Watchtower</a>
+          <a href="https://kawal393.github.io/ndis-signal-board/">APEX NDIS Watchtower</a> •
+          <a href="https://kawal393.github.io/ompc-1/">APEX-ATA Ledger</a>
         </div>
       </section>
     </div>
@@ -359,6 +362,9 @@
 
 <script>
 (() => {
+  // ✅ PASTE YOUR STRIPE PAYMENT LINK HERE (one time)
+  const STRIPE_LINK = "PASTE_STRIPE_LINK_HERE";
+
   const $ = (id) => document.getElementById(id);
 
   function nowStamp(){
@@ -373,71 +379,121 @@
 
   $("ready").textContent = `Ready: ${nowStamp()}`;
 
-  function pickTier(text){
-    const t = text.toLowerCase();
-    if(t.includes("banning") || t.includes("investigation") || t.includes("breach")) return ["Drop", "High"];
-    if(t.includes("restructure") || t.includes("wind down") || t.includes("cost out") || t.includes("redund")) return ["Hold", "Medium"];
-    if(t.includes("expansion") || t.includes("growth") || t.includes("acquire") || t.includes("partnership")) return ["Advance", "Medium"];
-    return ["Hold", "Low"];
+  // Wire Stripe button
+  const paidBtn = document.getElementById("paidBtn");
+  if(STRIPE_LINK && STRIPE_LINK.startsWith("http")){
+    paidBtn.href = STRIPE_LINK;
+  } else {
+    paidBtn.href = "#";
+    paidBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("Paste your Stripe payment link into STRIPE_LINK in the code.");
+    });
+  }
+
+  function confidenceFrom(decision, factsCount){
+    if(decision === "DROP" && factsCount >= 2) return "High";
+    if(decision === "ADVANCE" && factsCount >= 2) return "Medium";
+    if(decision === "HOLD" && factsCount >= 2) return "Medium";
+    return "Low";
+  }
+
+  // Concrete trigger extraction (facts, not vibes)
+  function extractFacts(rawLower){
+    const facts = [];
+
+    const rules = [
+      ["portfolio review", "They are re-evaluating assets/projects."],
+      ["strategic review", "They are re-evaluating direction."],
+      ["wind down", "They are signaling shutdown/exit of a unit."],
+      ["restructure", "They are changing structure/roles."],
+      ["redund", "They are reducing headcount."],
+      ["pause", "They are halting initiatives."],
+      ["delay", "They are slipping timelines."],
+      ["compliance", "They are reacting to compliance/regulatory pressure."],
+      ["investigation", "There is an investigation or formal scrutiny mentioned."],
+      ["breach", "A breach or failure is referenced."],
+      ["cost", "Cost discipline is being prioritized."],
+      ["simplify", "They are simplifying operations or scope."],
+      ["exploring options", "They are keeping optionality open (non-commitment language)."],
+      ["aligned to our long-term", "They are using future framing to avoid specifics now."],
+    ];
+
+    for(const [k, v] of rules){
+      if(rawLower.includes(k)) facts.push(v);
+      if(facts.length >= 3) break;
+    }
+    return facts;
+  }
+
+  // Decision rule (simple, consistent)
+  function decide(rawLower){
+    const hardDrop = ["wind down","shutdown","cease","terminate","banning","investigation","breach","fraud","insolv"];
+    if(hardDrop.some(k => rawLower.includes(k))) return "DROP";
+
+    const hold = ["restructure","strategic review","portfolio review","pause","delay","cost discipline","simplify","redund"];
+    if(hold.some(k => rawLower.includes(k))) return "HOLD";
+
+    const advance = ["expansion","growth","acquire","acquisition","partnership","hiring","launch","invest"];
+    if(advance.some(k => rawLower.includes(k))) return "ADVANCE";
+
+    return "HOLD";
   }
 
   function verdictFrom(text){
     const raw = text.trim();
     if(!raw) return null;
 
-    const [tier, conf] = pickTier(raw);
-
-    const triggers = [];
     const t = raw.toLowerCase();
-    const map = [
-      ["exit", "Exit / sale pressure"],
-      ["wind down", "Wind-down language"],
-      ["restructure", "Restructure signal"],
-      ["redund", "Headcount reduction"],
-      ["compliance", "Compliance pressure"],
-      ["review", "Portfolio review"],
-      ["strategic", "Strategy reframe"],
-      ["transform", "Transformation narrative"],
-      ["delay", "Delay / slip risk"],
-      ["regulat", "Regulatory gravity"],
-    ];
-    for(const [k, label] of map){
-      if(t.includes(k)) triggers.push(label);
-      if(triggers.length >= 4) break;
-    }
+    const decision = decide(t);
+    const facts = extractFacts(t);
 
-    const why = [
-      triggers[0] ? `• ${triggers[0]}` : `• Narrative indicates internal repositioning.`,
-      triggers[1] ? `• ${triggers[1]}` : `• Language suggests constraint / pressure management.`,
-      triggers[2] ? `• ${triggers[2]}` : `• Watch for downstream customer-impact artifacts.`,
-    ].slice(0,3);
+    // Plain English meaning (one sentence)
+    let meaning = "They are not committing to a concrete move yet.";
+    if(decision === "DROP") meaning = "This message signals a high-risk outcome or an exit direction.";
+    if(decision === "HOLD") meaning = "This message signals uncertainty or internal tightening — wait for specifics.";
+    if(decision === "ADVANCE") meaning = "This message signals forward motion — but confirm the concrete plan.";
 
-    const nextTest = `• Next Cheapest Test: Request the concrete timeline + owner + metric in one reply.`;
-    const killRule = `• Kill Rule: If they refuse specifics twice, assume optics > reality and drop.`;
+    // What they're actually doing (intent, not tone)
+    let intent = "They are managing perception while keeping optionality open.";
+    if(decision === "DROP") intent = "They are signaling shutdown/serious risk OR preparing a defensive posture.";
+    if(decision === "HOLD") intent = "They are rebalancing internally and avoiding hard commitments right now.";
+    if(decision === "ADVANCE") intent = "They are moving toward action and aligning stakeholders to a direction.";
 
-    const whyLine = `• Why: ${why.map(x => x.replace("• ","")).join(" | ").slice(0, 220)}`;
-    return [
-      `• Tier: ${tier}`,
-      `• Confidence: ${conf}`,
-      whyLine,
-      nextTest,
-      killRule
-    ].join("\n");
+    // Next action (one cheap step)
+    const nextAction = "Reply with one question: “What is the owner, the timeline, and the single success metric?”";
+
+    // Kill rule (binary)
+    const killRule = "If they refuse specifics twice (owner + timeline + metric), disengage and treat it as optics.";
+
+    const factsLine = facts.length ? facts.join(" ") : "No explicit operational trigger detected; message is generic."
+
+    const conf = confidenceFrom(decision, facts.length);
+
+    return {
+      decision,
+      confidence: conf,
+      text: [
+        `Decision: ${decision}`,
+        `Meaning: ${meaning}`,
+        `Intent: ${intent}`,
+        `Next Action: ${nextAction}`,
+        `Kill Rule: ${killRule}`
+      ].join("\n"),
+      factsCount: facts.length,
+      factsLine
+    };
   }
 
-  function setKV(tier, conf){
-    $("tier").textContent = tier || "—";
+  function setKV(decision, conf){
+    $("tier").textContent = decision || "—";
     $("conf").textContent = conf || "—";
 
-    const cls = (v) => v === "High" ? "bad" : (v === "Medium" ? "warn" : "dim");
-    $("conf").className = `v ${cls(conf)}`;
-    $("tier").className = `v ${tier === "Advance" ? "ok" : (tier === "Drop" ? "bad" : "dim")}`;
-  }
+    const clsConf = (v) => v === "High" ? "bad" : (v === "Medium" ? "warn" : "dim");
+    $("conf").className = `v ${clsConf(conf)}`;
 
-  function parseKV(out){
-    const tier = (out.match(/Tier:\s*(Advance|Hold|Partner-Only|Drop)/i) || [])[1];
-    const conf = (out.match(/Confidence:\s*(Low|Medium|High)/i) || [])[1];
-    return {tier: tier || "Hold", conf: conf || "Low"};
+    const clsDec = (v) => v === "ADVANCE" ? "ok" : (v === "DROP" ? "bad" : "dim");
+    $("tier").className = `v ${clsDec(decision)}`;
   }
 
   function copyText(text){
@@ -454,20 +510,19 @@
   $("run").addEventListener("click", () => {
     const v = verdictFrom($("msg").value);
     if(!v){
-      $("out").textContent = "• No verdict yet. Paste a message and run APEX.";
+      $("out").textContent = "Decision: —";
       $("status").textContent = "READY";
       setKV("—","—");
       return;
     }
-    $("out").textContent = v;
-    const kv = parseKV(v);
-    setKV(kv.tier, kv.conf);
+    $("out").textContent = v.text;
+    setKV(v.decision, v.confidence);
     $("status").textContent = "GENERATED";
   });
 
   $("clear").addEventListener("click", () => {
     $("msg").value = "";
-    $("out").textContent = "• No verdict yet. Paste a message and run APEX.";
+    $("out").textContent = "Decision: —";
     $("status").textContent = "READY";
     setKV("—","—");
   });
@@ -597,7 +652,6 @@ ${$("out").textContent}
   function draw(){
     ctx.clearRect(0,0,W,H);
 
-    // Very soft glow wash
     const g = ctx.createRadialGradient(W*0.5,H*0.35, 0, W*0.5,H*0.35, Math.max(W,H)*0.9);
     g.addColorStop(0,"rgba(214,179,90,.05)");
     g.addColorStop(0.55,"rgba(106,168,255,.035)");
@@ -605,7 +659,6 @@ ${$("out").textContent}
     ctx.fillStyle = g;
     ctx.fillRect(0,0,W,H);
 
-    // Links
     for(let i=0;i<particles.length;i++){
       const p = particles[i];
       for(let j=i+1;j<particles.length;j++){
@@ -627,14 +680,12 @@ ${$("out").textContent}
       }
     }
 
-    // Particles
     for(const p of particles){
       p.phase += 0.02;
       const tw = 1 + Math.sin(p.phase)*settings.twinkle;
 
       const color = p.hue === "gold" ? GOLD : BLUE;
 
-      // Glow orb
       ctx.globalAlpha = Math.max(0.06, Math.min(1, p.a*0.9));
       ctx.shadowBlur = 18;
       ctx.shadowColor = color;
@@ -643,7 +694,6 @@ ${$("out").textContent}
       ctx.arc(p.x, p.y, p.r*tw, 0, Math.PI*2);
       ctx.fill();
 
-      // Core
       ctx.shadowBlur = 0;
       ctx.globalAlpha = Math.max(0.10, Math.min(1, p.a));
       ctx.fillStyle = "rgba(255,255,255,.85)";
@@ -651,7 +701,6 @@ ${$("out").textContent}
       ctx.arc(p.x, p.y, Math.max(0.6, p.r*0.52), 0, Math.PI*2);
       ctx.fill();
 
-      // Drift
       p.x += p.vx;
       p.y += p.vy;
       if(p.x < -20) p.x = W+20;
