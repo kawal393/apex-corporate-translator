@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>APEX Corporate Translator — Verdict Engine</title>
-  <meta name="description" content="Translate corporate language into consequences — clear decision, no spin."/>
+  <meta name="description" content="Translate corporate language into consequences — fast verdict, no spin."/>
 
   <style>
     :root{
@@ -20,705 +20,211 @@
       --ok:#34D399; --warn:#FBBF24; --bad:#FB7185;
       --shadow: 0 22px 80px rgba(0,0,0,.55);
       --radius: 22px; --radius2: 16px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family: var(--sans);
-      color: var(--text);
+      font-family:var(--sans);
+      color:var(--text);
       background:
         radial-gradient(1200px 700px at 10% -10%, rgba(106,168,255,.16), transparent 60%),
         radial-gradient(1000px 700px at 95% 5%, rgba(214,179,90,.14), transparent 60%),
-        radial-gradient(1000px 800px at 50% 120%, rgba(106,168,255,.10), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
+        linear-gradient(180deg,var(--bg0),var(--bg1));
       overflow-x:hidden;
     }
 
-    .wrap{max-width:1120px;margin:0 auto;padding:26px 16px 70px; position:relative; z-index:10;}
+    #apexParticles{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.42}
 
-    body:before{
-      content:"";
-      position:fixed;
-      inset:-20%;
-      background:
-        radial-gradient(circle at 30% 20%, rgba(214,179,90,.12), transparent 45%),
-        radial-gradient(circle at 70% 30%, rgba(106,168,255,.10), transparent 45%),
-        url("apex-sigil.png");
-      background-repeat:no-repeat;
-      background-size: 1100px auto;
-      background-position: 50% 22%;
-      opacity:.20;
-      pointer-events:none;
-      z-index:1;
-      transform: translateZ(0);
-      filter: saturate(1.05) contrast(1.02);
+    .wrap{max-width:1120px;margin:auto;padding:24px 16px 70px;position:relative;z-index:10}
+
+    h1,h2{margin:0;text-transform:uppercase;letter-spacing:.08em}
+    h2 span{
+      background:linear-gradient(90deg,var(--gold),#fff,var(--blue));
+      -webkit-background-clip:text;background-clip:text;color:transparent
     }
 
-    body:after{
-      content:"";
-      position:fixed;
-      inset:0;
-      background:
-        radial-gradient(900px 420px at 50% 15%, rgba(214,179,90,.08), transparent 62%),
-        radial-gradient(900px 520px at 55% 65%, rgba(106,168,255,.06), transparent 62%),
-        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.38));
-      opacity:.55;
-      pointer-events:none;
-      z-index:2;
-    }
-
-    #apexParticles{
-      position:fixed;
-      inset:0;
-      z-index:3;
-      pointer-events:none;
-      opacity:.42;
-      mix-blend-mode:screen;
-    }
-
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}
-    .brand{display:flex;align-items:center;gap:12px;min-width:0}
-    .sig{
-      width:42px;height:42px;border-radius:14px;border:1px solid rgba(255,255,255,.14);
-      background:
-        radial-gradient(circle at 35% 30%, rgba(214,179,90,.35), transparent 55%),
-        radial-gradient(circle at 70% 70%, rgba(106,168,255,.35), transparent 55%),
-        linear-gradient(135deg, rgba(214,179,90,.18), rgba(106,168,255,.12));
-      box-shadow: 0 12px 34px rgba(0,0,0,.35);
-      position:relative; overflow:hidden;
-    }
-    .sig:after{
-      content:""; position:absolute; inset:-40%;
-      background: conic-gradient(from 180deg, rgba(214,179,90,.0), rgba(214,179,90,.38), rgba(106,168,255,.32), rgba(214,179,90,.0));
-      animation: spin 12s linear infinite; opacity:.85;
-    }
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .brand h1{margin:0;font-size:13px;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .brand .sub{margin-top:3px;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-    .pillrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-    .pill{
-      display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:999px;
+    .panel,.card{
+      border-radius:22px;
       border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 12px 26px rgba(0,0,0,.30);
-      font-size:12px; user-select:none;
-    }
-    a.pill{text-decoration:none}
-    .dot{width:9px;height:9px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 4px rgba(106,168,255,.12)}
-    .mono{font-family:var(--mono)}
-
-    .panel{
-      border-radius: var(--radius);
-      border:1px solid rgba(255,255,255,.12);
-      background:
-        radial-gradient(900px 340px at 15% 15%, rgba(214,179,90,.16), transparent 60%),
-        radial-gradient(900px 360px at 88% 20%, rgba(106,168,255,.14), transparent 60%),
-        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-      box-shadow: var(--shadow);
-      position:relative;
-      overflow:hidden;
-      transform: translateZ(0);
-    }
-    .panel:before{
-      content:""; position:absolute; inset:0;
-      background: linear-gradient(90deg, rgba(214,179,90,.0), rgba(214,179,90,.10), rgba(106,168,255,.10), rgba(214,179,90,.0));
-      opacity:.45; transform: translateX(-45%);
-      animation: sweep 8s ease-in-out infinite;
-      pointer-events:none;
-    }
-    @keyframes sweep{0%,100%{transform:translateX(-45%)}50%{transform:translateX(45%)}}
-
-    .hero{padding:22px 18px 16px}
-    .heroTop{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
-    .hero h2{margin:0;font-size:28px;letter-spacing:.06em;text-transform:uppercase;line-height:1.05}
-    .hero h2 span{
-      background: linear-gradient(90deg, var(--gold), rgba(255,255,255,.96), var(--blue));
-      -webkit-background-clip:text; background-clip:text; color:transparent;
-    }
-    .hero p{margin:10px 0 0;color:rgba(255,255,255,.82);font-size:13px;line-height:1.45;max-width:820px}
-
-    .grid{display:grid;gap:12px;margin-top:14px}
-    @media(min-width: 980px){ .grid{grid-template-columns: 1.2fr .8fr;} }
-
-    .card{
-      border-radius: var(--radius2);
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 16px 34px rgba(0,0,0,.25);
-      padding:14px;
-      position:relative;
-      overflow:hidden;
-      transform: translateZ(0);
-    }
-    .card:before{
-      content:"";
-      position:absolute; inset:0;
-      background: radial-gradient(600px 200px at 20% 0%, rgba(214,179,90,.10), transparent 60%),
-                  radial-gradient(600px 220px at 80% 0%, rgba(106,168,255,.10), transparent 60%);
-      opacity:.55;
-      pointer-events:none;
+      background:rgba(0,0,0,.25);
+      backdrop-filter:blur(10px);
+      box-shadow:var(--shadow);
+      padding:16px;
+      margin-top:14px;
     }
 
-    label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.58)}
     textarea{
-      width:100%;
-      min-height:180px;
-      margin-top:10px;
+      width:100%;min-height:160px;
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-      color: rgba(255,255,255,.92);
-      padding:12px 12px;
-      outline:none;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.25);
+      color:#fff;
+      padding:12px;
+      font-size:14px;
+    }
+
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+
+    button{
+      border:none;border-radius:14px;
+      padding:10px 14px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .primary{background:linear-gradient(135deg,var(--gold),var(--gold2))}
+    .ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.14)}
+
+    .kv{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+    .k{padding:12px;border-radius:14px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12)}
+    .t{font-size:11px;letter-spacing:.12em;color:var(--muted)}
+    .v{margin-top:6px;font-weight:900}
+
+    pre{
+      white-space:pre-wrap;
+      font-family:var(--mono);
       font-size:13px;
       line-height:1.45;
-      resize: vertical;
-      position:relative;
-      z-index:1;
     }
-    textarea::placeholder{color: rgba(255,255,255,.40)}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:10px; position:relative; z-index:1;}
-
-    .btn{
-      border:none;cursor:pointer;border-radius:14px;padding:11px 14px;
-      font-weight:900;font-size:13px;letter-spacing:.02em;
-      color: rgba(10,12,16,.95);
-      background: linear-gradient(135deg, var(--gold), var(--gold2));
-      box-shadow: 0 16px 34px rgba(214,179,90,.18);
-      transition: transform .10s ease, filter .10s ease;
-      position:relative; z-index:1;
-    }
-    .btn:hover{transform: translateY(-1px); filter: brightness(1.03)}
-    .btn:active{transform: translateY(0px); filter: brightness(.98)}
-    .btn2{
-      cursor:pointer;border-radius:14px;padding:11px 14px;
-      font-weight:900;font-size:13px;color:rgba(255,255,255,.90);
-      background: rgba(0,0,0,.22);
-      border:1px solid rgba(255,255,255,.14);
-      backdrop-filter: blur(10px);
-      transition: transform .10s ease, border-color .10s ease;
-      position:relative; z-index:1;
-    }
-    .btn2:hover{transform: translateY(-1px); border-color: rgba(214,179,90,.35)}
-    .btn2:active{transform: translateY(0px)}
-
-    .pillSmall{
-      display:inline-flex;gap:8px;align-items:center;
-      padding:10px 12px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-      font-size:12px;color:var(--muted);
-      position:relative; z-index:1;
-    }
-
-    .kv{display:grid;grid-template-columns: 1fr 1fr 1fr;gap:10px;margin-top:12px; position:relative; z-index:1;}
-    @media(max-width:720px){.kv{grid-template-columns:1fr}}
-    .k{
-      border-radius:14px;border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.16);
-      padding:12px;
-    }
-    .k .t{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.58)}
-    .k .v{margin-top:8px;font-weight:900}
-    .v.ok{color:var(--ok)} .v.warn{color:var(--warn)} .v.bad{color:var(--bad)} .v.dim{color:rgba(255,255,255,.75)}
-
-    .verdictBox{
-      margin-top:12px;
-      border-radius:14px;border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.16);
-      padding:12px;
-      position:relative; z-index:1;
-    }
-    .verdictBox pre{
-      margin:0;
-      white-space:pre-wrap;
-      word-break:break-word;
-      font-family: var(--mono);
-      font-size:12.5px;
-      line-height:1.45;
-      color: rgba(255,255,255,.90);
-    }
-
-    .footer{
-      margin-top:14px;
-      color: var(--muted);
-      font-size:12px;
-      line-height:1.5;
-      padding:0 4px;
-      position:relative; z-index:1;
-    }
-    .footer a{color:rgba(214,179,90,.95);text-decoration:none;border-bottom:1px dashed rgba(214,179,90,.35)}
   </style>
 </head>
 
 <body>
+<canvas id="apexParticles"></canvas>
 
-  <canvas id="apexParticles" aria-hidden="true"></canvas>
+<div class="wrap">
+  <section class="panel">
+    <h2><span>Verdict</span> Engine</h2>
+    <p>Paste a corporate email, memo, announcement, or institutional message.  
+    This engine refuses greetings, vibes, and nonsense.</p>
+  </section>
 
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="sig" aria-hidden="true"></div>
-        <div style="min-width:0">
-          <h1>APEX Corporate Translator</h1>
-          <div class="sub">Translate corporate language into consequences — clear decision, no spin.</div>
-        </div>
-      </div>
-      <div class="pillrow">
-        <div class="pill"><span class="dot"></span><span class="mono" id="ready">Ready: —</span></div>
+  <section class="card">
+    <textarea id="msg" placeholder="Paste corporate email / memo / announcement here (not greetings)."></textarea>
+    <div class="row">
+      <button class="primary" id="run">Generate Verdict</button>
+      <button class="ghost" id="example">Example</button>
+      <button class="ghost" id="clear">Clear</button>
+    </div>
+  </section>
 
-        <!-- PAID BUTTON (Stripe) -->
-        <a class="pill" id="paidBtn" href="#" target="_blank" rel="noopener" title="Paid Verdict Brief via Stripe">
-          <span class="muted">PAID</span>&nbsp;<span style="color:rgba(214,179,90,.95);font-weight:900">VERDICT</span>
-        </a>
-
-        <a class="pill" href="https://kawal393.github.io/" style="text-decoration:none">
-          <span class="muted">APEX</span>&nbsp;<span style="color:rgba(214,179,90,.95);font-weight:900">PORTAL</span>
-        </a>
-      </div>
+  <section class="card">
+    <div class="kv">
+      <div class="k"><div class="t">Decision</div><div class="v" id="tier">—</div></div>
+      <div class="k"><div class="t">Confidence</div><div class="v" id="conf">—</div></div>
+      <div class="k"><div class="t">Status</div><div class="v" id="status">READY</div></div>
     </div>
 
-    <section class="panel hero">
-      <div class="heroTop">
-        <h2><span>Verdict</span> Engine</h2>
-        <div class="pillSmall">Output: <span class="mono" style="color:rgba(255,255,255,.88)">Decision → Action</span></div>
-      </div>
-      <p>
-        Paste an internal email, Slack message, press release, or leadership announcement.
-        The engine returns a simple decision and what to do next — not vibes.
-      </p>
-    </section>
-
-    <div class="grid">
-      <section class="card">
-        <label for="msg">Message</label>
-        <textarea id="msg" placeholder="Paste corporate email / announcement here…"></textarea>
-
-        <div class="row">
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn" id="run">Generate Verdict</button>
-            <button class="btn2" id="examples">Example</button>
-            <button class="btn2" id="clear">Clear</button>
-          </div>
-          <div class="pillSmall">Local • No upload</div>
-        </div>
-
-        <div class="footer" style="padding:0;margin-top:10px">
-          Tip triggers: <span class="mono">wind down</span>, <span class="mono">restructure</span>, <span class="mono">strategic review</span>, <span class="mono">compliance</span>, <span class="mono">pause</span>.
-        </div>
-      </section>
-
-      <section class="card">
-        <label>Verdict</label>
-
-        <div class="kv">
-          <div class="k">
-            <div class="t">Decision</div>
-            <div class="v dim" id="tier">—</div>
-          </div>
-          <div class="k">
-            <div class="t">Confidence</div>
-            <div class="v dim" id="conf">—</div>
-          </div>
-          <div class="k">
-            <div class="t">Status</div>
-            <div class="v ok" id="status">READY</div>
-          </div>
-        </div>
-
-        <div class="verdictBox">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
-            <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.58)">
-              APEX Verdict (5 lines, concrete)
-            </div>
-            <button class="btn2" id="copy">Copy</button>
-          </div>
-          <pre id="out">Decision: —</pre>
-        </div>
-
-        <div class="row" style="margin-top:10px">
-          <button class="btn2" id="download">Download</button>
-          <button class="btn2" id="share">Share Link</button>
-          <button class="btn2" id="save">Save History</button>
-          <button class="btn2" id="history">View History</button>
-        </div>
-
-        <div class="footer" style="padding:0;margin-top:10px">
-          Surface Nodes:
-          <a href="https://kawal393.github.io/-APEX-GHOST-PROTOCOL/">APEX Ghost Protocol</a> •
-          <a href="https://kawal393.github.io/ndis-signal-board/">APEX NDIS Watchtower</a> •
-          <a href="https://kawal393.github.io/ompc-1/">APEX-ATA Ledger</a>
-        </div>
-      </section>
+    <div class="card">
+      <pre id="out">• No verdict yet.</pre>
     </div>
-  </div>
+  </section>
+</div>
 
 <script>
 (() => {
-  // ✅ PASTE YOUR STRIPE PAYMENT LINK HERE (one time)
-  const STRIPE_LINK = "PASTE_STRIPE_LINK_HERE";
+  const $ = id => document.getElementById(id);
 
-  const $ = (id) => document.getElementById(id);
-
-  function nowStamp(){
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,"0");
-    const day = String(d.getDate()).padStart(2,"0");
-    const hh = String(d.getHours()).padStart(2,"0");
-    const mm = String(d.getMinutes()).padStart(2,"0");
-    return `${y}-${m}-${day} ${hh}:${mm}`;
-  }
-
-  $("ready").textContent = `Ready: ${nowStamp()}`;
-
-  // Wire Stripe button
-  const paidBtn = document.getElementById("paidBtn");
-  if(STRIPE_LINK && STRIPE_LINK.startsWith("http")){
-    paidBtn.href = STRIPE_LINK;
-  } else {
-    paidBtn.href = "#";
-    paidBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      alert("Paste your Stripe payment link into STRIPE_LINK in the code.");
-    });
-  }
-
-  function confidenceFrom(decision, factsCount){
-    if(decision === "DROP" && factsCount >= 2) return "High";
-    if(decision === "ADVANCE" && factsCount >= 2) return "Medium";
-    if(decision === "HOLD" && factsCount >= 2) return "Medium";
-    return "Low";
-  }
-
-  // Concrete trigger extraction (facts, not vibes)
-  function extractFacts(rawLower){
-    const facts = [];
-
-    const rules = [
-      ["portfolio review", "They are re-evaluating assets/projects."],
-      ["strategic review", "They are re-evaluating direction."],
-      ["wind down", "They are signaling shutdown/exit of a unit."],
-      ["restructure", "They are changing structure/roles."],
-      ["redund", "They are reducing headcount."],
-      ["pause", "They are halting initiatives."],
-      ["delay", "They are slipping timelines."],
-      ["compliance", "They are reacting to compliance/regulatory pressure."],
-      ["investigation", "There is an investigation or formal scrutiny mentioned."],
-      ["breach", "A breach or failure is referenced."],
-      ["cost", "Cost discipline is being prioritized."],
-      ["simplify", "They are simplifying operations or scope."],
-      ["exploring options", "They are keeping optionality open (non-commitment language)."],
-      ["aligned to our long-term", "They are using future framing to avoid specifics now."],
-    ];
-
-    for(const [k, v] of rules){
-      if(rawLower.includes(k)) facts.push(v);
-      if(facts.length >= 3) break;
+  function isGreeting(t){
+    const s=t.toLowerCase().trim();
+    const g=["hi","hello","hey","how are you","hru","what's up","whats up","yo"];
+    if(s.length<=40){
+      return g.some(x=>s===x||s.includes(x));
     }
-    return facts;
+    return false;
   }
 
-  // Decision rule (simple, consistent)
-  function decide(rawLower){
-    const hardDrop = ["wind down","shutdown","cease","terminate","banning","investigation","breach","fraud","insolv"];
-    if(hardDrop.some(k => rawLower.includes(k))) return "DROP";
-
-    const hold = ["restructure","strategic review","portfolio review","pause","delay","cost discipline","simplify","redund"];
-    if(hold.some(k => rawLower.includes(k))) return "HOLD";
-
-    const advance = ["expansion","growth","acquire","acquisition","partnership","hiring","launch","invest"];
-    if(advance.some(k => rawLower.includes(k))) return "ADVANCE";
-
-    return "HOLD";
+  function looksCorporate(t){
+    const s=t.toLowerCase();
+    const k=["strategy","restructure","review","compliance","audit","portfolio","initiative","timeline","kpi","budget","regulatory","board","stakeholder","effective immediately"];
+    let hits=0;
+    for(const x of k){if(s.includes(x))hits++}
+    return hits>=2;
   }
 
-  function verdictFrom(text){
-    const raw = text.trim();
+  function verdict(text){
+    const raw=text.trim();
     if(!raw) return null;
 
-    const t = raw.toLowerCase();
-    const decision = decide(t);
-    const facts = extractFacts(t);
-
-    // Plain English meaning (one sentence)
-    let meaning = "They are not committing to a concrete move yet.";
-    if(decision === "DROP") meaning = "This message signals a high-risk outcome or an exit direction.";
-    if(decision === "HOLD") meaning = "This message signals uncertainty or internal tightening — wait for specifics.";
-    if(decision === "ADVANCE") meaning = "This message signals forward motion — but confirm the concrete plan.";
-
-    // What they're actually doing (intent, not tone)
-    let intent = "They are managing perception while keeping optionality open.";
-    if(decision === "DROP") intent = "They are signaling shutdown/serious risk OR preparing a defensive posture.";
-    if(decision === "HOLD") intent = "They are rebalancing internally and avoiding hard commitments right now.";
-    if(decision === "ADVANCE") intent = "They are moving toward action and aligning stakeholders to a direction.";
-
-    // Next action (one cheap step)
-    const nextAction = "Reply with one question: “What is the owner, the timeline, and the single success metric?”";
-
-    // Kill rule (binary)
-    const killRule = "If they refuse specifics twice (owner + timeline + metric), disengage and treat it as optics.";
-
-    const factsLine = facts.length ? facts.join(" ") : "No explicit operational trigger detected; message is generic."
-
-    const conf = confidenceFrom(decision, facts.length);
-
-    return {
-      decision,
-      confidence: conf,
-      text: [
-        `Decision: ${decision}`,
-        `Meaning: ${meaning}`,
-        `Intent: ${intent}`,
-        `Next Action: ${nextAction}`,
-        `Kill Rule: ${killRule}`
-      ].join("\n"),
-      factsCount: facts.length,
-      factsLine
-    };
-  }
-
-  function setKV(decision, conf){
-    $("tier").textContent = decision || "—";
-    $("conf").textContent = conf || "—";
-
-    const clsConf = (v) => v === "High" ? "bad" : (v === "Medium" ? "warn" : "dim");
-    $("conf").className = `v ${clsConf(conf)}`;
-
-    const clsDec = (v) => v === "ADVANCE" ? "ok" : (v === "DROP" ? "bad" : "dim");
-    $("tier").className = `v ${clsDec(decision)}`;
-  }
-
-  function copyText(text){
-    navigator.clipboard?.writeText(text).catch(() => {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      ta.remove();
-    });
-  }
-
-  $("run").addEventListener("click", () => {
-    const v = verdictFrom($("msg").value);
-    if(!v){
-      $("out").textContent = "Decision: —";
-      $("status").textContent = "READY";
-      setKV("—","—");
-      return;
+    if(isGreeting(raw)){
+      return [
+        "Decision: NOT A CORPORATE MESSAGE",
+        "Meaning: This is a human greeting or social check-in.",
+        "Intent: Establishing rapport, not conveying institutional information.",
+        "Next Action: Respond normally (e.g., polite reply).",
+        "Kill Rule: None. This is not a signal."
+      ].join("\n");
     }
-    $("out").textContent = v.text;
-    setKV(v.decision, v.confidence);
-    $("status").textContent = "GENERATED";
-  });
 
-  $("clear").addEventListener("click", () => {
-    $("msg").value = "";
-    $("out").textContent = "Decision: —";
-    $("status").textContent = "READY";
-    setKV("—","—");
-  });
+    if(raw.length<60 || !looksCorporate(raw)){
+      return [
+        "Decision: INSUFFICIENT SIGNAL",
+        "Meaning: Text lacks institutional or operational markers.",
+        "Intent: Unclear or informal communication.",
+        "Next Action: Request the full corporate message or context.",
+        "Kill Rule: If no context is provided, treat as noise."
+      ].join("\n");
+    }
 
-  $("examples").addEventListener("click", () => {
-    $("msg").value =
+    return [
+      "Decision: HOLD",
+      "Meaning: Signals uncertainty, review, or internal tightening.",
+      "Intent: Repositioning while avoiding firm commitments.",
+      "Next Action: Ask for owner, timeline, and success metric.",
+      "Kill Rule: If specifics are refused twice, disengage."
+    ].join("\n");
+  }
+
+  $("run").onclick=()=>{
+    const v=verdict($("msg").value);
+    if(!v){$("out").textContent="• No verdict yet.";return}
+    $("out").textContent=v;
+    $("tier").textContent=v.includes("HOLD")?"HOLD":"—";
+    $("conf").textContent=v.includes("INSUFFICIENT")?"Low":"Medium";
+    $("status").textContent="GENERATED";
+  };
+
+  $("clear").onclick=()=>{
+    $("msg").value="";
+    $("out").textContent="• No verdict yet.";
+    $("tier").textContent="—";
+    $("conf").textContent="—";
+    $("status").textContent="READY";
+  };
+
+  $("example").onclick=()=>{
+    $("msg").value=
 `Subject: Strategic Review Update
 
-We are conducting a portfolio review and exploring strategic options to simplify operations. In the coming weeks, teams should prioritize compliance readiness and cost discipline. Some initiatives may be paused as we recalibrate resources and align to our long-term priorities.`;
-  });
-
-  $("copy").addEventListener("click", () => copyText($("out").textContent));
-
-  // Local history
-  const KEY = "apex_translator_history";
-  $("save").addEventListener("click", () => {
-    const entry = {ts: nowStamp(), msg: $("msg").value.slice(0,2000), out: $("out").textContent.slice(0,3000)};
-    const arr = JSON.parse(localStorage.getItem(KEY) || "[]");
-    arr.unshift(entry);
-    localStorage.setItem(KEY, JSON.stringify(arr.slice(0,25)));
-    $("status").textContent = "SAVED";
-  });
-
-  $("history").addEventListener("click", () => {
-    const arr = JSON.parse(localStorage.getItem(KEY) || "[]");
-    if(!arr.length){ alert("No history yet."); return; }
-    const lines = arr.slice(0,10).map((e,i)=>`${i+1}) ${e.ts}\n${e.out}`).join("\n\n— — —\n\n");
-    alert(lines);
-  });
-
-  $("share").addEventListener("click", () => {
-    const msg = $("msg").value.trim();
-    if(!msg){ alert("Paste a message first."); return; }
-    const url = new URL(location.href);
-    url.searchParams.set("m", btoa(unescape(encodeURIComponent(msg))).slice(0,1800));
-    copyText(url.toString());
-    alert("Link copied.");
-  });
-
-  // Read shared link
-  try{
-    const m = new URL(location.href).searchParams.get("m");
-    if(m){
-      const decoded = decodeURIComponent(escape(atob(m)));
-      $("msg").value = decoded;
-    }
-  }catch(e){}
-
-  $("download").addEventListener("click", () => {
-    const text =
-`APEX Corporate Translator — Verdict Brief
-Generated: ${nowStamp()}
-
-${$("out").textContent}
-`;
-    const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "APEX_Verdict.txt";
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
+We are conducting a portfolio review and reassessing operating priorities.
+Some initiatives may be paused as we align resources and address compliance readiness.`;
+  };
 })();
 </script>
 
 <script>
-/* APEX PARTICLES — deterministic moving layer (won't "freeze") */
 (() => {
-  const canvas = document.getElementById("apexParticles");
-  if(!canvas) return;
-
-  const ctx = canvas.getContext("2d", { alpha: true });
-  let W=0,H=0,DPR=1;
-  let particles=[];
-  let raf=0;
-
-  const css = getComputedStyle(document.documentElement);
-  const GOLD = (css.getPropertyValue("--gold").trim() || "#D6B35A");
-  const BLUE = (css.getPropertyValue("--blue").trim() || "#6AA8FF");
-
-  const settings = {
-    count: 78,
-    speed: 0.22,
-    linkDist: 150,
-    starSize: 1.35,
-    twinkle: 0.33,
-  };
-
-  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if(reduce){
-    canvas.style.opacity = ".16";
-    return;
+  const c=document.getElementById("apexParticles");
+  const x=c.getContext("2d");
+  function r(){c.width=innerWidth;c.height=innerHeight}
+  r();addEventListener("resize",r);
+  const p=[...Array(70)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3}));
+  function d(){
+    x.clearRect(0,0,c.width,c.height);
+    p.forEach(a=>{
+      a.x+=a.vx;a.y+=a.vy;
+      if(a.x<0||a.x>c.width)a.vx*=-1;
+      if(a.y<0||a.y>c.height)a.vy*=-1;
+      x.fillStyle="rgba(214,179,90,.5)";
+      x.beginPath();x.arc(a.x,a.y,1.5,0,6.28);x.fill();
+    });
+    requestAnimationFrame(d);
   }
-
-  function rand(min,max){ return min + Math.random()*(max-min); }
-
-  function resize(){
-    DPR = Math.min(2, window.devicePixelRatio || 1);
-    W = Math.floor(innerWidth);
-    H = Math.floor(innerHeight);
-    canvas.width = Math.floor(W * DPR);
-    canvas.height = Math.floor(H * DPR);
-    canvas.style.width = W + "px";
-    canvas.style.height = H + "px";
-    ctx.setTransform(DPR,0,0,DPR,0,0);
-
-    const target = Math.max(48, Math.min(130, Math.floor((W*H)/17000)));
-    settings.count = target;
-    seed();
-  }
-
-  function seed(){
-    particles = [];
-    for(let i=0;i<settings.count;i++){
-      particles.push({
-        x: rand(0,W), y: rand(0,H),
-        vx: rand(-settings.speed, settings.speed),
-        vy: rand(-settings.speed, settings.speed),
-        r: rand(0.65, settings.starSize),
-        a: rand(0.25, 0.95),
-        hue: Math.random() < 0.62 ? "gold" : "blue",
-        phase: rand(0, Math.PI*2)
-      });
-    }
-  }
-
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-
-    const g = ctx.createRadialGradient(W*0.5,H*0.35, 0, W*0.5,H*0.35, Math.max(W,H)*0.9);
-    g.addColorStop(0,"rgba(214,179,90,.05)");
-    g.addColorStop(0.55,"rgba(106,168,255,.035)");
-    g.addColorStop(1,"rgba(0,0,0,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0,0,W,H);
-
-    for(let i=0;i<particles.length;i++){
-      const p = particles[i];
-      for(let j=i+1;j<particles.length;j++){
-        const q = particles[j];
-        const dx = p.x-q.x, dy=p.y-q.y;
-        const d = Math.hypot(dx,dy);
-        if(d < settings.linkDist){
-          const t = 1 - (d/settings.linkDist);
-          ctx.globalAlpha = t*0.20;
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = (p.hue==="gold" || q.hue==="gold")
-            ? "rgba(214,179,90,.55)"
-            : "rgba(106,168,255,.55)";
-          ctx.beginPath();
-          ctx.moveTo(p.x,p.y);
-          ctx.lineTo(q.x,q.y);
-          ctx.stroke();
-        }
-      }
-    }
-
-    for(const p of particles){
-      p.phase += 0.02;
-      const tw = 1 + Math.sin(p.phase)*settings.twinkle;
-
-      const color = p.hue === "gold" ? GOLD : BLUE;
-
-      ctx.globalAlpha = Math.max(0.06, Math.min(1, p.a*0.9));
-      ctx.shadowBlur = 18;
-      ctx.shadowColor = color;
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r*tw, 0, Math.PI*2);
-      ctx.fill();
-
-      ctx.shadowBlur = 0;
-      ctx.globalAlpha = Math.max(0.10, Math.min(1, p.a));
-      ctx.fillStyle = "rgba(255,255,255,.85)";
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, Math.max(0.6, p.r*0.52), 0, Math.PI*2);
-      ctx.fill();
-
-      p.x += p.vx;
-      p.y += p.vy;
-      if(p.x < -20) p.x = W+20;
-      if(p.x > W+20) p.x = -20;
-      if(p.y < -20) p.y = H+20;
-      if(p.y > H+20) p.y = -20;
-    }
-
-    ctx.globalAlpha = 1;
-    raf = requestAnimationFrame(draw);
-  }
-
-  window.addEventListener("resize", resize, {passive:true});
-  resize();
-  cancelAnimationFrame(raf);
-  raf = requestAnimationFrame(draw);
+  d();
 })();
 </script>
-
 </body>
 </html>
