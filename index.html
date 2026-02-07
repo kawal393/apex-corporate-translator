@@ -3,144 +3,339 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>APEX Corporate Translator — Verdict Engine</title>
+<title>APEX Corporate Translator</title>
+
+<meta name="description" content="Translate institutional language into consequences. Signal only. No vibes.">
 
 <style>
-/* ===== CORE THEME (UNCHANGED) ===== */
 :root{
-  --bg0:#05070B; --bg1:#070A12;
-  --gold:#D6B35A; --blue:#6AA8FF;
-  --text:#fff; --muted:rgba(255,255,255,.6);
+  --bg:#03040a;
+  --panel:rgba(255,255,255,.06);
+  --stroke:rgba(255,255,255,.14);
+  --gold:#d6b35a;
+  --blue:#6aa8ff;
+  --text:rgba(255,255,255,.92);
+  --muted:rgba(255,255,255,.6);
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
 }
-html,body{margin:0;height:100%;font-family:system-ui;background:
-radial-gradient(1200px 700px at 10% -10%, rgba(106,168,255,.16), transparent 60%),
-radial-gradient(1000px 700px at 95% 5%, rgba(214,179,90,.14), transparent 60%),
-linear-gradient(180deg,var(--bg0),var(--bg1));color:var(--text);}
-.wrap{max-width:1100px;margin:auto;padding:24px;position:relative;z-index:5}
 
-/* ===== LOGO BACKDROP ===== */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(214,179,90,.18), transparent 60%),
+    radial-gradient(900px 600px at 80% 20%, rgba(106,168,255,.14), transparent 60%),
+    linear-gradient(180deg,#02030a,#04050d);
+  color:var(--text);
+  font-family:var(--sans);
+  overflow-x:hidden;
+}
+
+/* Sigil backdrop */
 body:before{
-content:"";
-position:fixed;inset:0;
-background:url("apex-sigil.png") center 65%/900px no-repeat;
-opacity:.15;pointer-events:none;
+  content:"";
+  position:fixed;
+  inset:-20%;
+  background:url("apex-sigil.png") center 30% no-repeat;
+  background-size:900px auto;
+  opacity:.18;
+  filter:contrast(1.1) saturate(1.05);
+  pointer-events:none;
+  z-index:0;
 }
 
-/* ===== PARTICLES ===== */
-canvas{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.4}
+/* PARTICLES */
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  opacity:.45;
+}
 
-/* ===== UI ===== */
-.panel{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);
-border-radius:20px;padding:20px;margin-bottom:16px}
-textarea{width:100%;min-height:160px;background:#000;border:1px solid rgba(255,255,255,.2);
-border-radius:14px;color:#fff;padding:12px;font-size:14px}
-button{border-radius:14px;border:none;padding:10px 14px;font-weight:700;cursor:pointer}
-.primary{background:linear-gradient(135deg,var(--gold),#b99233);color:#000}
-.secondary{background:#111;color:#fff;border:1px solid rgba(255,255,255,.2)}
-.locked{opacity:.5}
-.verdict{white-space:pre-wrap;font-family:monospace;font-size:13px}
-.bad{color:#ff6b6b} .ok{color:#4ade80}
+.wrap{
+  position:relative;
+  z-index:2;
+  max-width:1100px;
+  margin:0 auto;
+  padding:40px 18px 120px;
+}
+
+/* HEADER */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:28px;
+}
+
+.brand{
+  display:flex;
+  gap:14px;
+  align-items:center;
+}
+
+.logo{
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  background:
+    radial-gradient(circle at 30% 30%, var(--gold), transparent 60%),
+    radial-gradient(circle at 70% 70%, var(--blue), transparent 60%);
+  box-shadow:0 0 40px rgba(214,179,90,.35);
+}
+
+h1{
+  margin:0;
+  font-size:14px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+}
+
+.sub{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* HERO */
+.hero{
+  border:1px solid var(--stroke);
+  border-radius:26px;
+  padding:28px;
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
+  box-shadow:0 30px 120px rgba(0,0,0,.6);
+  margin-bottom:24px;
+}
+
+.hero h2{
+  font-size:34px;
+  margin:0 0 10px;
+  letter-spacing:.08em;
+}
+
+.hero p{
+  max-width:760px;
+  font-size:14px;
+  line-height:1.6;
+  color:rgba(255,255,255,.85);
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  gap:20px;
+}
+@media(min-width:900px){
+  .grid{grid-template-columns:1.2fr .8fr;}
+}
+
+/* PANELS */
+.panel{
+  background:rgba(0,0,0,.35);
+  border:1px solid var(--stroke);
+  border-radius:22px;
+  padding:20px;
+  backdrop-filter:blur(10px);
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+}
+
+label{
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+textarea{
+  width:100%;
+  min-height:180px;
+  margin-top:12px;
+  padding:14px;
+  border-radius:16px;
+  background:rgba(0,0,0,.4);
+  border:1px solid var(--stroke);
+  color:var(--text);
+  font-size:13px;
+  resize:vertical;
+}
+
+/* BUTTONS */
+.actions{
+  margin-top:14px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  padding:12px 18px;
+  border-radius:14px;
+  border:none;
+  cursor:pointer;
+  font-weight:900;
+  background:linear-gradient(135deg,var(--gold),#b99233);
+  color:#0b0d14;
+  box-shadow:0 10px 30px rgba(214,179,90,.4);
+}
+
+.btn.alt{
+  background:transparent;
+  border:1px solid var(--stroke);
+  color:var(--text);
+}
+
+/* VERDICT */
+.stat{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.box{
+  border:1px solid var(--stroke);
+  border-radius:14px;
+  padding:12px;
+  background:rgba(0,0,0,.3);
+}
+
+.box .t{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  color:var(--muted);
+}
+
+.box .v{
+  margin-top:6px;
+  font-weight:900;
+}
+
+pre{
+  margin:0;
+  font-family:var(--mono);
+  font-size:12.5px;
+  line-height:1.5;
+  white-space:pre-wrap;
+}
+
+/* LOCK */
+.lock{
+  margin-top:14px;
+  padding:14px;
+  border-radius:14px;
+  background:rgba(214,179,90,.12);
+  border:1px solid rgba(214,179,90,.4);
+}
+
+.lock a{
+  display:inline-block;
+  margin-top:10px;
+  padding:12px 16px;
+  background:linear-gradient(135deg,var(--gold),#b99233);
+  border-radius:12px;
+  color:#0b0d14;
+  font-weight:900;
+  text-decoration:none;
+}
 </style>
 </head>
 
 <body>
-<canvas id="fx"></canvas>
+
+<canvas id="particles"></canvas>
 
 <div class="wrap">
-<h2>APEX Corporate Translator</h2>
-<p class="muted">Translate institutional language into consequences. This engine refuses greetings, vibes, and nonsense.</p>
 
-<div class="panel">
-<textarea id="input" placeholder="Paste corporate email / memo / announcement (not greetings)."></textarea>
-<br><br>
-<button class="primary" onclick="run()">Generate Verdict</button>
-<button class="secondary" onclick="example()">Example</button>
-</div>
+  <div class="header">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>APEX Corporate Translator</h1>
+        <div class="sub">Signal extraction · Consequence first</div>
+      </div>
+    </div>
+  </div>
 
-<div class="panel">
-<div id="status" class="muted">Status: READY</div>
-<div id="output" class="verdict">• No verdict yet.</div>
-<br>
-<div id="payBlock" style="display:none">
-<button class="primary" onclick="pay()">Unlock Full Verdict — A$19</button>
-</div>
-</div>
+  <section class="hero">
+    <h2>VERDICT ENGINE</h2>
+    <p>
+      Paste an internal email, memo, or institutional message.
+      This engine ignores greetings, vibes, and fluff.
+      It outputs a decision — or refuses.
+    </p>
+  </section>
+
+  <div class="grid">
+
+    <section class="panel">
+      <label>Message</label>
+      <textarea id="msg" placeholder="Paste corporate message here (not greetings)."></textarea>
+
+      <div class="actions">
+        <button class="btn" onclick="run()">Generate Verdict</button>
+        <button class="btn alt" onclick="example()">Example</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="stat">
+        <div class="box"><div class="t">Decision</div><div class="v" id="d">—</div></div>
+        <div class="box"><div class="t">Confidence</div><div class="v" id="c">—</div></div>
+        <div class="box"><div class="t">Status</div><div class="v" id="s">READY</div></div>
+      </div>
+
+      <pre id="out">• No verdict yet.</pre>
+
+      <div class="lock" id="lock" style="display:none">
+        Full verdict requires unlock.
+        <a href="https://buy.stripe.com/5kQ5kvawp4eA5g4dAEb7y01">Unlock Full Verdict</a>
+      </div>
+    </section>
+
+  </div>
 </div>
 
 <script>
-/* ===== PARTICLES (UNCHANGED FEEL) ===== */
-const c=document.getElementById("fx"),x=c.getContext("2d");
-function r(){c.width=innerWidth;c.height=innerHeight}
-r();onresize=r;
-let p=[...Array(70)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3}));
-function a(){
-x.clearRect(0,0,c.width,c.height);
-p.forEach(o=>{
-o.x+=o.vx;o.y+=o.vy;
-if(o.x<0||o.x>c.width)o.vx*=-1;
-if(o.y<0||o.y>c.height)o.vy*=-1;
-x.fillStyle=Math.random()>.5?"#D6B35A":"#6AA8FF";
-x.globalAlpha=.6;
-x.beginPath();x.arc(o.x,o.y,1.2,0,7);x.fill();
-});
-requestAnimationFrame(a)}
-a();
-
-/* ===== CORE LOGIC ===== */
-const STRIPE="https://buy.stripe.com/5kQ5kvawp4eA5g4dAEb7y01";
-
-function isSignal(t){
-t=t.toLowerCase();
-if(t.length<40)return false;
-const keys=["strategy","review","compliance","restructure","pause","align","approval","timeline","decision","portfolio","headcount"];
-return keys.some(k=>t.includes(k));
-}
-
-function verdictPreview(){
-return `Decision: HOLD
-Meaning: Institutional language detected.
-Intent: Strategy reframing / internal alignment.
-Preview Only: Full action + kill rule locked.`;
-}
-
-function verdictFull(){
-return `Decision: HOLD
-Meaning: Formal institutional message detected.
-Intent: Organization is delaying commitment while rebalancing priorities.
-Next Action: Ask for owner + timeline + success metric in one reply.
-Kill Rule: If specifics are refused twice, treat as optics and disengage.`;
-}
-
 function run(){
-const t=document.getElementById("input").value.trim();
-const out=document.getElementById("output");
-const paid=new URLSearchParams(location.search).get("paid")==="1";
-
-if(!isSignal(t)){
-out.innerHTML=`Classification: NO SIGNAL
-Meaning: This is conversational or non-institutional language.
-Action: None. Apex only processes corporate decision language.`;
-document.getElementById("payBlock").style.display="none";
-return;
-}
-
-if(!paid){
-out.textContent=verdictPreview();
-document.getElementById("payBlock").style.display="block";
-}else{
-out.textContent=verdictFull();
-document.getElementById("payBlock").style.display="none";
-}
-}
-
-function pay(){
-location.href=STRIPE;
+  const t = msg.value.toLowerCase();
+  if(t.length < 20 || t.includes("how are you")){
+    out.textContent="• NO SIGNAL\n• Message is greeting or non-institutional.\n• System refused.";
+    d.textContent="NO SIGNAL";
+    c.textContent="High";
+    s.textContent="REFUSED";
+    lock.style.display="none";
+    return;
+  }
+  d.textContent="HOLD";
+  c.textContent="Medium";
+  s.textContent="PREVIEW";
+  out.textContent=
+`• Decision: HOLD
+• Meaning: Institutional positioning detected
+• Intent: Avoiding hard commitment
+• Next Action: Locked
+• Kill Rule: Locked`;
+  lock.style.display="block";
 }
 
 function example(){
-document.getElementById("input").value=
-"Subject: Strategic Review\n\nWe are reviewing priorities to align with long-term value creation. Some initiatives may be paused pending leadership approval.";
+  msg.value=`Subject: Strategic Alignment
+
+We are reviewing priorities and reallocating resources.
+Some initiatives may pause pending leadership review.`;
 }
 </script>
+
+<script>
+const c=document.getElementById("particles"),x=c.getContext("2d");
+let W,H,P=[];
+function r(){W=c.width=innerWidth;H=c.height=innerHeight;P=[...Array(70)].map(()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3}))}
+function a(){x.clearRect(0,0,W,H);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.y<0)p.y=H;if(p.x>W)p.x=0;if(p.y>H)p.y=0;x.fillStyle="rgba(214,179,90,.6)";x.fillRect(p.x,p.y,1.5,1.5)});requestAnimationFrame(a)}
+onresize=r;r();a();
+</script>
+
 </body>
 </html>
